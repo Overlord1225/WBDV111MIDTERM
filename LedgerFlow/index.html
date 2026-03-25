@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LedgerFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="login.html" class="logo">
+                LedgerFlow
+            </a>
+            <ul class="nav-links">
+                <li><a href="login.html">Login</a></li>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section with Image -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h2><i class="fas fa-chart-line"></i> Welcome to LedgerFlow</h2>
+                <p>Your complete financial management solution — Track invoices, manage clients, and process payments seamlessly.</p>
+            </div>
+            <div class="hero-image">
+                <img src="img/1.png" alt="LedgerFlow Dashboard" />
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="stat-value">1,248</div>
+                <div class="stat-label">Total Invoices</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">356</div>
+                <div class="stat-label">Active Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value">$284K</div>
+                <div class="stat-label">Revenue This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">89%</div>
+                <div class="stat-label">Payment Rate</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Forms - 3 Column Grid -->
+        <div class="dashboard-grid">
+            <!-- Invoice Form -->
+            <div class="dashboard-card">
+                <h3>
+                    <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                    Create Invoice
+                </h3>
+                <form id="invoiceForm" class="functioning-form">
+                    <div class="form-group">
+                        <label for="invoice-client">Client</label>
+                        <select id="invoice-client" name="client" required>
+                            <option value="">Select Client</option>
+                            <option value="acme">Acme Corporation</option>
+                            <option value="techstart">TechStart Inc.</option>
+                            <option value="global">Global Industries</option>
+                            <option value="bright">Bright Solutions</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoice-number">Invoice #</label>
+                            <input type="text" id="invoice-number" name="invoiceNumber" placeholder="INV-001" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoice-date">Date</label>
+                            <input type="date" id="invoice-date" name="invoiceDate" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoice-amount">Amount ($)</label>
+                            <input type="number" id="invoice-amount" name="amount" placeholder="0.00" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoice-due">Due Date</label>
+                            <input type="date" id="invoice-due" name="dueDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-description">Description</label>
+                        <textarea id="invoice-description" name="description" rows="2" placeholder="Invoice description..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                    <div class="form-success" id="invoiceSuccess">
+                        <i class="fas fa-check-circle"></i>
+                        Invoice created successfully!
+                    </div>
+                </form>
+            </div>
+
+            <!-- Clients Form -->
+            <div class="dashboard-card">
+                <h3>
+                    <span class="icon"><i class="fas fa-user-plus"></i></span>
+                    Manage Clients
+                </h3>
+                <form id="clientForm" class="functioning-form">
+                    <div class="form-group">
+                        <label for="client-name">Client Name</label>
+                        <input type="text" id="client-name" name="clientName" placeholder="Enter client name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-email">Email Address</label>
+                        <input type="email" id="client-email" name="clientEmail" placeholder="client@company.com" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-phone">Phone Number</label>
+                            <input type="tel" id="client-phone" name="clientPhone" placeholder="+1 (555) 000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label for="client-status">Status</label>
+                            <select id="client-status" name="clientStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-address">Address</label>
+                        <textarea id="client-address" name="clientAddress" rows="2" placeholder="Client address..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                    <div class="form-success" id="clientSuccess">
+                        <i class="fas fa-check-circle"></i>
+                        Client saved successfully!
+                    </div>
+                </form>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="dashboard-card">
+                <h3>
+                    <span class="icon"><i class="fas fa-credit-card"></i></span>
+                    Process Payment
+                </h3>
+                <form id="paymentForm" class="functioning-form">
+                    <div class="form-group">
+                        <label for="payment-invoice">Invoice Reference</label>
+                        <select id="payment-invoice" name="paymentInvoice" required>
+                            <option value="">Select Invoice</option>
+                            <option value="INV-1001">INV-1001 - Acme Corp ($5,000)</option>
+                            <option value="INV-1002">INV-1002 - TechStart ($2,500)</option>
+                            <option value="INV-1003">INV-1003 - Global Ind ($8,750)</option>
+                            <option value="INV-1004">INV-1004 - Bright ($1,200)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payment-amount">Amount ($)</label>
+                            <input type="number" id="payment-amount" name="paymentAmount" placeholder="0.00" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-method">Method</label>
+                            <select id="payment-method" name="paymentMethod" required>
+                                <option value="">Select</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="card">Credit Card</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="check">Check</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payment-date">Date</label>
+                            <input type="date" id="payment-date" name="paymentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-ref">Reference</label>
+                            <input type="text" id="payment-ref" name="paymentRef" placeholder="TXN-000000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-notes">Notes</label>
+                        <textarea id="payment-notes" name="paymentNotes" rows="2" placeholder="Payment notes..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Process
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                    <div class="form-success" id="paymentSuccess">
+                        <i class="fas fa-check-circle"></i>
+                        Payment processed!
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>LedgerFlow</h4>
+                <p>Professional accounting and financial management software for modern businesses.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="login.html">Login</a>
+                <a href="index.html">Dashboard</a>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#">Help Center</a>
+                <a href="#">Documentation</a>
+                <a href="#">API Reference</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Security</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LedgerFlow. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

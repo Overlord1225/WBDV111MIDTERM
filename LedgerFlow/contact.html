@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - LedgerFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="login.html" class="logo">
+                LedgerFlow
+            </a>
+            <ul class="nav-links">
+                <li><a href="login.html">Login</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html" class="active">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Contact Us</h1>
+            <p>We're here to help! Reach out to our team for any questions or support you need.</p>
+        </div>
+
+        <!-- Zig-Zag Layout Section 1: Contact Info with Image (content left, image right) -->
+        <div class="zigzag-section">
+            <div class="zigzag-content">
+                <!-- Contact Information Card -->
+                <div class="contact-info-card">
+                    <h3><i class="fas fa-map-marker-alt" style="margin-right: 0.5rem;"></i> Get in Touch</h3>
+                    
+                    <div class="contact-item">
+                        <div class="icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Headquarters</h4>
+                            <p>123 Finance Street, Suite 500<br>New York, NY 10001<br>United States</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567<br>+1 (555) 987-6543 (Support)</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Email</h4>
+                            <p>info@ledgerflow.com<br>support@ledgerflow.com<br>sales@ledgerflow.com</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="details">
+                            <h4>Business Hours</h4>
+                            <p>Monday - Friday: 9AM - 6PM EST<br>Saturday - Sunday: Closed</p>
+                        </div>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div class="social-section">
+                        <h4>Follow Us</h4>
+                        <div class="social-icons">
+                            <div class="social-icon" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div class="social-icon" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </div>
+                            <div class="social-icon" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </div>
+                            <div class="social-icon" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="zigzag-image">
+                <img src="img/3.png" alt="Contact Us" />
+            </div>
+        </div>
+
+        <!-- Zig-Zag Layout Section 2: Contact Form with Image (image left, content right - via RTL) -->
+        <div class="zigzag-section">
+            <div class="zigzag-image">
+                <img src="img/2.png" alt="Get in Touch" />
+            </div>
+            <div class="zigzag-content">
+                <!-- Contact Form Card -->
+                <div class="contact-form-card">
+                    <h3><i class="fas fa-paper-plane" style="margin-right: 0.5rem;"></i> Send Us a Message</h3>
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-firstname">First Name</label>
+                                <input type="text" id="contact-firstname" name="firstName" placeholder="John" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-lastname">Last Name</label>
+                                <input type="text" id="contact-lastname" name="lastName" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-email">Email Address</label>
+                            <input type="email" id="contact-email" name="contactEmail" placeholder="john@company.com" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-phone">Phone Number</label>
+                                <input type="tel" id="contact-phone" name="contactPhone" placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-subject">Subject</label>
+                                <select id="contact-subject" name="subject" required>
+                                    <option value="">Select Subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="sales">Sales & Pricing</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="billing">Billing & Payments</option>
+                                    <option value="partnership">Partnership</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-company">Company Name</label>
+                            <input type="text" id="contact-company" name="company" placeholder="Your Company (Optional)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" name="message" rows="4" placeholder="How can we help you?" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="remember-me">
+                                <input type="checkbox" name="newsletter">
+                                Subscribe to our newsletter
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-redo"></i> Clear
+                            </button>
+                        </div>
+
+                        <div class="form-success" id="contactSuccess">
+                            <i class="fas fa-check-circle"></i>
+                            Message sent successfully!
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>LedgerFlow</h4>
+                <p>Professional accounting and financial management software for modern businesses.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="login.html">Login</a>
+                <a href="index.html">Dashboard</a>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#">Help Center</a>
+                <a href="#">Documentation</a>
+                <a href="#">API Reference</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Security</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LedgerFlow. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

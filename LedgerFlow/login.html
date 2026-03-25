@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LedgerFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="login.html" class="logo">
+                LedgerFlow
+            </a>
+            <ul class="nav-links">
+                <li><a href="login.html" class="active">Login</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Page with Dashboard Layout -->
+    <div class="login-page">
+        <div class="login-wrapper">
+            <!-- Brand Section with Image -->
+            <div class="login-brand-section">
+                <div class="login-brand-image">
+                    <img src="img/login.png" alt="LedgerFlow Login" />
+                </div>
+                <div class="login-brand-content">
+                    <a href="index.html" class="logo">
+                        LedgerFlow
+                    </a>
+                    
+                    <h2>Secure Access to Your Financial Dashboard</h2>
+                    <p>Manage your invoices, clients, and payments all in one secure location.</p>
+                    
+                    <div class="brand-features">
+                        <div class="brand-feature">
+                            <div class="icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <span>Bank-grade security with 2FA</span>
+                        </div>
+                        <div class="brand-feature">
+                            <div class="icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <span>Real-time financial tracking</span>
+                        </div>
+                        <div class="brand-feature">
+                            <div class="icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <span>Powerful analytics & reporting</span>
+                        </div>
+                        <div class="brand-feature">
+                            <div class="icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <span>Access from anywhere</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Section -->
+            <div class="login-form-section">
+                <div class="login-header">
+                    <h3>Welcome Back</h3>
+                    <p>Enter your credentials to access your account</p>
+                </div>
+
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    Two-Factor Authentication Enabled
+                </div>
+
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Two-Factor Authentication Section -->
+                <div class="two-factor-section">
+                    <p>Choose your 2FA method</p>
+                    <div class="two-factor-icons">
+                        <div class="two-factor-icon" title="Authenticator App">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="two-factor-icon" title="Email Verification">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="two-factor-icon" title="SMS Code">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                        <div class="two-factor-icon" title="Hardware Key">
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
