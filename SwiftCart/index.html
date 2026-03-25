@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftCart Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <div class="wrap">
+        <header class="topbar card">
+            <div class="brand-block">
+                <p class="eyebrow">SwiftCart E-Commerce</p>
+                <h1 class="title">Store Dashboard</h1>
+            </div>
+            <nav class="top-menu" aria-label="Main">
+                <a href="aboutus.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html" class="logout-link" aria-label="Logout of SwiftCart">
+                    <span>Logout</span>
+                    <span class="logout-icon" aria-hidden="true">&rarr;</span>
+                </a>
+            </nav>
+        </header>
+
+        <main class="dashboard-layout">
+            <aside class="card side-menu" aria-label="Store Menu">
+                <h2>Menu</h2>
+                <p class="muted">Jump to key sections quickly.</p>
+                <ul class="menu-links">
+                    <li><a href="#catalogArea">Catalog</a></li>
+                    <li><a href="#checkoutArea">Cart &amp; Checkout</a></li>
+                    <li><a href="#trackingArea">Track Package</a></li>
+                </ul>
+                <div class="menu-note">
+                    <strong>Tip:</strong> Add products first, then complete checkout details.
+                </div>
+            </aside>
+
+            <section class="card content-panel" id="catalogArea">
+                <h2>Catalog</h2>
+                <p class="muted">Add items to your cart and proceed to checkout.</p>
+                <div class="catalog" id="catalog"></div>
+
+                <section class="tracker-panel" id="trackingArea">
+                    <h2>Track Package</h2>
+                    <p class="muted">Enter your tracking number to view package status.</p>
+                    <div class="tracker-row">
+                        <input id="trackingInput" type="text" placeholder="SC-20260302-1234" aria-label="Tracking number">
+                        <button id="trackBtn" class="checkout-btn" type="button">Track</button>
+                    </div>
+                    <p class="tracking-number" id="latestTrackingNumber">No active tracking number yet.</p>
+                    <div class="status status-info" id="trackingStatus">Tracking Status: Not Found</div>
+                    <ul class="tracking-steps" id="trackingSteps">
+                        <li data-step="0">Order Confirmed</li>
+                        <li data-step="1">Packed</li>
+                        <li data-step="2">Out for Delivery</li>
+                        <li data-step="3">Delivered</li>
+                    </ul>
+                </section>
+            </section>
+
+            <aside class="card cart-panel" id="checkoutArea">
+                <h2>Cart</h2>
+                <div id="cartItems" class="muted">No items in cart.</div>
+                <div class="row total-row">
+                    <strong>Total</strong>
+                    <strong id="totalPrice">PHP 0.00</strong>
+                </div>
+                <form id="checkoutForm" class="checkout-form">
+                    <label for="customerName">Full Name</label>
+                    <input id="customerName" name="customerName" type="text" required>
+                    <label for="shippingAddress">Shipping Address</label>
+                    <input id="shippingAddress" name="shippingAddress" type="text" required>
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod" name="paymentMethod" required>
+                        <option value="">Select payment method</option>
+                        <option value="Card">Credit/Debit Card</option>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="E-Wallet">E-Wallet</option>
+                    </select>
+                </form>
+                <div class="actions-row">
+                    <button class="checkout-btn" id="checkoutBtn" type="button">Checkout</button>
+                    <button class="cancel-btn" id="cancelBtn" type="button" disabled>Cancel Order</button>
+                </div>
+                <div class="status status-info" id="checkoutStatus">Checkout Status: None</div>
+            </aside>
+        </main>
+    </div>
+
+    <div class="image-modal" id="imageModal" aria-hidden="true">
+        <button class="modal-close" id="modalClose" type="button" aria-label="Close image preview">&times;</button>
+        <img class="modal-image" id="modalImage" src="" alt="">
+        <p class="modal-caption" id="modalCaption"></p>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

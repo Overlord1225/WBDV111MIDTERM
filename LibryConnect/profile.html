@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LibryConnect | Profile</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-profile">
+  <header class="site-header">
+    <div class="shell">
+      <a class="site-logo" href="index.html">LibryConnect</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Search</a>
+        <a href="profile.html">Members</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+  <main class="profile-app">
+    <section class="profile-grid">
+      <article class="profile-card account-card">
+        <div id="avatar" class="avatar" aria-hidden="true">--</div>
+        <h2 id="profile-name">Guest Reader</h2>
+        <p id="profile-role" class="meta">Member profile updates after login.</p>
+        <ul id="profile-details" class="details"></ul>
+      </article>
+
+      <article class="profile-card stats-card">
+        <h2>Account Snapshot</h2>
+        <div class="stats-list">
+          <div>
+            <p id="stats-borrowed" class="stat-number">0</p>
+            <p class="stat-label">Borrowed</p>
+          </div>
+          <div>
+            <p id="stats-holds" class="stat-number">0</p>
+            <p class="stat-label">On Hold</p>
+          </div>
+          <div>
+            <p class="stat-number">$0.00</p>
+            <p class="stat-label">Fines</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="profile-card list-card" aria-live="polite">
+      <h2>Active Loans</h2>
+      <div id="loan-list"></div>
+    </section>
+
+    <section class="profile-card list-card" aria-live="polite">
+      <h2>Hold Queue</h2>
+      <div id="hold-list"></div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell">
+      <p>LibryConnect</p>
+      <p>Browse. Borrow. Return.</p>
+    </div>
+  </footer>
+  <script src="js/scripting.js"></script>
+</body>
+</html>
+

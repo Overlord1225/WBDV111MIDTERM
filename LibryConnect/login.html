@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LibryConnect | Login</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-login">
+  <header class="site-header">
+    <div class="shell">
+      <a class="site-logo" href="index.html">LibryConnect</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Search</a>
+        <a href="profile.html">Members</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+  <main class="login-main">
+    <section class="login-card">
+      <h1 class="brand">LibryConnect</h1>
+      <p class="lead">Sign in to search books, place holds or loans, and track your due dates.</p>
+
+      <form action="index.html" method="get">
+        <label for="email">Email
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        </label>
+
+        <label for="password">Password
+          <input id="password" name="password" type="password" placeholder="Enter password" required />
+        </label>
+
+        <div class="row">
+          <label class="remember" for="remember">
+            <input id="remember" type="checkbox" />Remember me
+          </label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit">Login</button>
+      </form>
+
+      <p class="create">No account yet? <a href="#">Create one</a></p>
+      <p class="quick-links">
+        <a href="index.html">Go to Book Search</a>
+        <a href="profile.html">Go to Profile</a>
+      </p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell">
+      <p>LibryConnect</p>
+      <p>Browse. Borrow. Return.</p>
+    </div>
+  </footer>
+</body>
+</html>

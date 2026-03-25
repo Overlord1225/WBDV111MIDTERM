@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScholarPortal | Semester Planner</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="page-scholar">
+  <header class="site-header">
+    <div class="header-content">
+      <h1>ScholarPortal</h1>
+      <p>Build your semester, settle fees, and track your academic record.</p>
+    </div>
+    <nav>
+      <a href="login.html" class="ghost-link logout-link">Log Out</a>
+    </nav>
+  </header>
+  <main class="portal-shell">
+    <section class="flow-bar" aria-label="Process flow">
+      <span>View Course Catalog</span>
+      <span class="arrow">-></span>
+      <span>Add to Semester</span>
+      <span class="arrow">-></span>
+      <span>Pay Fees</span>
+      <span class="arrow">-></span>
+      <button id="view-transcript-btn" type="button">View Transcript</button>
+    </section>
+
+    <section class="layout-grid">
+      <section class="panel panel-catalog">
+        <div class="panel-head">
+          <h2>Course Catalog</h2>
+          <p>Notebook-style modules. Click add to include in this semester.</p>
+        </div>
+        <div id="course-catalog" class="catalog-grid"></div>
+      </section>
+
+      <section class="panel panel-semester">
+        <div class="panel-head">
+          <h2>Current Semester</h2>
+          <p>Review your selected modules before payment.</p>
+        </div>
+
+        <div class="bulk-actions">
+          <button id="add-all-btn" type="button">Add All</button>
+          <button id="remove-all-btn" type="button">Remove All</button>
+        </div>
+
+        <div id="semester-list" class="semester-list"></div>
+
+        <div class="totals">
+          <p>Total Units: <strong id="total-units">0</strong></p>
+          <p>Estimated Fees: <strong id="total-fee">PHP 0.00</strong></p>
+        </div>
+
+        <button id="pay-fees-btn" class="primary-btn" type="button">Pay Fees</button>
+        <p id="payment-status" class="status-line" aria-live="polite"></p>
+      </section>
+    </section>
+
+    <section id="transcript" class="panel panel-transcript">
+      <div class="panel-head">
+        <h2>Course Record</h2>
+        <p>Track available subjects and your taken/enrolled courses.</p>
+      </div>
+
+      <div class="transcript-columns">
+        <div>
+          <h3>Available Courses</h3>
+          <ul id="available-courses" class="plain-list"></ul>
+        </div>
+        <div>
+          <h3>Taken Courses</h3>
+          <ul id="taken-courses" class="plain-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>&copy; 2026 ScholarPortal. All rights reserved.</p>
+  </footer>
+  <script src="js/script.js"></script>
+</body>
+</html>

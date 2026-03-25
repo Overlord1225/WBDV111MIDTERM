@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LibryConnect | Search & Hold</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-search">
+  <header class="site-header">
+    <div class="shell">
+      <a class="site-logo" href="index.html">LibryConnect</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Search</a>
+        <a href="profile.html">Members</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+  <main class="app">
+    <section class="content">
+      <div class="search-wrap">
+        <label class="search-label" for="book-search">Find by title, author, or ISBN</label>
+        <div class="search-row">
+          <input id="book-search" type="search" placeholder="Search books..." aria-label="Search books" />
+          <button id="search-btn" type="button">Search</button>
+        </div>
+        <p id="loan-notice" class="loan-notice" aria-live="polite"></p>
+      </div>
+
+      <section id="results" class="results" aria-label="Search results"></section>
+    </section>
+  </main>
+  <div id="cover-modal" class="cover-modal" aria-hidden="true">
+    <button id="cover-close" class="cover-close" type="button" aria-label="Close image preview">Close</button>
+    <img id="cover-preview" class="cover-preview" src="" alt="Book cover preview" />
+  </div>
+  <footer class="site-footer">
+    <div class="shell">
+      <p>LibryConnect</p>
+      <p>Browse. Borrow. Return.</p>
+    </div>
+  </footer>
+
+  <script src="js/scripting.js"></script>
+</body>
+</html>
