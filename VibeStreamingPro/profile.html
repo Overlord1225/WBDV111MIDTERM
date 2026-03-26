@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - VibeStreamingPro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo" aria-label="VibeStreaming Pro"><span class="logo-mark">VSP</span><span class="logo-text">VibeStreamingPro</span></div>
+    <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlist.html">Playlist</a></li>
+        <li><a href="addmusic.html">Add Music</a></li>
+        <li><a href="profile.html" class="active" aria-current="page">Profile</a></li>
+    </ul>
+</nav>
+
+<div class="page-content profile-content" id="profilePage">
+    <h2>Your Listening Profile</h2>
+    <p class="subtitle">Live stats from your music activity in this browser.</p>
+
+    <div class="profile-grid">
+        <div class="profile-card">
+            <p class="profile-label">Most Played Song</p>
+            <p class="profile-value" id="mostPlayedSong">No plays yet</p>
+        </div>
+        <div class="profile-card">
+            <p class="profile-label">Favorite Song</p>
+            <p class="profile-value" id="favoriteSong">No favorite selected</p>
+        </div>
+        <div class="profile-card">
+            <p class="profile-label">Total Plays</p>
+            <p class="profile-value" id="totalPlays">0</p>
+        </div>
+        <div class="profile-card">
+            <p class="profile-label">Uploaded Songs</p>
+            <p class="profile-value" id="uploadedSongs">0</p>
+        </div>
+    </div>
+
+    <div class="profile-list-wrap">
+        <h3>Top Played Tracks</h3>
+        <ul class="profile-list" id="topTracksList">
+            <li>No listening data yet.</li>
+        </ul>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>

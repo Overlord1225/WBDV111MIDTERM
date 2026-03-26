@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - VibeStreamingPro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo" aria-label="VibeStreaming Pro"><span class="logo-mark">VSP</span><span class="logo-text">VibeStreamingPro</span></div>
+    <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="explore.html" class="active" aria-current="page">Explore</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlist.html">Playlist</a></li>
+        <li><a href="addmusic.html">Add Music</a></li>
+        <li><a href="profile.html">Profile</a></li>
+    </ul>
+</nav>
+
+<div class="page-content">
+    <h2>Explore your Music</h2>
+    <div class="search-wrap">
+        <input type="search" id="musicSearch" class="search-input" placeholder="Search songs or artists in Explore..." aria-label="Search songs or artists">
+    </div>
+
+    <div class="music-grid music-scroll" id="musicList">
+        <div class="music-card" data-search="children of the city mili">
+            <img src="img/childrenofthecity.jpg" alt="Children of the City Cover" class="cover-art">
+            <div class="track-info">
+                <p class="song-title">Children of the City</p>
+                <p class="artist-name">Mili</p>
+                <audio controls preload="metadata">
+                    <source src="music/ChildrenoftheCity.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+
+        <div class="music-card" data-search="string theocracy mili">
+            <img src="img/stringtheocracy.jpg" alt="String Theocracy Cover" class="cover-art">
+            <div class="track-info">
+                <p class="song-title">String Theocracy</p>
+                <p class="artist-name">Mili</p>
+                <audio controls preload="metadata">
+                    <source src="music/StringTheocracy.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+
+        <div class="music-card" data-search="gone angels mili">
+            <img src="img/goneangels.jpg" alt="Gone Angels Cover" class="cover-art">
+            <div class="track-info">
+                <p class="song-title">Gone Angels</p>
+                <p class="artist-name">Mili</p>
+                <audio controls preload="metadata">
+                    <source src="music/GoneAngels.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+
+        <div class="music-card" data-search="iron lotus mili">
+            <img src="img/ironlotus.jpg" alt="Iron Lotus Cover" class="cover-art">
+            <div class="track-info">
+                <p class="song-title">Iron Lotus</p>
+                <p class="artist-name">Mili</p>
+                <audio controls preload="metadata">
+                    <source src="music/IronLotus.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
+
+
+
