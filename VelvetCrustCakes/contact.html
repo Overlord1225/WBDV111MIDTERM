@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Velvet Crust Cakes - Contact</title>
+    <meta name="description" content="Contact Velvet Crust Cakes for custom cake requests, event orders, and general questions." />
+    <meta name="theme-color" content="#f472b6" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header>
+      <div class="container">
+        <a href="index.html" class="logo">
+          <span class="logo-name">Velvet Crust Cakes</span>
+        </a>
+        <nav aria-label="Primary">
+          <ul id="primary-menu">
+            <li><a href="login.html" class="nav-link">Login</a></li>
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-controls">
+          <button
+            class="hamburger"
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-controls="primary-menu"
+            aria-expanded="false"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="split-layout" aria-label="Contact Velvet Crust Cakes">
+        <div class="split-media">
+          <div class="split-media-inner">
+            <h1>Contact</h1>
+            <p>Questions, custom requests, or event planning—send us a message and we’ll reply as soon as we can.</p>
+
+            <img src="img/logo.png" alt="" loading="lazy" decoding="async" width="1024" height="1024" />
+
+            <div class="contact-info" aria-label="Contact details">
+              <p><strong>Email:</strong> info@velvetcrustcakes.com</p>
+              <p><strong>Phone:</strong> (123) 456-7890</p>
+              <p><strong>Address:</strong> 123 Cake Lane, Sweet City, CA 90210</p>
+              <p><strong>Business Hours:</strong> Mon - Sat: 9 AM - 6 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-content">
+          <h2>Send Us a Message</h2>
+          <p>Tell us what you need and we’ll get back to you. (Demo form)</p>
+
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="contact-name">Your Name</label>
+              <input type="text" id="contact-name" name="contact-name" placeholder="Enter your name" autocomplete="name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-email">Email Address</label>
+              <input
+                type="email"
+                id="contact-email"
+                name="contact-email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                placeholder="e.g., Order inquiry, Feedback"
+                autocomplete="off"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="message-body">Your Message</label>
+              <textarea id="message-body" name="message-body" rows="7" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn">Send Message</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; <span data-current-year>2026</span> Velvet Crust Cakes. All rights reserved.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Twitter / X">X</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

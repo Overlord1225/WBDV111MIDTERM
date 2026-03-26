@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Velvet Crust Cakes - Login</title>
+    <meta name="description" content="Log in to Velvet Crust Cakes (demo page)." />
+    <meta name="theme-color" content="#f472b6" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="login-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header>
+      <div class="container">
+        <a href="index.html" class="logo">
+          <span class="logo-name">Velvet Crust Cakes</span>
+        </a>
+        <nav aria-label="Primary">
+          <ul id="primary-menu">
+            <li><a href="login.html" class="nav-link">Login</a></li>
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-controls">
+          <button
+            class="hamburger"
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-controls="primary-menu"
+            aria-expanded="false"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="login-shell">
+      <section class="login-layout" aria-label="Login">
+        <div class="login-media" aria-hidden="true">
+          <img
+            src="img/logo.png"
+            alt=""
+            loading="eager"
+            decoding="async"
+            width="1024"
+            height="1024"
+          />
+        </div>
+
+        <div class="glass-card">
+          <h1 class="login-title">Login</h1>
+
+          <form id="loginForm" action="#" method="post">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+
+            <div class="login-row">
+              <a class="login-link" href="index.html">Back to Home</a>
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; <span data-current-year>2026</span> Velvet Crust Cakes. All rights reserved.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Twitter / X">X</a>
+        </div>
+      </div>
+    </footer>
+    <script src="js/script.js"></script>
+  </body>
+</html>
