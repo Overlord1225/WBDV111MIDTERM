@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna Vista Resort | Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home-page">
+    <header class="site-header">
+        <div class="brand">
+            <img src="img/logo.png" alt="Luna Vista Resort logo" class="brand-logo">
+            <span>Luna Vista Resort</span>
+        </div>
+        <nav class="site-nav">
+            <a href="index.html" aria-current="page">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="reservation.html">Reservation</a>
+            <a href="aboutus.html">About</a>
+            <a href="contactus.html">Contact</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <header class="hero-carousel" id="heroCarousel">
+        <div class="slides">
+            <article class="slide active">
+                <img src="img/loginBGpic.jpg" alt="Luna Vista Resort main pool area">
+                <div class="slide-content">
+                    <p class="eyebrow">Luna Vista Resort</p>
+                    <h1>Stay Where the Forest Meets the Water</h1>
+                </div>
+            </article>
+            <article class="slide">
+                <img src="img/room1.jpg" alt="Resort room with tropical view">
+                <div class="slide-content">
+                    <p class="eyebrow">Room Comfort</p>
+                    <h1>Elegant Spaces for Every Kind of Escape</h1>
+                </div>
+            </article>
+            <article class="slide">
+                <img src="img/room2.jpg" alt="Poolside lounge and tropical landscape">
+                <div class="slide-content">
+                    <p class="eyebrow">Resort Experience</p>
+                    <h1>Relax Poolside, Dine Well, and Discover More</h1>
+                </div>
+            </article>
+        </div>
+
+        <button class="carousel-btn prev" type="button" id="prevSlide" aria-label="Previous slide">&#10094;</button>
+        <button class="carousel-btn next" type="button" id="nextSlide" aria-label="Next slide">&#10095;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </header>
+
+    <main class="home-content landing-content">
+        <section class="rooms-section">
+            <h2>Welcome to Luna Vista Resort</h2>
+            <p class="rooms-note">Your tropical escape for family vacations, romantic getaways, and premium resort experiences.</p>
+            <div class="landing-actions">
+                <a class="landing-btn" href="reservation.html">Book Your Stay</a>
+                <a class="landing-btn ghost" href="gallery.html">View Gallery</a>
+                <a class="landing-btn ghost" href="aboutus.html">About Us</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Luna Vista Resort. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

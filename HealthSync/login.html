@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSync Clinic - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header class="site-header">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-text">HealthSync Clinic</span>
+            </a>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Toggle menu" aria-controls="navLinks" aria-expanded="false">☰</button>
+
+            <nav aria-label="Primary navigation">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html" class="nav-cta">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+        <div class="split-layout split-layout--auth">
+            <section class="hero hero--auth" aria-label="Welcome message">
+                <figure class="hero-media hero-media--fill">
+                    <img src="img/login.jpg" alt="Doctor and patient consultation" loading="lazy">
+                </figure>
+                <div class="hero-overlay">
+                    <div class="hero-badge">Secure sign-in</div>
+                    <h1 class="hero-title">Welcome back</h1>
+                    <p class="hero-subtitle">Access your HealthSync account and continue your registration.</p>
+                    <ul class="hero-list hero-list--compact">
+                        <li>Simple, fast login</li>
+                        <li>Mobile-friendly design</li>
+                        <li>Guided intake experience</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="login-container">
+                <div class="login-box">
+                    <div class="login-header">
+                        <h2>Login</h2>
+                        <p>Use your email and password.</p>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        </div>
+
+                        <div class="form-meta">
+                            <label class="check">
+                                <input type="checkbox" id="remember" name="remember">
+                                <span>Remember me</span>
+                            </label>
+                            <a class="form-link" href="contact.html">Need help?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <span>Sign In</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>© <span data-year></span> HealthSync Clinic. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js" defer></script>
+</body>
+</html>

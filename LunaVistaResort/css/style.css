@@ -1,0 +1,1453 @@
+:root {
+    --pool: #2ec7c0;
+    --deep-pool: #157f84;
+    --stone: #d2bc95;
+    --wood: #8c5b3c;
+    --leaf: #234a2b;
+    --ink: #1e2a22;
+    --card: rgba(247, 241, 228, 0.9);
+    --border: rgba(74, 56, 34, 0.28);
+    /* Added for glassmorphism and shadow */
+    --glass-bg: rgba(255, 255, 255, 0.22);
+    --glass-blur: blur(12px);
+    --shadow-lg: 0 8px 32px rgba(38, 30, 21, 0.18);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Outfit", sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(28, 43, 25, 0.48), rgba(28, 43, 25, 0.48)),
+        url("../img/loginBGpic.jpg") center/cover no-repeat fixed;
+    letter-spacing: 0.01em;
+}
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 30;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    background: rgba(17, 41, 33, 0.72);
+    border-bottom: 1px solid rgba(255, 243, 220, 0.22);
+    backdrop-filter: blur(7px);
+}
+
+.site-header .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Cinzel", serif;
+    color: #f8efdb;
+    font-size: 1.15rem;
+}
+
+.site-header .brand-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3px;
+}
+
+.site-nav {
+    display: flex;
+    gap: 8px;
+}
+
+.site-nav a {
+    color: #f8efdb;
+    text-decoration: none;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+
+.site-nav a[aria-current="page"] {
+    border-color: rgba(248, 239, 219, 0.45);
+    background: rgba(248, 239, 219, 0.12);
+}
+
+.page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.login-shell {
+    width: min(960px, 100%);
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 55px rgba(38, 30, 21, 0.28);
+    background: var(--card);
+    backdrop-filter: blur(5px);
+}
+
+.resort-panel {
+    padding: 48px 38px;
+    color: white;
+    background:
+        linear-gradient(to top, rgba(26, 54, 31, 0.84), rgba(26, 54, 31, 0.45)),
+        url("../img/loginBGpic.jpg") center/cover;
+}
+
+.eyebrow {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    margin-bottom: 14px;
+    opacity: 0.9;
+}
+
+.resort-panel h1 {
+    font-family: "Cinzel", serif;
+    font-size: clamp(1.9rem, 3vw, 2.4rem);
+    margin-bottom: 14px;
+}
+
+.lead {
+    line-height: 1.65;
+    margin-bottom: 18px;
+    max-width: 36ch;
+}
+
+.highlights {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.highlights li::before {
+    content: "*";
+    color: var(--stone);
+    margin-right: 9px;
+}
+
+.form-panel {
+    padding: 48px 38px;
+    display: grid;
+    align-content: center;
+}
+
+.form-panel h2 {
+    font-family: "Cinzel", serif;
+    color: var(--wood);
+    font-size: 1.7rem;
+}
+
+.subtext {
+    margin: 8px 0 24px;
+    color: #5f543f;
+}
+
+form {
+    display: grid;
+    gap: 12px;
+}
+
+label {
+    font-size: 0.94rem;
+    color: #5a4a36;
+}
+
+input[type="email"],
+input[type="password"] {
+    border: 1px solid #c6ad7f;
+    background: rgba(255, 251, 241, 0.92);
+    border-radius: 10px;
+    padding: 12px 13px;
+    font: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: var(--deep-pool);
+    box-shadow: 0 0 0 3px rgba(46, 199, 192, 0.2);
+    outline: none;
+}
+
+.form-row {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.remember {
+    display: inline-flex;
+    gap: 7px;
+    align-items: center;
+}
+
+.link {
+    color: var(--deep-pool);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+button {
+    margin-top: 8px;
+    border: 0;
+    border-radius: 10px;
+    padding: 13px;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #a66a42, #7d4e32);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 4px 16px rgba(38, 30, 21, 0.13);
+    letter-spacing: 0.03em;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(83, 53, 30, 0.3);
+    filter: brightness(1.08);
+}
+
+.message {
+    min-height: 1.2em;
+    font-size: 0.9rem;
+    margin-top: 3px;
+}
+
+.message.error {
+    color: #b1303f;
+}
+
+.message.success {
+    color: var(--leaf);
+}
+
+@media (max-width: 840px) {
+    .login-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .resort-panel,
+    .form-panel {
+        padding: 32px 24px;
+    }
+}
+
+/* Video Login Page */
+.login-page {
+    background: #0d1d19;
+}
+
+.login-page .bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.login-page .video-overlay {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(68, 152, 147, 0.28), transparent 38%),
+        radial-gradient(circle at 82% 78%, rgba(204, 154, 99, 0.2), transparent 36%),
+        linear-gradient(rgba(6, 18, 15, 0.64), rgba(6, 18, 15, 0.72));
+    z-index: 1;
+}
+
+.login-page .page {
+    position: relative;
+    z-index: 2;
+    padding-top: 90px;
+}
+
+.login-page .login-shell.login-glass {
+    width: min(460px, 94%);
+    grid-template-columns: 1fr;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 244, 223, 0.34);
+    border-radius: 24px;
+    background: linear-gradient(160deg, rgba(19, 46, 37, 0.62), rgba(11, 28, 23, 0.48));
+    box-shadow: 0 28px 58px rgba(4, 12, 9, 0.54);
+    backdrop-filter: blur(10px);
+    animation: loginFloat 5.5s ease-in-out infinite;
+}
+
+.login-page .login-shell.login-glass::before {
+    content: "";
+    position: absolute;
+    inset: -40% 25% auto -25%;
+    height: 220px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 68%);
+    pointer-events: none;
+}
+
+.login-page .form-panel {
+    padding: 36px 32px;
+    color: #f8f4e8;
+}
+
+.login-page .form-panel h2 {
+    color: #f8f4e8;
+    font-size: clamp(1.9rem, 3.6vw, 2.25rem);
+    line-height: 1.1;
+    margin-top: 6px;
+}
+
+.login-page .brand-chip {
+    display: inline-block;
+    width: fit-content;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 233, 194, 0.54);
+    border-radius: 999px;
+    padding: 6px 12px;
+    color: #ffe9c5;
+    background: rgba(255, 198, 121, 0.13);
+    margin-bottom: 14px;
+}
+
+.login-page .eyebrow {
+    color: rgba(182, 238, 233, 0.96);
+    margin-bottom: 8px;
+}
+
+.login-page .subtext,
+.login-page label {
+    color: rgba(248, 244, 232, 0.88);
+}
+
+.login-page input[type="email"],
+.login-page input[type="password"] {
+    border: 1px solid rgba(255, 236, 201, 0.44);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 13px 14px;
+}
+
+.login-page input[type="email"]:focus,
+.login-page input[type="password"]:focus {
+    border-color: #7de9df;
+    box-shadow: 0 0 0 4px rgba(125, 233, 223, 0.23);
+}
+
+.login-page .remember {
+    color: rgba(245, 239, 224, 0.92);
+}
+
+.login-page .link {
+    color: #96efe8;
+}
+
+.login-page button {
+    margin-top: 10px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #18ab9f, #1b7a74 60%, #115d58);
+    letter-spacing: 0.02em;
+}
+
+.login-page button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px rgba(7, 58, 55, 0.42);
+}
+
+.login-page .message.error {
+    color: #ffd2d6;
+}
+
+.login-page .message.success {
+    color: #abf2b6;
+}
+
+@keyframes loginFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Home Page */
+.home-page {
+    font-family: "Outfit", sans-serif;
+    color: #f5f0e4;
+    background: linear-gradient(180deg, #1c2f1d 0%, #203a25 35%, #254933 100%);
+}
+
+.home-page .hero-carousel {
+    position: relative;
+    margin-top: 72px;
+    height: calc(100vh - 72px);
+    min-height: 620px;
+    overflow: hidden;
+}
+
+.home-page .slides {
+    height: 100%;
+}
+
+.home-page .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.home-page .slide.active {
+    opacity: 1;
+}
+
+.home-page .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.08);
+}
+
+.home-page .slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(18, 25, 17, 0.76), rgba(18, 25, 17, 0.25));
+}
+
+.home-page .slide-content {
+    position: absolute;
+    left: 5%;
+    bottom: 12%;
+    z-index: 1;
+    max-width: 58ch;
+}
+
+.home-page .slide-content h1 {
+    font-family: "Cinzel", serif;
+    font-size: clamp(1.7rem, 4vw, 2.7rem);
+    color: #f6efdf;
+    margin-top: 8px;
+    text-shadow: 0 2px 12px rgba(44, 62, 80, 0.18);
+}
+
+.home-page .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid rgba(245, 240, 228, 0.5);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #f6efdf;
+    background: rgba(23, 49, 32, 0.52);
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-top: 0;
+    padding: 0;
+}
+
+.home-page .carousel-btn.prev {
+    left: 16px;
+}
+
+.home-page .carousel-btn.next {
+    right: 16px;
+}
+
+.home-page .carousel-dots {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.home-page .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+}
+
+.home-page .dot.active {
+    background: var(--pool);
+}
+
+.home-page .home-content {
+    width: min(1120px, 94%);
+    margin: 20px auto 42px;
+    display: grid;
+    gap: 24px;
+}
+
+.home-page .booking-tools,
+.home-page .rooms-section {
+    background: rgba(238, 226, 200, 0.9);
+    color: #2f2a20;
+    border: 1px solid rgba(111, 84, 51, 0.35);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: var(--glass-blur);
+}
+
+.home-page h2 {
+    font-family: "Cinzel", serif;
+    color: #6f452d;
+    margin-bottom: 14px;
+}
+
+.home-page .rooms-note {
+    color: #5f5039;
+    margin-bottom: 12px;
+}
+
+.home-page .room-search-wrap {
+    margin-bottom: 14px;
+}
+
+.home-page #roomSearch {
+    width: min(520px, 100%);
+    border: 1px solid #b89d74;
+    border-radius: 10px;
+    padding: 11px 12px;
+    background: #fff9ee;
+    color: #3e3528;
+    font: inherit;
+}
+
+.home-page .filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 10px 16px;
+    align-items: end;
+}
+
+.home-page .filters input,
+.home-page .filters select {
+    border: 1px solid #b89d74;
+    border-radius: 9px;
+    padding: 9px 10px;
+    background: #fff9ee;
+    color: #3e3528;
+}
+
+.home-page .amenities-filter {
+    margin-top: 16px;
+    border: 1px solid #bfa982;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.home-page .amenities-filter legend {
+    padding: 0 6px;
+    font-weight: 600;
+    color: #6b4c33;
+}
+
+.home-page #onlineCheckInBtn {
+    margin-top: 14px;
+}
+
+.home-page .booking-panel-host {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 40;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.home-page .booking-panel-host.is-open {
+    display: flex;
+}
+
+.home-page .booking-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: rgba(8, 21, 16, 0.5);
+    cursor: pointer;
+}
+
+.home-page .close-booking-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    margin: 0;
+    border-radius: 12px;
+    padding: 0;
+    font-size: 1.45rem;
+    line-height: 1;
+    background: #8c6b4d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-page .selected-room-label {
+    margin-top: -4px;
+    margin-bottom: 10px;
+    color: #5f5039;
+}
+
+.home-page .selected-room-preview {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #c3ac84;
+    margin-bottom: 12px;
+}
+
+.home-page .selected-room-preview img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.home-page .room-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+.home-page .room-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(111, 84, 51, 0.35);
+    background: rgba(238, 226, 200, 0.96);
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 10px 18px rgba(55, 43, 28, 0.12);
+}
+
+.home-page .room-card:hover {
+    box-shadow: 0 12px 22px rgba(55, 43, 28, 0.18);
+    transform: translateY(-2px);
+    border-color: #b58c5c;
+}
+
+.home-page .room-card.is-selected {
+    border-color: #1b7a74;
+    box-shadow: 0 0 0 3px rgba(27, 122, 116, 0.24);
+    overflow: visible;
+}
+
+.home-page .room-card.is-booked {
+    border-color: #1e8b50;
+    box-shadow: 0 0 0 3px rgba(30, 139, 80, 0.2);
+}
+
+.home-page .room-card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    transition: height 0.25s ease;
+}
+
+.home-page .room-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.home-page .room-info h3 {
+    color: #2f3f2d;
+    font-family: "Cinzel", serif;
+    font-size: 1.18rem;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    min-height: 2.4em;
+}
+
+.home-page .room-info > p:nth-of-type(1) {
+    color: #3f3a2f;
+    font-weight: 600;
+}
+
+.home-page .room-tags {
+    font-size: 0.9rem;
+    color: #5d5a44;
+    min-height: 2.4em;
+}
+
+.home-page .room-info p {
+    margin: 0;
+}
+
+.home-page .room-info .room-select {
+    margin-top: auto;
+    width: 100%;
+}
+
+.home-page .booking-slot {
+    display: none;
+}
+
+.home-page .room-booking-panel {
+    position: relative;
+    z-index: 1;
+    width: min(920px, 96vw);
+    max-height: min(90vh, 820px);
+    overflow: auto;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(238, 226, 200, 0.98);
+    box-shadow: 0 20px 48px rgba(27, 21, 14, 0.32);
+    border: 1px solid rgba(111, 84, 51, 0.35);
+}
+
+.home-page .room-booking-panel h2,
+.home-page .room-booking-panel .selected-room-label {
+    font-family: "Cinzel", serif;
+    color: #6f452d;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+}
+
+.home-page .room-booking-panel .selected-room-preview img {
+    width: 100%;
+    max-width: 760px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(38, 30, 21, 0.15);
+}
+
+.home-page .room-booking-panel .top-filters {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 12px;
+    border: 1px solid #c9b28a;
+    border-radius: 12px;
+    background: rgba(255, 250, 241, 0.65);
+}
+
+.home-page .room-booking-panel .field-group {
+    display: grid;
+    gap: 8px;
+}
+
+.home-page .room-booking-panel .field-group label,
+.home-page .room-booking-panel .booking-form-fields label {
+    color: #5a4a36;
+    font-size: 0.94rem;
+}
+
+.home-page .room-booking-panel .top-filters .field-group {
+    max-width: 420px;
+}
+
+.home-page .room-booking-panel .top-filters select,
+.home-page .room-booking-panel .booking-form-fields input[type="date"] {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #bfa982;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff9ee;
+    color: #3e3528;
+    font: inherit;
+}
+
+.home-page .room-booking-panel .amenities-filter {
+    margin-top: 4px;
+    background: rgba(255, 249, 238, 0.72);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid #bfa982;
+}
+
+.home-page .room-booking-panel .amenities-filter label {
+    font-size: 1rem;
+    color: #6b4c33;
+    margin-right: 14px;
+}
+
+.home-page .room-booking-panel .booking-form-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 12px 16px;
+    margin: 10px 0 12px;
+    padding: 12px;
+    border: 1px solid #c9b28a;
+    border-radius: 12px;
+    background: rgba(255, 250, 241, 0.65);
+}
+
+.home-page .room-booking-panel .booking-actions {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.home-page .room-booking-panel .booking-actions button {
+    margin-top: 0;
+    height: 46px;
+    min-height: 46px;
+    min-width: 190px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.home-page .room-booking-panel .unselect-btn {
+    background: linear-gradient(90deg, #8c8269, #746b55);
+}
+
+.home-page .room-booking-panel .close-booking-btn {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    padding: 0;
+    margin: 0;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: 1.45rem;
+}
+
+.home-page .room-card.is-hidden {
+    display: none;
+}
+
+.site-footer {
+    border-top: 1px solid rgba(255, 243, 220, 0.18);
+    background: rgba(17, 41, 33, 0.76);
+    color: #f8efdb;
+    text-align: center;
+    padding: 18px 12px;
+}
+
+@media (max-width: 760px) {
+    .home-page .hero-carousel {
+        height: auto;
+        min-height: 720px;
+    }
+
+    .home-page .filters {
+        grid-template-columns: 1fr;
+    }
+
+    .home-page .slide-content {
+        bottom: auto;
+        top: 14%;
+    }
+
+    .home-page .room-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-page .room-card img {
+        height: 170px;
+    }
+
+    .home-page .room-booking-panel .filters {
+        grid-template-columns: 1fr;
+    }
+
+    .site-header .brand span {
+        display: none;
+    }
+
+    .home-page .room-booking-panel .booking-form-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .home-page .room-booking-panel .booking-actions button {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .home-page .room-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Site-wide consistency polish --- */
+.site-nav a {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.site-nav a:hover {
+    border-color: rgba(248, 239, 219, 0.34);
+    background: rgba(248, 239, 219, 0.14);
+}
+
+.home-page .landing-content {
+    margin-top: 28px;
+}
+
+.home-page .landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.home-page .landing-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #a66a42, #7d4e32);
+    box-shadow: 0 8px 20px rgba(45, 30, 18, 0.2);
+}
+
+.home-page .landing-btn.ghost {
+    color: #6f452d;
+    border: 1px solid #b99669;
+    background: rgba(255, 250, 241, 0.9);
+    box-shadow: none;
+}
+
+.inner-page .page-main {
+    width: min(1120px, 94%);
+    margin: 96px auto 40px;
+    display: grid;
+    gap: 20px;
+}
+
+.inner-page .page-hero {
+    border: 1px solid rgba(111, 84, 51, 0.35);
+    border-radius: 16px;
+    padding: 24px;
+    background:
+        linear-gradient(120deg, rgba(29, 71, 57, 0.72), rgba(17, 37, 30, 0.78)),
+        url("../img/loginBGpic.jpg") center/cover no-repeat;
+    color: #f8efdb;
+    box-shadow: var(--shadow-lg);
+}
+
+.inner-page .page-hero .eyebrow {
+    margin-bottom: 6px;
+    color: #bfece6;
+}
+
+.inner-page .page-hero h1 {
+    font-family: "Cinzel", serif;
+    font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+    margin-bottom: 8px;
+}
+
+.inner-page .page-hero p {
+    color: rgba(248, 239, 219, 0.93);
+    max-width: 62ch;
+    line-height: 1.6;
+}
+
+.inner-page .content-panel {
+    background: rgba(238, 226, 200, 0.94);
+    border: 1px solid rgba(111, 84, 51, 0.35);
+    border-radius: 16px;
+    padding: 24px;
+    color: #2f2a20;
+    box-shadow: var(--shadow-lg);
+}
+
+.inner-page .text-stack {
+    display: grid;
+    gap: 16px;
+}
+
+.inner-page .text-block h2 {
+    font-family: "Cinzel", serif;
+    color: #6f452d;
+    margin-bottom: 6px;
+}
+
+.inner-page .text-block p {
+    color: #3f3a2f;
+    line-height: 1.72;
+}
+
+.inner-page .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.inner-page .feature-card {
+    border: 1px solid #ccb38a;
+    border-radius: 12px;
+    background: rgba(255, 250, 241, 0.84);
+    padding: 14px;
+}
+
+.inner-page .feature-card h3 {
+    font-family: "Cinzel", serif;
+    color: #6f452d;
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+.inner-page .feature-card p {
+    color: #5f5039;
+    line-height: 1.6;
+}
+
+.inner-page .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.inner-page .gallery-grid .room-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(111, 84, 51, 0.35);
+    box-shadow: 0 10px 18px rgba(55, 43, 28, 0.12);
+}
+
+.inner-page .gallery-grid .room-card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+}
+
+.inner-page .reservation-panel {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 14px;
+    padding: 22px;
+    background: rgba(255, 250, 241, 0.88);
+    border: 1px solid #c7ad83;
+    box-shadow: none;
+}
+
+.inner-page .reservation-panel .field-group {
+    display: grid;
+    gap: 8px;
+}
+
+.inner-page .reservation-panel .field-group label {
+    color: #5a4a36;
+}
+
+.inner-page .reservation-panel select,
+.inner-page .reservation-panel input[type="date"] {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #bfa982;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff9ee;
+    color: #3e3528;
+    font: inherit;
+}
+
+.inner-page .reservation-panel .booking-form-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 12px 16px;
+    margin: 14px 0;
+}
+
+.inner-page .reservation-panel .amenities-filter {
+    margin: 4px 0 12px;
+    border: 1px solid #bfa982;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.inner-page .reservation-panel .booking-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.inner-page .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.inner-page .contact-form {
+    display: grid;
+    gap: 10px;
+}
+
+.inner-page .contact-form label {
+    color: #5a4a36;
+    font-size: 0.94rem;
+}
+
+.inner-page .contact-form input,
+.inner-page .contact-form textarea {
+    border: 1px solid #c6ad7f;
+    background: rgba(255, 251, 241, 0.92);
+    border-radius: 10px;
+    padding: 12px 13px;
+    font: inherit;
+    color: #3e3528;
+}
+
+.inner-page .contact-form textarea {
+    resize: vertical;
+}
+
+.login-page .site-footer {
+    position: relative;
+    z-index: 2;
+    background: rgba(12, 28, 23, 0.74);
+}
+
+@media (max-width: 920px) {
+    .inner-page .gallery-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .inner-page .feature-grid,
+    .inner-page .contact-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .inner-page .reservation-panel .booking-form-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .inner-page .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .inner-page .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-page .landing-actions {
+        flex-direction: column;
+    }
+
+    .home-page .landing-btn {
+        width: 100%;
+    }
+}
+
+.gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.gallery-lightbox.is-open {
+    display: flex;
+}
+
+.gallery-lightbox .lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(6, 14, 12, 0.82);
+    margin: 0;
+    padding: 0;
+}
+
+.gallery-lightbox .lightbox-content {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    width: min(1100px, 94vw);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 237, 205, 0.5);
+    box-shadow: 0 24px 46px rgba(5, 12, 10, 0.42);
+    background: #12241b;
+}
+
+.gallery-lightbox img {
+    width: 100%;
+    height: min(78vh, 760px);
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-lightbox figcaption {
+    padding: 12px 16px;
+    color: #f8efdb;
+    background: rgba(12, 32, 25, 0.9);
+    font-size: 0.95rem;
+}
+
+.gallery-lightbox .lightbox-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 10px;
+    margin: 0;
+    padding: 0;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+body.lightbox-open {
+    overflow: hidden;
+}
+
+/* --- Final polish: premium interactions and button hierarchy --- */
+:root {
+    --btn-primary-a: #b87847;
+    --btn-primary-b: #7e4d31;
+    --btn-strong-shadow: 0 12px 26px rgba(51, 30, 17, 0.28);
+    --btn-focus-ring: 0 0 0 3px rgba(46, 199, 192, 0.32);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+button,
+.home-page .landing-btn,
+.inner-page .contact-form button,
+.gallery-lightbox .lightbox-close,
+.home-page .carousel-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+button::after,
+.home-page .landing-btn::after,
+.inner-page .contact-form button::after,
+.gallery-lightbox .lightbox-close::after,
+.home-page .carousel-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.28), transparent 44%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+button:hover::after,
+.home-page .landing-btn:hover::after,
+.inner-page .contact-form button:hover::after,
+.gallery-lightbox .lightbox-close:hover::after,
+.home-page .carousel-btn:hover::after {
+    opacity: 1;
+}
+
+button,
+.home-page .landing-btn,
+.inner-page .contact-form button {
+    background: linear-gradient(92deg, var(--btn-primary-a), var(--btn-primary-b));
+    box-shadow: 0 8px 18px rgba(52, 31, 18, 0.2);
+}
+
+button:hover,
+.home-page .landing-btn:hover,
+.inner-page .contact-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--btn-strong-shadow);
+    filter: saturate(1.06) brightness(1.03);
+}
+
+button:active,
+.home-page .landing-btn:active,
+.inner-page .contact-form button:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(52, 31, 18, 0.2);
+}
+
+button:focus-visible,
+.home-page .landing-btn:focus-visible,
+.inner-page .contact-form button:focus-visible,
+.gallery-lightbox .lightbox-close:focus-visible,
+.home-page .carousel-btn:focus-visible,
+.site-nav a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    box-shadow: var(--btn-focus-ring);
+}
+
+.site-nav a {
+    position: relative;
+}
+
+.site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(184, 241, 236, 0.88);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s ease;
+}
+
+.site-nav a:hover::after,
+.site-nav a[aria-current="page"]::after {
+    transform: scaleX(1);
+}
+
+.home-page .carousel-btn {
+    border-color: rgba(245, 240, 228, 0.68);
+    backdrop-filter: blur(3px);
+}
+
+.home-page .carousel-btn:hover {
+    background: rgba(18, 48, 31, 0.8);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.home-page .dot {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.home-page .dot:hover {
+    transform: scale(1.2);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.home-page .room-card,
+.inner-page .gallery-grid .room-card,
+.inner-page .feature-card,
+.inner-page .content-panel,
+.inner-page .page-hero {
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+.inner-page .gallery-grid .room-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 26px rgba(45, 33, 21, 0.2);
+    border-color: #b58c5c;
+}
+
+.home-page #roomSearch:hover,
+.home-page .filters input:hover,
+.home-page .filters select:hover,
+.inner-page .reservation-panel select:hover,
+.inner-page .reservation-panel input[type="date"]:hover,
+.inner-page .contact-form input:hover,
+.inner-page .contact-form textarea:hover,
+input[type="email"]:hover,
+input[type="password"]:hover {
+    border-color: #a78554;
+}
+
+.home-page #roomSearch:focus,
+.home-page .filters input:focus,
+.home-page .filters select:focus,
+.inner-page .reservation-panel select:focus,
+.inner-page .reservation-panel input[type="date"]:focus,
+.inner-page .contact-form input:focus,
+.inner-page .contact-form textarea:focus {
+    outline: none;
+    border-color: #1b7a74;
+    box-shadow: 0 0 0 3px rgba(27, 122, 116, 0.18);
+}
+
+.home-page .landing-btn.ghost {
+    background: rgba(255, 249, 238, 0.92);
+    color: #6f452d;
+    border: 1px solid #b99669;
+}
+
+.home-page .landing-btn.ghost:hover {
+    color: #573320;
+    border-color: #9b7448;
+    background: #fff9ee;
+}
+
+.gallery-lightbox .lightbox-close {
+    background: linear-gradient(92deg, #b87847, #825033);
+    border: 1px solid rgba(255, 234, 204, 0.48);
+    color: #fff7ea;
+}
+
+.gallery-lightbox .lightbox-close:hover {
+    transform: scale(1.04);
+    box-shadow: 0 12px 20px rgba(10, 23, 18, 0.34);
+}
+
+.site-footer {
+    letter-spacing: 0.02em;
+}

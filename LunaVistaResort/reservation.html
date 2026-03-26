@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna Vista Resort | Reservation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home-page inner-page">
+    <header class="site-header">
+        <div class="brand">
+            <img src="img/logo.png" alt="Luna Vista Resort logo" class="brand-logo">
+            <span>Luna Vista Resort</span>
+        </div>
+        <nav class="site-nav">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="reservation.html" aria-current="page">Reservation</a>
+            <a href="aboutus.html">About</a>
+            <a href="contactus.html">Contact</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <section class="page-hero">
+            <p class="eyebrow">Plan Your Stay</p>
+            <h1>Reservation</h1>
+            <p>Choose your room, set dates, add amenities, and submit your reservation request.</p>
+        </section>
+
+        <section class="content-panel">
+            <section class="booking-tools room-booking-panel reservation-panel">
+                <div class="field-group">
+                    <label for="reservationRoom">Choose Room</label>
+                    <select id="reservationRoom">
+                        <option>Deluxe Pool View</option>
+                        <option>Premier Forest Suite</option>
+                        <option>Family Garden Room</option>
+                        <option>Deluxe Balcony Room</option>
+                        <option>Sunrise Executive Suite</option>
+                        <option>Lagoon Family Cabana</option>
+                        <option>Deluxe Sunset Room</option>
+                        <option>Ocean Crest Suite</option>
+                        <option>Garden Family Suite</option>
+                        <option>Panorama Signature Suite</option>
+                    </select>
+                </div>
+
+                <div class="booking-form-fields">
+                    <div class="field-group">
+                        <label for="checkInDate">Check-in Date</label>
+                        <input type="date" id="checkInDate">
+                    </div>
+                    <div class="field-group">
+                        <label for="checkOutDate">Check-out Date</label>
+                        <input type="date" id="checkOutDate">
+                    </div>
+                </div>
+
+                <fieldset class="amenities-filter">
+                    <legend>Add Amenities</legend>
+                    <label><input type="checkbox" value="wifi"> Wi-Fi</label>
+                    <label><input type="checkbox" value="breakfast"> Breakfast</label>
+                    <label><input type="checkbox" value="pool"> Pool Access</label>
+                    <label><input type="checkbox" value="balcony"> Balcony</label>
+                </fieldset>
+
+                <div class="booking-actions">
+                    <button id="onlineCheckInBtn" type="button">Book Reservation</button>
+                </div>
+                <p id="checkInMessage" class="message" aria-live="polite"></p>
+            </section>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Luna Vista Resort. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
