@@ -47,6 +47,7 @@ body.page-admin {
 }
 
 body.page-home {
+    animation: float-home 18s ease-in-out infinite alternate;
     background-image:
         linear-gradient(rgba(255, 226, 74, 0.2), rgba(255, 226, 74, 0.2)),
         linear-gradient(rgba(154, 77, 255, 0.22), rgba(154, 77, 255, 0.22)),
@@ -87,6 +88,7 @@ body.page-home {
 }
 
 body.page-login {
+    animation: float-login 20s ease-in-out infinite alternate;
     background-image:
         linear-gradient(rgba(255, 226, 74, 0.16), rgba(255, 226, 74, 0.16)),
         linear-gradient(rgba(77, 93, 255, 0.18), rgba(77, 93, 255, 0.18)),
@@ -127,6 +129,7 @@ body.page-login {
 }
 
 body.page-admin {
+    animation: float-admin 22s ease-in-out infinite alternate;
     background-image:
         linear-gradient(rgba(154, 77, 255, 0.18), rgba(154, 77, 255, 0.18)),
         linear-gradient(rgba(77, 93, 255, 0.2), rgba(77, 93, 255, 0.2)),
@@ -164,6 +167,96 @@ body.page-admin {
         left 8% bottom 14%,
         right 11% bottom 17%,
         center bottom 8%;
+}
+
+@keyframes float-home {
+    from {
+        background-position:
+            right 28% top 18%,
+            left 18% top 32%,
+            center 22%,
+            right 7% top 14%,
+            left 30% bottom 26%,
+            right 18% center,
+            left 10% bottom 14%,
+            left 7% top 12%,
+            right 10% bottom 18%,
+            center bottom 9%;
+    }
+
+    to {
+        background-position:
+            right 24% top 14%,
+            left 21% top 36%,
+            center 26%,
+            right 10% top 17%,
+            left 33% bottom 22%,
+            right 15% 56%,
+            left 13% bottom 18%,
+            left 10% top 16%,
+            right 7% bottom 14%,
+            center bottom 12%;
+    }
+}
+
+@keyframes float-login {
+    from {
+        background-position:
+            left 24% top 20%,
+            right 18% bottom 28%,
+            center 68%,
+            left 9% top 15%,
+            right 26% top 36%,
+            left 16% center,
+            right 10% top 19%,
+            right 8% bottom 16%,
+            left 10% bottom 18%,
+            center bottom 10%;
+    }
+
+    to {
+        background-position:
+            left 20% top 24%,
+            right 14% bottom 24%,
+            center 63%,
+            left 12% top 18%,
+            right 22% top 40%,
+            left 20% 54%,
+            right 13% top 15%,
+            right 5% bottom 20%,
+            left 7% bottom 14%,
+            center bottom 13%;
+    }
+}
+
+@keyframes float-admin {
+    from {
+        background-position:
+            left 26% 18%,
+            right 19% 42%,
+            center 74%,
+            right 8% top 16%,
+            right 27% top 32%,
+            left 16% bottom 28%,
+            left 8% top 24%,
+            left 8% bottom 14%,
+            right 11% bottom 17%,
+            center bottom 8%;
+    }
+
+    to {
+        background-position:
+            left 22% 22%,
+            right 15% 38%,
+            center 69%,
+            right 11% top 20%,
+            right 23% top 28%,
+            left 20% bottom 24%,
+            left 12% top 20%,
+            left 5% bottom 18%,
+            right 8% bottom 13%,
+            center bottom 11%;
+    }
 }
 
 img {
