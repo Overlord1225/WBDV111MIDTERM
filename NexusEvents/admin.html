@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Events | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-admin">
+    <header class="site-header">
+        <div class="container header-bar">
+            <a class="brand" href="admin.html" aria-label="Nexus Events admin">
+                <span class="brand-name">NEXUS</span>
+                <span class="brand-accent">ADMIN</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+                Menu
+            </button>
+
+            <nav class="site-nav" id="site-nav" data-nav>
+                <ul class="nav-list">
+                    <li><a class="nav-link is-active" href="admin.html">Dashboard</a></li>
+                    <li><a class="nav-link" href="index.html">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <section class="container section-stack">
+            <article class="card page-card">
+                <p class="eyebrow">F-Pattern Dashboard</p>
+                <h1>Read the overview fast and act from the left rail.</h1>
+                <p class="lead">
+                    The dashboard uses an F-pattern layout with a strong top summary, a focused action column, and a
+                    wider content area for activity and event tracking.
+                </p>
+            </article>
+
+            <section class="dashboard-grid" aria-label="Admin dashboard">
+                <header class="card dashboard-overview">
+                    <h2>Dashboard Overview</h2>
+                    <div class="metric-grid">
+                        <article class="metric-box">
+                            <p class="metric-label">Active Events</p>
+                            <p class="metric-value">12</p>
+                        </article>
+                        <article class="metric-box">
+                            <p class="metric-label">Registered Guests</p>
+                            <p class="metric-value">348</p>
+                        </article>
+                        <article class="metric-box">
+                            <p class="metric-label">Pending Tasks</p>
+                            <p class="metric-value">07</p>
+                        </article>
+                    </div>
+                </header>
+
+                <aside class="card dashboard-sidebar">
+                    <h2>Quick Actions</h2>
+                    <div class="action-stack">
+                        <button class="btn btn-block is-selected" type="button" data-dashboard-action="events">Manage Events</button>
+                        <button class="btn btn-block" type="button" data-dashboard-action="users">View Users</button>
+                        <button class="btn btn-block" type="button" data-dashboard-action="reports">Open Reports</button>
+                    </div>
+                </aside>
+
+                <div class="dashboard-main">
+                    <article class="card">
+                        <h2 id="dashboard-primary-title">Recent Activity</h2>
+                        <ul class="detail-list" id="dashboard-primary-list">
+                            <li><span class="highlight">09:00</span> Workshop registration opened</li>
+                            <li><span class="highlight">11:30</span> New VIP bookings were confirmed</li>
+                            <li><span class="highlight">14:15</span> Speaker profile details were updated</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h2 id="dashboard-secondary-title">Event Status</h2>
+                        <ul class="detail-list" id="dashboard-secondary-list">
+                            <li><span class="highlight">Concert Night:</span> Stage checks in progress</li>
+                            <li><span class="highlight">Design Summit:</span> Ready for attendee check-in</li>
+                            <li><span class="highlight">Creator Meetup:</span> Awaiting final room setup</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="card footer-card">
+                <p>&copy; 2026 Nexus Events. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

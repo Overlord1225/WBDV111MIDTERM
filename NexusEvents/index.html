@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Events | Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-home">
+    <header class="site-header">
+        <div class="container header-bar">
+            <a class="brand" href="index.html" aria-label="Nexus Events home">
+                <span class="brand-name">NEXUS</span>
+                <span class="brand-accent">EVENTS</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+                Menu
+            </button>
+
+            <nav class="site-nav" id="site-nav" data-nav>
+                <ul class="nav-list">
+                    <li><a class="nav-link is-active" href="index.html">Home</a></li>
+                    <li><a class="nav-link" href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <section class="container section-stack hero-section">
+            <article class="card hero-card">
+                <p class="eyebrow">Nexus Events</p>
+                <h1>Build standout events in a matter of seconds.</h1>
+                <p class="lead">
+                    Nexus Events keeps the journey clear from event selection to attendee details within easy and efficient steps.
+                </p>
+            </article>
+
+            <section class="zigzag-grid" aria-label="Event setup steps">
+                <article class="card flow-card">
+                    <header class="card-heading">
+                        <p class="step-label">01</p>
+                        <h2>Select Event</h2>
+                    </header>
+                    <form class="stack-form">
+                        <label class="field-group" for="event-type">
+                            <span class="field-label">Event Type</span>
+                            <select id="event-type" class="input-field">
+                                <option>Concert</option>
+                                <option>Workshop</option>
+                                <option>Conference</option>
+                            </select>
+                        </label>
+                    </form>
+                </article>
+
+                <article class="card flow-card">
+                    <header class="card-heading">
+                        <p class="step-label">02</p>
+                        <h2>Choose Ticket Tier</h2>
+                    </header>
+                    <div class="button-grid" aria-label="Ticket options">
+                        <button class="btn is-selected" type="button" data-ticket-button data-ticket-tier="Standard">Standard</button>
+                        <button class="btn" type="button" data-ticket-button data-ticket-tier="VIP">VIP</button>
+                    </div>
+                </article>
+
+                <article class="card flow-card">
+                    <header class="card-heading">
+                        <p class="step-label">03</p>
+                        <h2>Add Attendee Info</h2>
+                    </header>
+                    <form class="stack-form">
+                        <label class="field-group" for="attendee-name">
+                            <span class="field-label">Full Name</span>
+                            <input id="attendee-name" class="input-field" type="text" placeholder="Enter full name">
+                        </label>
+                        <label class="field-group" for="attendee-email">
+                            <span class="field-label">Email</span>
+                            <input id="attendee-email" class="input-field" type="email" placeholder="Enter email address">
+                        </label>
+                    </form>
+                </article>
+
+                <article class="card flow-card">
+                    <header class="card-heading">
+                        <p class="step-label">04</p>
+                        <h2>Review Details</h2>
+                    </header>
+                    <ul class="detail-list">
+                        <li><span class="highlight">Event:</span> <span id="review-event">Concert</span></li>
+                        <li><span class="highlight">Tier:</span> <span id="review-tier">Standard</span></li>
+                        <li><span class="highlight">Status:</span> <span id="review-status">Waiting for attendee details</span></li>
+                    </ul>
+                    <div class="button-grid">
+                        <button class="btn" type="button" id="generate-qr-button">Generate QR Code</button>
+                    </div>
+                    <div class="qr-box" aria-live="polite">
+                        <p class="qr-placeholder" id="qr-placeholder">Complete the fields, then generate the QR code.</p>
+                        <img id="ticket-qr" class="qr-image" alt="Generated ticket QR code" hidden>
+                    </div>
+                </article>
+            </section>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="card footer-card">
+                <p>&copy; 2026 Nexus Events. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

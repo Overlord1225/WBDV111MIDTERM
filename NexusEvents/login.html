@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Events | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-login">
+    <header class="site-header">
+        <div class="container header-bar">
+            <a class="brand" href="index.html" aria-label="Nexus Events home">
+                <span class="brand-name">NEXUS</span>
+                <span class="brand-name">EVENTS</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+                Menu
+            </button>
+
+            <nav class="site-nav" id="site-nav" data-nav>
+                <ul class="nav-list">
+                    <li><a class="nav-link" href="index.html">Home</a></li>
+                    <li><a class="nav-link is-active" href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <section class="container section-stack">
+            <article class="card page-card">
+                <p class="eyebrow">Secure Access</p>
+                    <h1>Login</h1>
+                <p class="lead">
+                    Sign up to your account
+                </p>
+            </article>
+
+            <section class="login-layout">
+                <section class="card form-card" aria-labelledby="login-title">
+                    <form id="login-form" class="stack-form" novalidate>
+                        <label class="field-group" for="username">
+                            <span class="field-label">Username</span>
+                            <input id="username" class="input-field" type="text" name="username" autocomplete="username" placeholder="Enter username">
+                        </label>
+
+                        <label class="field-group" for="password">
+                            <span class="field-label">Password</span>
+                            <input id="password" class="input-field" type="password" name="password" autocomplete="current-password" placeholder="Enter password">
+                        </label>
+
+                        <button class="btn btn-block" type="submit">Enter Dashboard</button>
+                        <p id="login-message" class="form-message" data-login-message aria-live="polite"></p>
+                    </form>
+                </section>
+            </section>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="card footer-card">
+                <p>&copy; 2026 Nexus Events. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
