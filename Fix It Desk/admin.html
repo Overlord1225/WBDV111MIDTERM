@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FixIt Desk admin dashboard with system analytics and support monitoring.">
+    <title>FixIt Desk | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body class="page page--admin">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="brand" href="index.html" aria-label="FixIt Desk home">FixIt Desk</a>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <ul class="site-nav__list">
+                    <li><a class="site-nav__link" href="index.html">Home</a></li>
+                    <li><a class="site-nav__link is-active" href="admin.html" aria-current="page">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="site-main">
+        <section class="page-intro container" data-reveal>
+            <p class="eyebrow">Admin Dashboard</p>
+            <h1 class="page-intro__title">System analytics and live support monitoring.</h1>
+            <p class="page-intro__subtitle">
+                A terminal-style operations view for uptime, ticket flow, incident load, and infrastructure health.
+            </p>
+        </section>
+
+        <section class="section-shell container dashboard" data-reveal>
+            <div class="dashboard__summary">
+                <article class="card metric-card">
+                    <p class="card__eyebrow">&gt; uptime</p>
+                    <h2 class="metric-card__value">99.94%</h2>
+                    <p class="card__text">Stable runtime across monitored systems in the last 30 days.</p>
+                </article>
+
+                <article class="card metric-card">
+                    <p class="card__eyebrow">&gt; open tickets</p>
+                    <h2 class="metric-card__value">18</h2>
+                    <p class="card__text">5 critical, 7 medium, 6 queued for review.</p>
+                </article>
+
+                <article class="card metric-card">
+                    <p class="card__eyebrow">&gt; avg. response</p>
+                    <h2 class="metric-card__value">6 min</h2>
+                    <p class="card__text">Current first-response performance for incoming requests.</p>
+                </article>
+
+                <article class="card metric-card">
+                    <p class="card__eyebrow">&gt; active technicians</p>
+                    <h2 class="metric-card__value">12</h2>
+                    <p class="card__text">Engineers handling live incidents and scheduled maintenance.</p>
+                </article>
+            </div>
+
+            <div class="dashboard__grid">
+                <section class="terminal-window admin-panel">
+                    <div class="terminal-window__header">
+                        <div class="terminal-dots" aria-hidden="true">
+                            <span class="terminal-dot terminal-dot--red"></span>
+                            <span class="terminal-dot terminal-dot--yellow"></span>
+                            <span class="terminal-dot terminal-dot--green"></span>
+                        </div>
+                        <p class="terminal-window__title">analytics --system-load</p>
+                    </div>
+
+                    <div class="terminal-window__body">
+                        <div class="bar-list" aria-label="System load chart">
+                            <div class="bar-list__item">
+                                <span>Servers</span>
+                                <div class="bar-list__track"><span class="bar-list__fill" style="width: 82%;"></span></div>
+                                <strong>82%</strong>
+                            </div>
+                            <div class="bar-list__item">
+                                <span>Network</span>
+                                <div class="bar-list__track"><span class="bar-list__fill" style="width: 68%;"></span></div>
+                                <strong>68%</strong>
+                            </div>
+                            <div class="bar-list__item">
+                                <span>Storage</span>
+                                <div class="bar-list__track"><span class="bar-list__fill" style="width: 57%;"></span></div>
+                                <strong>57%</strong>
+                            </div>
+                            <div class="bar-list__item">
+                                <span>Security</span>
+                                <div class="bar-list__track"><span class="bar-list__fill" style="width: 91%;"></span></div>
+                                <strong>91%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="terminal-window admin-panel">
+                    <div class="terminal-window__header">
+                        <div class="terminal-dots" aria-hidden="true">
+                            <span class="terminal-dot terminal-dot--red"></span>
+                            <span class="terminal-dot terminal-dot--yellow"></span>
+                            <span class="terminal-dot terminal-dot--green"></span>
+                        </div>
+                        <p class="terminal-window__title">status --incident-feed</p>
+                    </div>
+
+                    <div class="terminal-window__body">
+                        <ul class="activity-list">
+                            <li class="activity-list__item">
+                                <span class="activity-list__status activity-list__status--success"></span>
+                                <div>
+                                    <strong>Database sync restored</strong>
+                                    <p>North cluster recovered after packet loss alert.</p>
+                                </div>
+                            </li>
+                            <li class="activity-list__item">
+                                <span class="activity-list__status activity-list__status--warning"></span>
+                                <div>
+                                    <strong>High CPU usage detected</strong>
+                                    <p>Render node 03 exceeded threshold during backup cycle.</p>
+                                </div>
+                            </li>
+                            <li class="activity-list__item">
+                                <span class="activity-list__status activity-list__status--success"></span>
+                                <div>
+                                    <strong>Patch deployment complete</strong>
+                                    <p>Authentication service updated with no downtime.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="card admin-card">
+                    <p class="card__eyebrow">&gt; resolution queue</p>
+                    <h2 class="card__title">Support pipeline</h2>
+                    <div class="queue-grid">
+                        <div class="queue-grid__item">
+                            <span>Queued</span>
+                            <strong>06</strong>
+                        </div>
+                        <div class="queue-grid__item">
+                            <span>In Progress</span>
+                            <strong>09</strong>
+                        </div>
+                        <div class="queue-grid__item">
+                            <span>Escalated</span>
+                            <strong>03</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card admin-card">
+                    <p class="card__eyebrow">&gt; system notes</p>
+                    <h2 class="card__title">Today’s highlights</h2>
+                    <ul class="support-list">
+                        <li>2 maintenance windows completed ahead of schedule.</li>
+                        <li>Customer satisfaction score holds at 96%.</li>
+                        <li>No critical outages in the last 12 hours.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p>FixIt Desk Admin Console</p>
+            <p>Monitoring support operations in real time.</p>
+        </div>
+    </footer>
+</body>
+</html>

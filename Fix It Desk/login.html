@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access the FixIt Desk terminal-style login and registration interface.">
+    <title>FixIt Desk | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body class="page page--login">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="brand" href="index.html" aria-label="FixIt Desk home">FixIt Desk</a>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <ul class="site-nav__list">
+                    <li><a class="site-nav__link" href="index.html">Home</a></li>
+                    <li><a class="site-nav__link" href="service.html">Services</a></li>
+                    <li><a class="site-nav__link" href="about.html">About</a></li>
+                    <li><a class="site-nav__link" href="contact.html">Contact</a></li>
+                    <li><a class="site-nav__link is-active" href="login.html" aria-current="page">Login / Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="site-main">
+        <section class="page-intro container" data-reveal>
+            <p class="eyebrow">Auth Console</p>
+            <h1 class="page-intro__title">Secure access through a cleaner terminal flow.</h1>
+            <p class="page-intro__subtitle">
+                The login experience now uses consistent form components, smoother cursor behavior, and clearer feedback messages for both success and error states.
+            </p>
+        </section>
+
+        <section class="section-shell container auth-shell">
+            <div class="terminal-window terminal-window--auth" data-auth-app data-reveal>
+                <div class="terminal-window__header">
+                    <div class="terminal-dots" aria-hidden="true">
+                        <span class="terminal-dot terminal-dot--red"></span>
+                        <span class="terminal-dot terminal-dot--yellow"></span>
+                        <span class="terminal-dot terminal-dot--green"></span>
+                    </div>
+                    <p class="terminal-window__title" data-auth-mode-title>auth --login</p>
+                </div>
+
+                <div class="terminal-window__body">
+                    <div class="output-log" data-auth-output role="log" aria-live="polite">
+                        <p class="output-log__line output-log__line--muted">// FixIt Desk authentication console online.</p>
+                        <p class="output-log__line output-log__line--muted">// Demo account: admin / password123</p>
+                    </div>
+
+                    <form class="terminal-auth" data-auth-form novalidate>
+                        <div class="terminal-field">
+                            <label class="terminal-field__label" for="username">username</label>
+                            <div class="terminal-field__control">
+                                <span class="terminal-field__prompt" aria-hidden="true">&gt;</span>
+                                <input class="terminal-field__input" type="text" id="username" name="username" autocomplete="username" required>
+                                <span class="terminal-field__cursor" aria-hidden="true">_</span>
+                            </div>
+                        </div>
+
+                        <div class="terminal-field">
+                            <label class="terminal-field__label" for="password">password</label>
+                            <div class="terminal-field__control">
+                                <span class="terminal-field__prompt" aria-hidden="true">&gt;</span>
+                                <input class="terminal-field__input" type="password" id="password" name="password" autocomplete="current-password" required>
+                                <span class="terminal-field__cursor" aria-hidden="true">_</span>
+                            </div>
+                        </div>
+
+                        <div class="terminal-field" data-confirm-field hidden>
+                            <label class="terminal-field__label" for="confirm-password">confirm password</label>
+                            <div class="terminal-field__control">
+                                <span class="terminal-field__prompt" aria-hidden="true">&gt;</span>
+                                <input class="terminal-field__input" type="password" id="confirm-password" name="confirm-password" autocomplete="new-password">
+                                <span class="terminal-field__cursor" aria-hidden="true">_</span>
+                            </div>
+                        </div>
+
+                        <div class="terminal-auth__actions">
+                            <button class="button button--ghost" type="button" data-auth-toggle>Switch to Register</button>
+                            <button class="button" type="submit" data-auth-submit>Login</button>
+                        </div>
+
+                        <p class="terminal-note">Registration creates a session-only demo account for this browser tab.</p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p>FixIt Desk Terminal Interface v2.0</p>
+            <p>Built for clean support workflows and consistent UI.</p>
+        </div>
+    </footer>
+</body>
+</html>

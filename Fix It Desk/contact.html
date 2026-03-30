@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact FixIt Desk through our terminal-style support form.">
+    <title>FixIt Desk | Contact</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body class="page page--contact">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="brand" href="index.html" aria-label="FixIt Desk home">FixIt Desk</a>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <ul class="site-nav__list">
+                    <li><a class="site-nav__link" href="index.html">Home</a></li>
+                    <li><a class="site-nav__link" href="service.html">Services</a></li>
+                    <li><a class="site-nav__link" href="about.html">About</a></li>
+                    <li><a class="site-nav__link is-active" href="contact.html" aria-current="page">Contact</a></li>
+                    <li><a class="site-nav__link" href="login.html">Login / Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="site-main">
+        <section class="page-intro container" data-reveal>
+            <p class="eyebrow">Support Channel</p>
+            <h1 class="page-intro__title">Send a request through the console.</h1>
+            <p class="page-intro__subtitle">
+                The form keeps the same terminal language as the rest of the site while improving readability, focus states, and mobile spacing.
+            </p>
+        </section>
+
+        <section class="section-shell container">
+            <div class="contact-layout">
+                <aside class="contact-sidebar" data-reveal>
+                    <article class="card">
+                        <p class="card__eyebrow">&gt; response protocol</p>
+                        <h2 class="card__title">What happens next?</h2>
+                        <ul class="support-list">
+                            <li>We review your message and identify the issue type.</li>
+                            <li>We respond with the next action or support path.</li>
+                            <li>We keep communication clear until the issue is resolved.</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <p class="card__eyebrow">&gt; service catalog</p>
+                        <h2 class="card__title">Need the full service list?</h2>
+                        <ul class="support-list">
+                            <li>View diagnostics, software repair, network, and recovery support.</li>
+                            <li>Open the dedicated Services page for the full breakdown.</li>
+                            <li><a href="service.html">Go to Services</a></li>
+                        </ul>
+                    </article>
+                </aside>
+
+                <div class="terminal-window" data-reveal>
+                    <div class="terminal-window__header">
+                        <div class="terminal-dots" aria-hidden="true">
+                            <span class="terminal-dot terminal-dot--red"></span>
+                            <span class="terminal-dot terminal-dot--yellow"></span>
+                            <span class="terminal-dot terminal-dot--green"></span>
+                        </div>
+                        <p class="terminal-window__title">support --new-ticket</p>
+                    </div>
+
+                    <div class="terminal-window__body">
+                        <form class="terminal-form" data-contact-form novalidate>
+                            <div class="form-field">
+                                <label class="form-field__label" for="name">Name</label>
+                                <div class="form-field__control">
+                                    <span class="form-field__prompt" aria-hidden="true">&gt;</span>
+                                    <input class="form-field__input" type="text" id="name" name="name" autocomplete="name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-field__label" for="email">Email</label>
+                                <div class="form-field__control">
+                                    <span class="form-field__prompt" aria-hidden="true">&gt;</span>
+                                    <input class="form-field__input" type="email" id="email" name="email" autocomplete="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-field__label" for="message">Message</label>
+                                <div class="form-field__control form-field__control--textarea">
+                                    <span class="form-field__prompt" aria-hidden="true">&gt;</span>
+                                    <textarea class="form-field__textarea" id="message" name="message" rows="6" required></textarea>
+                                </div>
+                                <p class="form-field__help">Describe the issue clearly so we can route it faster.</p>
+                            </div>
+
+                            <div class="terminal-form__actions">
+                                <button class="button" type="submit">Send Message</button>
+                            </div>
+
+                            <p class="status-message" data-form-response role="status" aria-live="polite"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p>FixIt Desk Terminal Interface v2.0</p>
+            <p>Built for clean support workflows and consistent UI.</p>
+        </div>
+    </footer>
+</body>
+</html>

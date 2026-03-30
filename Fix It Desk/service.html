@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore FixIt Desk services including diagnostics, software support, networking, and data recovery.">
+    <title>FixIt Desk | Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body class="page page--services">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="brand" href="index.html" aria-label="FixIt Desk home">FixIt Desk</a>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <ul class="site-nav__list">
+                    <li><a class="site-nav__link" href="index.html">Home</a></li>
+                    <li><a class="site-nav__link is-active" href="service.html" aria-current="page">Services</a></li>
+                    <li><a class="site-nav__link" href="about.html">About</a></li>
+                    <li><a class="site-nav__link" href="contact.html">Contact</a></li>
+                    <li><a class="site-nav__link" href="login.html">Login / Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="site-main">
+        <section class="page-intro container" data-reveal>
+            <p class="eyebrow">Core Services</p>
+            <h1 class="page-intro__title">Practical support for the issues that slow teams down.</h1>
+            <p class="page-intro__subtitle">
+                These are the main FixIt Desk services available for business systems, user workstations, and network environments.
+            </p>
+        </section>
+
+        <section class="section-shell container service-shell">
+            <div class="terminal-window services-form-panel" data-reveal>
+                <div class="terminal-window__header">
+                    <div class="terminal-dots" aria-hidden="true">
+                        <span class="terminal-dot terminal-dot--red"></span>
+                        <span class="terminal-dot terminal-dot--yellow"></span>
+                        <span class="terminal-dot terminal-dot--green"></span>
+                    </div>
+                    <p class="terminal-window__title">services --request</p>
+                </div>
+
+                <div class="terminal-window__body">
+                    <form class="terminal-form terminal-form--service" data-service-form novalidate>
+                        <header class="service-form__header">
+                            <h2 class="service-form__title">Submit a Service Request</h2>
+                            <p class="services-form-panel__intro">
+                                Choose the service you need, add your contact information, and describe the issue clearly for faster review.
+                            </p>
+                        </header>
+
+                        <fieldset class="service-form__fieldset">
+                            <legend class="service-form__legend">Service Information</legend>
+
+                            <div class="service-form__grid">
+                                <div class="form-field service-form__field--wide">
+                                    <label class="form-field__label" for="service-type">Service Type</label>
+                                    <div class="form-field__control form-field__control--service">
+                                        <select class="form-field__input form-field__select" id="service-type" name="service" aria-describedby="service-type-help" required>
+                                            <option value="">Select one service</option>
+                                            <optgroup label="Hardware and Device Care">
+                                                <option value="System Diagnostics">System Diagnostics</option>
+                                                <option value="Data Recovery">Data Recovery</option>
+                                            </optgroup>
+                                            <optgroup label="Software and Connectivity Support">
+                                                <option value="Software Troubleshooting">Software Troubleshooting</option>
+                                                <option value="Network Solutions">Network Solutions</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <p class="form-field__help" id="service-type-help">Choose the support category that best matches your issue.</p>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="service-form__fieldset">
+                            <legend class="service-form__legend">Contact Information</legend>
+
+                            <div class="service-form__grid">
+                                <div class="form-field">
+                                    <label class="form-field__label" for="service-name">Full Name</label>
+                                    <div class="form-field__control form-field__control--service">
+                                        <input class="form-field__input" type="text" id="service-name" name="name" autocomplete="name" placeholder="Enter your full name" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-field__label" for="service-email">Email Address</label>
+                                    <div class="form-field__control form-field__control--service">
+                                        <input class="form-field__input" type="email" id="service-email" name="email" autocomplete="email" placeholder="Enter your email address" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="service-form__fieldset">
+                            <legend class="service-form__legend">Issue Summary</legend>
+
+                            <div class="service-form__grid">
+                                <div class="form-field service-form__field--wide">
+                                    <label class="form-field__label" for="service-details">Issue Details</label>
+                                    <div class="form-field__control form-field__control--textarea form-field__control--service">
+                                        <textarea class="form-field__textarea" id="service-details" name="details" rows="6" placeholder="Describe the issue, symptoms, and what you have already tried." required></textarea>
+                                    </div>
+                                    <p class="form-field__help">Include the device, software, or connection issue so the team can review it faster.</p>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="terminal-form__actions">
+                            <button class="button" type="submit">Submit Service Request</button>
+                        </div>
+
+                        <p class="status-message" data-service-response role="status" aria-live="polite"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p>FixIt Desk Terminal Interface v2.0</p>
+            <p>Built for clean support workflows and consistent UI.</p>
+        </div>
+    </footer>
+</body>
+</html>
