@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | Login/Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-login">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Main navigation">
+                <a class="site-logo" href="index.html">Cozy Corner</a>
+                <ul class="site-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reservation.html">Reservations</a></li>
+                    <li><a href="aboutus.html">About us</a></li>
+                    <li><a href="contactus.html">Contact us</a></li>
+                    <li><a class="is-active" href="login.html">Login/Register</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <section class="auth-layout" aria-label="Login and register">
+                <section class="auth-panel">
+                    <h1>Login</h1>
+                    <form class="auth-form" action="#">
+                        <label for="login-username">Username:</label>
+                        <input id="login-username" type="text" name="username">
+
+                        <label for="login-password">Password:</label>
+                        <input id="login-password" type="password" name="password">
+
+                        <button class="action-button action-button--small" type="submit">login</button>
+                    </form>
+                    <p class="auth-note">new user? here</p>
+                </section>
+
+                <section class="auth-panel auth-panel--secondary">
+                    <h2>Register</h2>
+                    <form class="auth-form" action="#">
+                        <label for="register-email">Email:</label>
+                        <input id="register-email" type="email" name="email">
+
+                        <label for="register-password">Password:</label>
+                        <input id="register-password" type="password" name="password">
+
+                        <label for="register-confirm">Confirm Password:</label>
+                        <input id="register-confirm" type="password" name="confirm-password">
+
+                        <button class="action-button action-button--small" type="submit">register</button>
+                    </form>
+                </section>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-copy">Footer</div>
+        </footer>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
