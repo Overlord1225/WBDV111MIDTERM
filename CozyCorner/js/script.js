@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeReservationPage();
     initializeContactForm();
     initializeAuthPage();
+    initializeCarousels();
 });
 
 function initializePageState() {
@@ -117,6 +118,9 @@ function initializeReservationPage() {
             selectRoom(card.dataset.roomId, roomCards, bookingForm);
         });
     });
+
+    initializeCarousels();
+
 
     document.querySelectorAll(".reserve-trigger").forEach((button) => {
         button.addEventListener("click", () => {
@@ -640,6 +644,128 @@ function formatCurrency(value) {
 
 function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function initializeCarousels() {
+    const carousels = document.querySelectorAll("[data-carousel]");
+    if (carousels.length === 0) {
+        return;
+    }
+
+    carousels.forEach((carousel) => {
+        const track = carousel.querySelector(".carousel-track");
+        const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+        const prevBtn = carousel.querySelector(".carousel-btn--prev");
+        const nextBtn = carousel.querySelector(".carousel-btn--next");
+        const dotsContainer = carousel.querySelector(".carousel-dots");
+
+        let currentIndex = slides.findIndex((slide) => slide.classList.contains("is-active"));
+        if (currentIndex === -1) {
+            currentIndex = 0;
+        }
+        
+        let autoPlayInterval = null;
+        const AUTO_PLAY_DELAY = 5000; // 5 seconds
+
+        function createDots() {
+            if (!dotsContainer) {
+                return;
+            }
+            dotsContainer.innerHTML = "";
+            slides.forEach((_, index) => {
+                const dot = document.createElement("button");
+                dot.className = "carousel-dot" + (index === currentIndex ? " is-active" : "");
+                dot.setAttribute("role", "tab");
+                dot.setAttribute("aria-label", `Slide ${index + 1} of ${slides.length}`);
+                dot.setAttribute("aria-selected", String(index === currentIndex));
+                dot.addEventListener("click", () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            if (!dotsContainer) {
+                return;
+            }
+            const dots = dotsContainer.querySelectorAll(".carousel-dot");
+            dots.forEach((dot, index) => {
+                dot.classList.toggle("is-active", index === currentIndex);
+                dot.setAttribute("aria-selected", String(index === currentIndex));
+            });
+        }
+
+        function goToSlide(index) {
+            slides[currentIndex].classList.remove("is-active");
+            currentIndex = index;
+            if (currentIndex < 0) {
+                currentIndex = slides.length - 1;
+            }
+            if (currentIndex >= slides.length) {
+                currentIndex = 0;
+            }
+            slides[currentIndex].classList.add("is-active");
+            updateDots();
+        }
+
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+
+        function startAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+            }
+            autoPlayInterval = setInterval(nextSlide, AUTO_PLAY_DELAY);
+        }
+
+        function stopAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+        }
+
+        // Start auto play when carousel is initialized
+        startAutoPlay();
+
+        // Pause auto play when user interacts with carousel
+        if (prevBtn) {
+            prevBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                stopAutoPlay();
+                prevSlide();
+                // Restart auto play after interaction
+                startAutoPlay();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                stopAutoPlay();
+                nextSlide();
+                // Restart auto play after interaction
+                startAutoPlay();
+            });
+        }
+
+        // Pause auto play when user hovers over carousel
+        carousel.addEventListener("mouseenter", stopAutoPlay);
+        carousel.addEventListener("mouseleave", startAutoPlay);
+
+        // Pause auto play when user focuses on carousel controls
+        const focusableElements = carousel.querySelectorAll("button");
+        focusableElements.forEach((el) => {
+            el.addEventListener("focus", stopAutoPlay);
+            el.addEventListener("blur", startAutoPlay);
+        });
+
+        createDots();
+    });
 }
 
 function getCurrentPageName() {

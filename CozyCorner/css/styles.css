@@ -184,6 +184,44 @@ textarea:focus-visible {
     background-color: rgba(255, 250, 245, 0.98);
 }
 
+/* Enhanced image display for property cards */
+.room-listing__media,
+.stay-card__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+}
+
+.room-listing__media img,
+.stay-card__media img {
+    transition: transform var(--transition-base);
+    object-fit: cover;
+}
+
+.room-listing__media:hover img,
+.stay-card__media:hover img {
+    transform: scale(1.05);
+}
+
+/* Add subtle overlay effect on hover */
+.room-listing__media::after,
+.stay-card__media::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 70%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.room-listing__media:hover::after,
+.stay-card__media:hover::after {
+    opacity: 1;
+}
+
 /* Enhanced button hover states */
 .button--primary {
     transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast),
@@ -617,6 +655,110 @@ h3 {
 .field textarea.is-focused {
     border-color: rgba(147, 99, 63, 0.6);
     box-shadow: 0 0 0 4px rgba(147, 99, 63, 0.12);
+}
+
+/* Carousel styles */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-track {
+    position: relative;
+    height: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.carousel-slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-slide.is-active {
+    display: block;
+}
+
+.carousel-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    background: rgba(37, 49, 63, 0.4);
+    backdrop-filter: blur(6px);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.carousel-btn:hover {
+    background: rgba(37, 49, 63, 0.65);
+    border-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-btn--prev {
+    left: 12px;
+}
+
+.carousel-btn--next {
+    right: 12px;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 0;
+}
+
+.carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.carousel-dot.is-active {
+    background: #ffffff;
+    transform: scale(1.2);
+}
+
+.carousel-dot:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
 }
 
 .field input.is-error,
