@@ -13,8 +13,16 @@
     <div class="site-frame">
         <header class="site-header">
             <nav class="site-nav" aria-label="Main navigation">
-                <a class="site-logo" href="index.html">Cozy Corner</a>
-                <ul class="site-links">
+                <a class="site-logo" href="index.html">
+    <img src="img/logo.png" alt="CozyCorner">
+</a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="site-menu">
                     <li><a href="index.html">Home</a></li>
                     <li><a class="is-active" href="reservation.html">Reservations</a></li>
                     <li><a href="aboutus.html">About us</a></li>
@@ -25,63 +33,261 @@
         </header>
 
         <main class="site-main">
-            <section class="reservation-layout" aria-label="Reservation listings">
-                <section class="reservation-list">
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 1</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 2</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 3</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 4</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 5</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                    <article class="property-card">
-                        <div class="placeholder-box placeholder-box--property"></div>
-                        <h2>property 6</h2>
-                        <a class="action-button action-button--small" href="login.html">Reserve</a>
-                    </article>
-                </section>
+            <section class="page-intro" aria-labelledby="reservations-heading">
+                <h2 id="reservations-heading" class="visually-hidden">Reservations Introduction</h2>
+                <p class="eyebrow">Plan your stay</p>
+                <h1>Reservations</h1>
+                <p>Browse available rooms, filter by guest count or style, then complete a booking request using the reservation form.</p>
+            </section>
 
-                <aside class="filter-panel">
-                    <h1>Search Filter</h1>
-                    <dl class="filter-list">
-                        <div>
-                            <dt>Price</dt>
-                            <dd>PHP 700 up</dd>
+            <section class="reservation-layout">
+                <aside class="panel sidebar-panel">
+                    <section aria-labelledby="filter-title">
+                        <div class="panel-heading">
+                            <h2 id="filter-title">Search filters</h2>
                         </div>
-                        <div>
-                            <dt>Guests</dt>
-                            <dd>room type</dd>
+
+                        <form class="filter-form" id="filter-form">
+                            <div class="field">
+                                <label for="filter-guests">Guests</label>
+                                <select id="filter-guests" name="guests">
+                                    <option value="">Any size</option>
+                                    <option value="1">1 guest</option>
+                                    <option value="2">2 guests</option>
+                                    <option value="3">3+ guests</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="filter-type">Room type</label>
+                                <select id="filter-type" name="type">
+                                    <option value="">All types</option>
+                                    <option value="suite">Suite</option>
+                                    <option value="studio">Studio</option>
+                                    <option value="family">Family</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="filter-price">Max price</label>
+                                <select id="filter-price" name="price">
+                                    <option value="">No limit</option>
+                                    <option value="3000">PHP 3,000</option>
+                                    <option value="3400">PHP 3,400</option>
+                                    <option value="3800">PHP 3,800</option>
+                                </select>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="button button--primary" type="submit">Apply</button>
+                                <button class="button button--secondary" type="button" id="clear-filters">Reset</button>
+                            </div>
+                            <p class="form-feedback is-visible" id="filter-feedback" aria-live="polite">Showing all 6 rooms.</p>
+                        </form>
+                    </section>
+
+                    <section class="booking-section" aria-labelledby="booking-title">
+                        <div class="panel-heading">
+                            <h2 id="booking-title">Book your stay</h2>
                         </div>
-                        <div>
-                            <dt>Type</dt>
-                            <dd>amenities</dd>
-                        </div>
-                    </dl>
-                    <a class="action-button action-button--small" href="reservation.html">Order</a>
+
+                        <form class="booking-form" id="booking-form">
+                            <input id="selected-room-id" type="hidden" name="roomId">
+
+                            <div class="booking-summary" id="selected-room-summary" aria-live="polite">
+                                <strong>No room selected</strong>
+                                <span>Choose a room to start your booking.</span>
+                            </div>
+
+                            <div class="field">
+                                <label for="booking-name">Full name</label>
+                                <input id="booking-name" type="text" name="name" autocomplete="name">
+                                <p class="field-message" aria-live="polite"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="booking-email">Email</label>
+                                <input id="booking-email" type="email" name="email" autocomplete="email">
+                                <p class="field-message" aria-live="polite"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="booking-checkin">Check-in</label>
+                                <input id="booking-checkin" type="date" name="checkin">
+                                <p class="field-message" aria-live="polite"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="booking-checkout">Check-out</label>
+                                <input id="booking-checkout" type="date" name="checkout">
+                                <p class="field-message" aria-live="polite"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="booking-guests">Guests</label>
+                                <select id="booking-guests" name="guests">
+                                    <option value="">Select guests</option>
+                                    <option value="1">1 guest</option>
+                                    <option value="2">2 guests</option>
+                                    <option value="3">3+ guests</option>
+                                </select>
+                                <p class="field-message" aria-live="polite"></p>
+                            </div>
+
+                            <div class="booking-total" id="booking-total" aria-live="polite">Total: Select dates to calculate</div>
+                            <button class="button button--primary" type="submit">Reserve now</button>
+                            <p class="form-feedback" id="booking-feedback" aria-live="polite"></p>
+                        </form>
+                    </section>
                 </aside>
+
+                <section class="listing-panel" aria-labelledby="room-list-title">
+                    <div class="section-heading section-heading--compact">
+                        <div>
+                            <p class="eyebrow">Available stays</p>
+                            <h2 id="room-list-title">Choose a room</h2>
+                        </div>
+                    </div>
+
+                    <div class="reservation-grid" id="room-grid">
+                        <article class="room-listing" data-room-id="room-1" data-price="2800" data-guests="2" data-type="suite">
+                            <figure class="room-listing__media">
+                                <img src="img/room1/077f6d83-971c-4e34-aafc-018d2899368d.jpeg" alt="Room 1 cozy indoor dining and lounge setup">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 1</h3>
+                                        <p class="listing-subtitle">Forest Hearth Suite</p>
+                                    </div>
+                                    <span class="price-tag">PHP 2,800</span>
+                                </div>
+                                <p>Best for couples who want a warm indoor setup and a relaxed evening atmosphere.</p>
+                                <ul class="feature-list">
+                                    <li>2 guests</li>
+                                    <li>Suite</li>
+                                    <li>Lounge area</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-1">Reserve</button>
+                            </div>
+                        </article>
+
+                        <article class="room-listing" data-room-id="room-2" data-price="3000" data-guests="2" data-type="studio">
+                            <figure class="room-listing__media">
+                                <img src="img/room2/04d8d164-3ef9-4d6a-a9fb-f84fe0f4ef2a.jpeg" alt="Room 2 minimal bedroom with curtains and open floor area">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 2</h3>
+                                        <p class="listing-subtitle">Calm Studio Retreat</p>
+                                    </div>
+                                    <span class="price-tag">PHP 3,000</span>
+                                </div>
+                                <p>A clean and quiet layout with a simple finish, ideal for short city stays.</p>
+                                <ul class="feature-list">
+                                    <li>2 guests</li>
+                                    <li>Studio</li>
+                                    <li>Quiet interior</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-2">Reserve</button>
+                            </div>
+                        </article>
+
+                        <article class="room-listing" data-room-id="room-3" data-price="3200" data-guests="2" data-type="suite">
+                            <figure class="room-listing__media">
+                                <img src="img/room3/151b01e3-2301-467d-8d1f-a798e8b5b6ac.jpeg" alt="Room 3 bright bedroom with wooden arch wall">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 3</h3>
+                                        <p class="listing-subtitle">Sunlit Wood Suite</p>
+                                    </div>
+                                    <span class="price-tag">PHP 3,200</span>
+                                </div>
+                                <p>Bright styling with a workstation and extra floor space for longer stays.</p>
+                                <ul class="feature-list">
+                                    <li>2 guests</li>
+                                    <li>Suite</li>
+                                    <li>Work desk</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-3">Reserve</button>
+                            </div>
+                        </article>
+
+                        <article class="room-listing" data-room-id="room-4" data-price="3400" data-guests="3" data-type="family">
+                            <figure class="room-listing__media">
+                                <img src="img/room4/1487bc2a-edef-4cc6-8938-6a3bfdec31ce.jpeg" alt="Room 4 accommodation interior">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 4</h3>
+                                        <p class="listing-subtitle">Relaxed Family Room</p>
+                                    </div>
+                                    <span class="price-tag">PHP 3,400</span>
+                                </div>
+                                <p>Designed with a little more room to move, suitable for small groups or families.</p>
+                                <ul class="feature-list">
+                                    <li>3 guests</li>
+                                    <li>Family</li>
+                                    <li>Open layout</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-4">Reserve</button>
+                            </div>
+                        </article>
+
+                        <article class="room-listing" data-room-id="room-5" data-price="3600" data-guests="4" data-type="family">
+                            <figure class="room-listing__media">
+                                <img src="img/room5/9340069e-24d2-4c0f-9558-364744bdfe78.jpeg" alt="Room 5 accommodation interior">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 5</h3>
+                                        <p class="listing-subtitle">Spacious Weekend Stay</p>
+                                    </div>
+                                    <span class="price-tag">PHP 3,600</span>
+                                </div>
+                                <p>A roomier setup with balanced natural tones for extended weekend bookings.</p>
+                                <ul class="feature-list">
+                                    <li>4 guests</li>
+                                    <li>Family</li>
+                                    <li>Extended stay</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-5">Reserve</button>
+                            </div>
+                        </article>
+
+                        <article class="room-listing" data-room-id="room-6" data-price="3800" data-guests="4" data-type="suite">
+                            <figure class="room-listing__media">
+                                <img src="img/room6/9535844c-f80b-46dc-bf47-8c62001e2175.jpeg" alt="Room 6 accommodation interior">
+                            </figure>
+                            <div class="room-listing__body">
+                                <div class="room-listing__header">
+                                    <div>
+                                        <h3>Room 6</h3>
+                                        <p class="listing-subtitle">Premium Cozy Suite</p>
+                                    </div>
+                                    <span class="price-tag">PHP 3,800</span>
+                                </div>
+                                <p>Our highest-capacity suite with a more polished finish and broader guest flexibility.</p>
+                                <ul class="feature-list">
+                                    <li>4 guests</li>
+                                    <li>Suite</li>
+                                    <li>Premium finish</li>
+                                </ul>
+                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-6">Reserve</button>
+                            </div>
+                        </article>
+                    </div>
+                </section>
             </section>
         </main>
 
         <footer class="site-footer">
-            <div class="footer-copy">Footer</div>
+            <p>Need help choosing a room? Use the filters, then complete the booking request form.</p>
         </footer>
     </div>
     <script src="js/script.js"></script>

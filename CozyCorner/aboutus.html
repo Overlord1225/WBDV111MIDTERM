@@ -13,8 +13,16 @@
     <div class="site-frame">
         <header class="site-header">
             <nav class="site-nav" aria-label="Main navigation">
-                <a class="site-logo" href="index.html">Cozy Corner</a>
-                <ul class="site-links">
+                <a class="site-logo" href="index.html">
+    <img src="img/logo.png" alt="CozyCorner">
+</a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="site-menu">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="reservation.html">Reservations</a></li>
                     <li><a class="is-active" href="aboutus.html">About us</a></li>
@@ -25,22 +33,45 @@
         </header>
 
         <main class="site-main">
-            <section class="about-layout" aria-label="About us content">
-                <div class="placeholder-box placeholder-box--about"></div>
-                <article class="about-card">
-                    <h1>Our Story</h1>
-                    <p>CozyCorner offers warm and simple stays designed for comfort, ease, and everyday travel.</p>
+            <section class="story-layout" aria-labelledby="story-heading">
+                <h2 id="story-heading" class="visually-hidden">Our Story</h2>
+                <figure class="story-media">
+                    <img src="img/homepage.jpg" alt="CozyCorner featured stay with indoor-outdoor living area">
+                </figure>
+
+                <article class="panel panel--accent">
+                    <p class="eyebrow">About CozyCorner</p>
+                    <h1>Comfort-first spaces with a calm, modern feel</h1>
+                    <p>CozyCorner was created for travelers who want their stay to feel settled, quiet, and easy. We focus on rooms that are warm in tone, practical in layout, and simple to book.</p>
+                    <p>Whether you are planning a quick weekend break or a longer restful stay, our goal is the same: make the space feel welcoming from the moment you walk in.</p>
                 </article>
-                <article class="about-card">
-                    <h2>Our Mission</h2>
-                    <p>Our mission is to create quiet, welcoming spaces that feel familiar the moment guests arrive.</p>
+            </section>
+
+            <section class="info-grid" aria-label="About CozyCorner details">
+                <article class="panel">
+                    <h2>Our story</h2>
+                    <p>We started CozyCorner around the idea that small details matter: warm lighting, clean finishes, intuitive layouts, and rooms that feel personal without being complicated.</p>
                 </article>
-                <div class="placeholder-box placeholder-box--about"></div>
+
+                <article class="panel">
+                    <h2>Our mission</h2>
+                    <p>We aim to deliver dependable accommodation for couples, solo guests, and small groups through straightforward booking and thoughtfully prepared rooms.</p>
+                </article>
+
+                <article class="panel">
+                    <h2>What guests value</h2>
+                    <p>Guests choose CozyCorner for quiet interiors, wood-accent styling, practical amenities, and a booking experience that stays simple from browse to confirmation.</p>
+                </article>
+
+                <article class="panel">
+                    <h2>How we host</h2>
+                    <p>We keep our process responsive and clear. Every room is presented honestly, and each reservation request is reviewed with the details you submit on the reservation page.</p>
+                </article>
             </section>
         </main>
 
         <footer class="site-footer">
-            <div class="footer-copy">Footer</div>
+            <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
         </footer>
     </div>
     <script src="js/script.js"></script>
