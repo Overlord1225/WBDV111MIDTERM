@@ -1,5 +1,5 @@
 const STORAGE_KEYS = {
-    users: "cozycorner-users",
+    registeredUsers: "cozycorner_registered_users",
     session: "cozycorner-session",
     contact: "cozycorner-contact-messages",
     reservations: "cozycorner-reservations",
@@ -7,28 +7,64 @@ const STORAGE_KEYS = {
 };
 
 const ROOM_DATA = {
-    "room-1": { name: "Room 1", title: "Forest Hearth Suite", price: 2800, guests: 2 },
-    "room-2": { name: "Room 2", title: "Calm Studio Retreat", price: 3000, guests: 2 },
-    "room-3": { name: "Room 3", title: "Sunlit Wood Suite", price: 3200, guests: 2 },
-    "room-4": { name: "Room 4", title: "Relaxed Family Room", price: 3400, guests: 3 },
-    "room-5": { name: "Room 5", title: "Spacious Weekend Stay", price: 3600, guests: 4 },
-    "room-6": { name: "Room 6", title: "Premium Cozy Suite", price: 3800, guests: 4 }
+    "room-1": { name: "Room 1", title: "Forest Hearth Suite", price: 2800, guests: 2, type: "suite", description: "Warm lighting, a private lounge setup, and a quiet indoor atmosphere for couples.", features: ["2 guests", "Suite", "Lounge area"] },
+    "room-2": { name: "Room 2", title: "Calm Studio Retreat", price: 3000, guests: 2, type: "studio", description: "Soft neutral finishes and open floor space designed for solo guests or a pair.", features: ["2 guests", "Studio", "Quiet interior"] },
+    "room-3": { name: "Room 3", title: "Sunlit Wood Suite", price: 3200, guests: 2, type: "suite", description: "Airy bedroom styling with a dedicated work corner and a brighter daytime feel.", features: ["2 guests", "Suite", "Work desk"] },
+    "room-4": { name: "Room 4", title: "Relaxed Family Room", price: 3400, guests: 3, type: "family", description: "Designed with a little more room to move, suitable for small groups or families.", features: ["3 guests", "Family", "Open layout"] },
+    "room-5": { name: "Room 5", title: "Spacious Weekend Stay", price: 3600, guests: 4, type: "family", description: "A roomier setup with balanced natural tones for extended weekend bookings.", features: ["4 guests", "Family", "Extended stay"] },
+    "room-6": { name: "Room 6", title: "Premium Cozy Suite", price: 3800, guests: 4, type: "suite", description: "Our highest-capacity suite with a more polished finish and broader guest flexibility.", features: ["4 guests", "Suite", "Premium finish"] }
 };
+
+const ROOM_IMAGES = {
+    "room-1": ["img/room1/077f6d83-971c-4e34-aafc-018d2899368d.jpeg", "img/room1/116bbd49-a22c-4f9f-ac40-400f4cd88a7c.jpeg", "img/room1/8e567aa9-5876-47f9-a166-ae5160579898.jpeg", "img/room1/bb258352-46d0-4863-9c80-e365dc1ac150.jpeg"],
+    "room-2": ["img/room2/04d8d164-3ef9-4d6a-a9fb-f84fe0f4ef2a.jpeg", "img/room2/43b0a2a7-8a82-44c0-9af0-6a0bafed9df3.jpeg", "img/room2/18ca8bd8-c5d8-4d68-8ebe-186da680da43.jpeg", "img/room2/90830dde-da26-4073-bffc-8d79a7a0bfe0.jpeg"],
+    "room-3": ["img/room3/151b01e3-2301-467d-8d1f-a798e8b5b6ac.jpeg", "img/room3/b5e6a979-1510-4b42-b6e7-4f3a01d34034.jpeg", "img/room3/7272dc02-be0f-48c5-8402-658d67a48449.jpeg", "img/room3/e6c9a497-cf50-4127-b8fd-478962c9ee02.jpeg"],
+    "room-4": ["img/room4/1487bc2a-edef-4cc6-8938-6a3bfdec31ce.jpeg", "img/room4/5a31e05e-4295-4938-b02c-bb7b4097159c.jpeg", "img/room4/5f516e68-0be0-42a7-a3f4-d7e264046018.jpeg", "img/room4/ffd19a9d-eb68-42c9-8098-f636fa1ba4ea.jpeg"],
+    "room-5": ["img/room5/9340069e-24d2-4c0f-9558-364744bdfe78.jpeg", "img/room5/bbffdf0b-6926-4800-ac7a-021e97a662de.jpeg", "img/room5/ea2b8597-0abb-44d9-9ee6-3f3a4396a8f7.jpeg", "img/room5/e2ab49e2-aeb9-4308-969e-8329e514bdf4.jpeg"],
+    "room-6": ["img/room6/9535844c-f80b-46dc-bf47-8c62001e2175.jpeg", "img/room6/e8b4e5c7-3f13-4d7f-8a83-7a75ed3888ec.jpeg", "img/room6/c47f2b9a-e2b7-4368-b112-39b9ea3cec7d.jpeg", "img/room6/9af22104-09aa-4dbc-a7f4-d844c9fce34d.jpeg"]
+};
+
+const USER_ROLES = { USER: "user", ADMIN: "admin", SUPER_ADMIN: "super_admin" };
+
+// ---------- User persistence (localStorage) ----------
+function getDefaultUsers() {
+    return {
+        admin: { username: "admin", email: "admin@example.com", password: "admin123", role: USER_ROLES.ADMIN },
+        super: { username: "super", email: "super@example.com", password: "super123", role: USER_ROLES.SUPER_ADMIN },
+        user: { username: "user", email: "user@example.com", password: "user123", role: USER_ROLES.USER }
+    };
+}
+
+function getAllUsers() {
+    const defaultUsers = getDefaultUsers();
+    const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+    return { ...defaultUsers, ...registered };
+}
+
+function saveUser(user) {
+    const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+    registered[user.username] = user;
+    writeStorage(STORAGE_KEYS.registeredUsers, registered);
+}
+
+// ---------- Global cache for inline views ----------
+let cachedViews = {};
 
 document.addEventListener("DOMContentLoaded", () => {
     initializePageState();
     initializeNavigation();
     initializeButtons();
-    initializeReservationPage();
-    initializeContactForm();
-    initializeAuthPage();
+    initializeAuthPage();      // handles login/register forms
     initializeCarousels();
+    initializeDashboardView(); // only runs on user.html
+    updateNavigationForSession();
+    initializeStaticLogout();
+    // Reservation and contact forms are loaded on-demand inside views
 });
 
+// ---------- Core helpers ----------
 function initializePageState() {
-    requestAnimationFrame(() => {
-        document.body.classList.add("is-loaded");
-    });
+    requestAnimationFrame(() => document.body.classList.add("is-loaded"));
 }
 
 function initializeNavigation() {
@@ -36,17 +72,13 @@ function initializeNavigation() {
     const links = document.querySelectorAll(".site-links a");
     const navToggle = document.querySelector(".nav-toggle");
     const menu = document.querySelector(".site-links");
-    const navigableLinks = document.querySelectorAll(".site-links a, .site-logo, a.button");
 
-    links.forEach((link) => {
+    links.forEach(link => {
         const href = link.getAttribute("href");
         const isCurrent = href === currentPath;
         link.classList.toggle("is-active", isCurrent);
-        if (isCurrent) {
-            link.setAttribute("aria-current", "page");
-        } else {
-            link.removeAttribute("aria-current");
-        }
+        if (isCurrent) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
     });
 
     if (navToggle && menu) {
@@ -56,153 +88,352 @@ function initializeNavigation() {
         });
     }
 
-    navigableLinks.forEach((link) => {
+    const navigableLinks = document.querySelectorAll(".site-links a, .site-logo, a.button:not([data-no-transition])");
+    navigableLinks.forEach(link => {
         link.addEventListener("click", (event) => {
             const href = link.getAttribute("href");
-
-            if (!shouldHandleNavigation(event, href)) {
-                return;
-            }
-
+            if (!shouldHandleNavigation(event, href)) return;
             event.preventDefault();
             document.body.classList.add("is-leaving");
-            window.setTimeout(() => {
-                window.location.href = href;
-            }, 160);
+            setTimeout(() => { window.location.href = href; }, 160);
         });
     });
 }
 
 function initializeButtons() {
-    document.querySelectorAll(".button").forEach((button) => {
-        button.addEventListener("pointerdown", () => {
-            button.classList.add("is-pressed");
-        });
-
-        ["pointerup", "pointerleave", "pointercancel", "blur"].forEach((eventName) => {
-            button.addEventListener(eventName, () => {
-                button.classList.remove("is-pressed");
-            });
+    document.querySelectorAll(".button").forEach(button => {
+        button.addEventListener("pointerdown", () => button.classList.add("is-pressed"));
+        ["pointerup", "pointerleave", "pointercancel", "blur"].forEach(ev => {
+            button.addEventListener(ev, () => button.classList.remove("is-pressed"));
         });
     });
 }
 
-function initializeReservationPage() {
-    const filterForm = document.getElementById("filter-form");
-    const bookingForm = document.getElementById("booking-form");
-    const roomCards = Array.from(document.querySelectorAll(".room-listing"));
-    const clearFiltersButton = document.getElementById("clear-filters");
-
-    if (!filterForm || !bookingForm || roomCards.length === 0) {
-        return;
-    }
-
-    setDateMinimums();
-    bindFieldValidation(bookingForm);
-
-    filterForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        applyRoomFilters(filterForm, roomCards);
-    });
-
-    clearFiltersButton?.addEventListener("click", () => {
-        filterForm.reset();
-        applyRoomFilters(filterForm, roomCards);
-    });
-
-    roomCards.forEach((card) => {
-        card.addEventListener("click", (event) => {
-            if (event.target.closest(".reserve-trigger")) {
-                return;
-            }
-            selectRoom(card.dataset.roomId, roomCards, bookingForm);
-        });
-    });
-
-    initializeCarousels();
-
-
-    document.querySelectorAll(".reserve-trigger").forEach((button) => {
-        button.addEventListener("click", () => {
-            const roomId = button.dataset.roomSelect;
-            selectRoom(roomId, roomCards, bookingForm);
-            bookingForm.scrollIntoView({ behavior: "smooth", block: "center" });
-        });
-    });
-
-    ["checkin", "checkout", "guests"].forEach((name) => {
-        const field = bookingForm.elements.namedItem(name);
-        field?.addEventListener("input", () => updateBookingTotal(bookingForm));
-    });
-
-    bookingForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        handleBookingSubmit(bookingForm, roomCards);
-    });
-
-    applyRoomFilters(filterForm, roomCards);
-    preloadSelectedRoom(roomCards, bookingForm);
-}
-
-function initializeContactForm() {
-    const form = document.getElementById("contact-form");
-    if (!form) {
-        return;
-    }
-
-    bindFieldValidation(form);
-
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const values = {
-            name: getFieldValue(form, "name"),
-            email: getFieldValue(form, "email"),
-            message: getFieldValue(form, "message")
-        };
-
-        const isValid =
-            validateRequired(form, "name", values.name, "Please enter your name.") &&
-            validateEmailField(form, "email", values.email) &&
-            validateRequired(form, "message", values.message, "Please enter your message.");
-
-        const feedback = document.getElementById("contact-feedback");
-
-        if (!isValid) {
-            setFeedback(feedback, "error", "Please complete the contact form.");
-            return;
-        }
-
-        const messages = readStorage(STORAGE_KEYS.contact, []);
-        messages.push({ ...values, submittedAt: new Date().toISOString() });
-        writeStorage(STORAGE_KEYS.contact, messages);
-
-        form.reset();
-        clearFormState(form);
-        setFeedback(feedback, "success", "Message saved successfully.");
-    });
-}
-
+// ---------- Authentication (persistent) ----------
 function initializeAuthPage() {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
-
-    if (!loginForm || !registerForm) {
-        return;
-    }
+    if (!loginForm || !registerForm) return;
 
     bindFieldValidation(loginForm);
     bindFieldValidation(registerForm);
 
-    loginForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        handleLogin(loginForm);
+    loginForm.addEventListener("submit", (e) => { e.preventDefault(); handleLogin(loginForm); });
+    registerForm.addEventListener("submit", (e) => { e.preventDefault(); handleRegistration(registerForm, loginForm); });
+}
+
+function handleLogin(form) {
+    const username = getFieldValue(form, "username");
+    const password = getFieldValue(form, "password");
+    const feedback = document.getElementById("login-feedback");
+
+    if (!validateRequired(form, "username", username, "Enter your username.") ||
+        !validateRequired(form, "password", password, "Enter your password.")) {
+        setFeedback(feedback, "error", "Please complete the login form.");
+        return;
+    }
+
+    const allUsers = getAllUsers();
+    const matchedUser = allUsers[username];
+
+    if (!matchedUser || matchedUser.password !== password) {
+        setFeedback(feedback, "error", "Invalid username or password.");
+        return;
+    }
+
+    writeSession(STORAGE_KEYS.session, {
+        username: matchedUser.username,
+        email: matchedUser.email,
+        role: matchedUser.role
+    });
+    setFeedback(feedback, "success", `Welcome back, ${matchedUser.username}. Redirecting...`);
+    setTimeout(() => { window.location.href = "user.html"; }, 600);
+}
+
+function handleRegistration(registerForm, loginForm) {
+    const username = getFieldValue(registerForm, "username");
+    const email = getFieldValue(registerForm, "email");
+    const password = getFieldValue(registerForm, "password");
+    const confirmPassword = getFieldValue(registerForm, "confirm-password");
+    const feedback = document.getElementById("register-feedback");
+
+    let isValid = true;
+    isValid = validateRequired(registerForm, "username", username, "Choose a username.") && isValid;
+    isValid = validateEmailField(registerForm, "email", email) && isValid;
+    isValid = validatePassword(registerForm, "password", password) && isValid;
+    isValid = validateConfirmPassword(registerForm, password, confirmPassword) && isValid;
+
+    const allUsers = getAllUsers();
+    if (allUsers[username]) {
+        setFieldState(registerForm, "username", "error", "That username is already registered.");
+        isValid = false;
+    }
+    if (Object.values(allUsers).some(u => u.email === email)) {
+        setFieldState(registerForm, "email", "error", "That email is already registered.");
+        isValid = false;
+    }
+
+    if (!isValid) {
+        setFeedback(feedback, "error", "Please review the registration fields.");
+        return;
+    }
+
+    const newUser = {
+        username,
+        email,
+        password,
+        role: USER_ROLES.USER
+    };
+    saveUser(newUser);
+
+    // Auto-login after registration
+    writeSession(STORAGE_KEYS.session, { username, email, role: USER_ROLES.USER });
+
+    registerForm.reset();
+    clearFormState(registerForm);
+    setFeedback(feedback, "success", `Welcome, ${username}! Redirecting to your dashboard...`);
+
+    const loginUsername = loginForm.elements.namedItem("username");
+    if (loginUsername) loginUsername.value = username;
+
+    setTimeout(() => { window.location.href = "user.html"; }, 800);
+}
+
+// ---------- Dashboard inline view system (only for user.html) ----------
+function initializeDashboardView() {
+    if (!window.location.pathname.includes("user.html")) return;
+
+    const navBtns = document.querySelectorAll('.dashboard-nav-btn');
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            if (!view) return;
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadView(view);
+        });
+    });
+    loadView('dashboard'); // default
+}
+
+async function loadView(viewName) {
+    const container = document.getElementById('dynamic-view');
+    if (!container) return;
+
+    if (viewName === 'dashboard') {
+        renderDashboardView();
+        return;
+    }
+
+    container.innerHTML = '<div style="text-align: center; padding: 40px;">Loading...</div>';
+
+    let htmlContent = cachedViews[viewName];
+    if (!htmlContent) {
+        const page = viewName === 'reservations' ? 'reservation.html' : 'contactus.html';
+        try {
+            const response = await fetch(page);
+            htmlContent = await response.text();
+            cachedViews[viewName] = htmlContent;
+        } catch (error) {
+            container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--error);">Failed to load ${viewName}. Please try again.</div>`;
+            return;
+        }
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    const mainContent = doc.querySelector('main.site-main');
+    if (!mainContent) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--error);">Invalid page structure.</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    container.appendChild(mainContent.cloneNode(true));
+
+    if (viewName === 'reservations') {
+        initializeReservationPage();
+    } else if (viewName === 'contact') {
+        initializeContactForm();
+    }
+    initializeCarousels();
+}
+
+function renderDashboardView() {
+    const container = document.getElementById('dynamic-view');
+    if (!container) return;
+
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="user-dashboard" style="display: grid; grid-template-columns: 280px minmax(0, 1fr) 300px; gap: 15px; align-items: start;">
+            <section class="panel" style="text-align: center;">
+                <div class="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 2.4rem; font-weight: 700; color: #ffffff;">
+                    <span>${session.username.charAt(0).toUpperCase()}</span>
+                </div>
+                <p class="eyebrow" style="margin-bottom: 4px;">Welcome back,</p>
+                <h2 style="font-size: 1.6rem; letter-spacing: -0.03em;">${session.username}</h2>
+            </section>
+            <section class="panel">
+                <div class="panel-heading"><div><p class="eyebrow">Current Trip</p><h3>Your Stay</h3></div></div>
+                <div id="current-trip-content" style="padding: 6px 0;"><p style="color: var(--text-soft); text-align: center; padding: 36px 24px;">No active reservation. Your next getaway starts here.</p></div>
+            </section>
+            <section class="panel">
+                <div class="panel-heading"><div><p class="eyebrow">Account</p><h3>Quick Links</h3></div></div>
+                <nav style="display: grid; gap: 8px;">
+                    <a href="#" class="account-link" data-section="personal" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); text-decoration: none; color: var(--text);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span style="font-weight: 500;">Personal info</span>
+                    </a>
+                    <a href="#" class="account-link" data-section="payments" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); text-decoration: none; color: var(--text);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        <span style="font-weight: 500;">Payments</span>
+                    </a>
+                </nav>
+                <div id="account-detail" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); min-height: 60px;">
+                    <p style="font-size: 0.88rem; color: var(--text-soft); text-align: center;">Select an option above</p>
+                </div>
+            </section>
+        </div>
+    `;
+
+    document.querySelectorAll('.account-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAccountDetail(link.dataset.section, session, document.getElementById('account-detail'));
+        });
     });
 
-    registerForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        handleRegistration(registerForm, loginForm);
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const userReservations = reservations.filter(r => r.email === (session.email || ""));
+    const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
+
+    const tripContent = document.getElementById('current-trip-content');
+    if (activeReservation && tripContent) {
+        tripContent.innerHTML = `
+            <div style="display: grid; gap: 12px;">
+                <div><h4 style="font-size: 1.2rem; margin:0;">${activeReservation.roomName} - ${activeReservation.title}</h4><p style="margin:4px 0 0; font-size:0.9rem; color:var(--text-soft);">${formatCurrency(activeReservation.price)}/night</p></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(147,99,63,0.06); padding:12px; border-radius:var(--radius-md);">
+                    <div><span style="font-size:0.8rem;">Check-in</span><div style="font-weight:600;">${formatDate(activeReservation.checkin)}</div></div>
+                    <div><span style="font-size:0.8rem;">Check-out</span><div style="font-weight:600;">${formatDate(activeReservation.checkout)}</div></div>
+                    <div><span style="font-size:0.8rem;">Guests</span><div style="font-weight:600;">${activeReservation.guests}</div></div>
+                    <div><span style="font-size:0.8rem;">Nights</span><div style="font-weight:600;">${activeReservation.nights}</div></div>
+                </div>
+                <div><button id="viewPropertyBtn" class="button button--secondary" style="width:100%;">View Property</button></div>
+            </div>
+        `;
+        setupPropertyDropdown(activeReservation);
+    } else if (tripContent) {
+        tripContent.innerHTML = `<p style="color: var(--text-soft); text-align: center; padding: 36px 24px;">No active reservation. Your next getaway starts here.</p>`;
+    }
+}
+
+function setupPropertyDropdown(reservation) {
+    let dropdown = document.getElementById("propertyDropdownContainer");
+    if (!dropdown) {
+        dropdown = document.createElement("div");
+        dropdown.id = "propertyDropdownContainer";
+        dropdown.style.cssText = `margin-top:16px; overflow:hidden; transition:max-height 0.4s ease-out, opacity 0.3s ease; max-height:0; opacity:0; border-radius:var(--radius-lg);`;
+        const tripDiv = document.getElementById('current-trip-content');
+        if (tripDiv) tripDiv.parentNode.insertBefore(dropdown, tripDiv.nextSibling);
+    }
+    const btn = document.getElementById("viewPropertyBtn");
+    if (!btn) return;
+    let isOpen = false;
+    btn.onclick = () => {
+        if (!isOpen) {
+            const room = ROOM_DATA[reservation.roomId];
+            const images = ROOM_IMAGES[reservation.roomId] || [];
+            let carouselHtml = '';
+            if (images.length) {
+                carouselHtml = `
+                    <div class="carousel" data-carousel>
+                        <div class="carousel-track">
+                            ${images.map((img, idx) => `<div class="carousel-slide ${idx===0?'is-active':''}"><img src="${img}" alt="${room.name}"></div>`).join('')}
+                        </div>
+                        <button class="carousel-btn carousel-btn--prev" type="button">‹</button>
+                        <button class="carousel-btn carousel-btn--next" type="button">›</button>
+                        <div class="carousel-dots"></div>
+                    </div>
+                `;
+            } else carouselHtml = '<div style="background:#f0e3d6; padding:40px; text-align:center;">No images</div>';
+            dropdown.innerHTML = `
+                <div class="panel property-detail-panel" style="padding:0; overflow:hidden;">
+                    <div class="property-detail-grid">
+                        <div class="property-carousel">${carouselHtml}</div>
+                        <div class="property-info">
+                            <h3 style="margin-bottom:12px;">${room.name} – ${room.title}</h3>
+                            <div class="price-badges">
+                                <span class="price-tag">${formatCurrency(room.price)}/night</span>
+                                <span class="price-tag">👥 Up to ${room.guests}</span>
+                                <span class="price-tag">🏷️ ${room.type}</span>
+                            </div>
+                            <p>${room.description}</p>
+                            <ul class="feature-list">${room.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+                            <a href="reservation.html?room=${reservation.roomId}" class="button button--primary" style="width:100%;">Book again</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            initializeCarousels();
+            dropdown.style.maxHeight = "800px";
+            dropdown.style.opacity = "1";
+            isOpen = true;
+            btn.textContent = "Hide Property";
+        } else {
+            dropdown.style.maxHeight = "0";
+            dropdown.style.opacity = "0";
+            isOpen = false;
+            btn.textContent = "View Property";
+            setTimeout(() => { if (!isOpen) dropdown.innerHTML = ""; }, 400);
+        }
+    };
+}
+
+function showAccountDetail(section, session, container) {
+    if (!container) return;
+    if (section === "personal") {
+        container.innerHTML = `<div><label>Username</label><div>${session.username}</div></div><div><label>Email</label><div>${session.email}</div></div>`;
+    } else {
+        container.innerHTML = `<p style="text-align:center;">No payment methods on file.</p>`;
+    }
+}
+
+// ---------- Reservation page functions (used when view is loaded) ----------
+function initializeReservationPage() {
+    const filterForm = document.getElementById("filter-form");
+    const bookingForm = document.getElementById("booking-form");
+    const roomCards = Array.from(document.querySelectorAll(".room-listing"));
+    const clearFilters = document.getElementById("clear-filters");
+    if (!filterForm || !bookingForm || roomCards.length === 0) return;
+
+    setDateMinimums();
+    bindFieldValidation(bookingForm);
+
+    filterForm.addEventListener("submit", (e) => { e.preventDefault(); applyRoomFilters(filterForm, roomCards); });
+    clearFilters?.addEventListener("click", () => { filterForm.reset(); applyRoomFilters(filterForm, roomCards); });
+
+    roomCards.forEach(card => card.addEventListener("click", (e) => {
+        if (e.target.closest(".reserve-trigger")) return;
+        selectRoom(card.dataset.roomId, roomCards, bookingForm);
+    }));
+    document.querySelectorAll(".reserve-trigger").forEach(btn => btn.addEventListener("click", () => {
+        const roomId = btn.dataset.roomSelect;
+        selectRoom(roomId, roomCards, bookingForm);
+        bookingForm.scrollIntoView({ behavior: "smooth", block: "center" });
+    }));
+    ["checkin","checkout","guests"].forEach(name => {
+        const field = bookingForm.elements.namedItem(name);
+        field?.addEventListener("input", () => updateBookingTotal(bookingForm));
     });
+    bookingForm.addEventListener("submit", (e) => { e.preventDefault(); handleBookingSubmit(bookingForm, roomCards); });
+    applyRoomFilters(filterForm, roomCards);
+    preloadSelectedRoom(roomCards, bookingForm);
+    prefillBookingFromSession();
 }
 
 function handleBookingSubmit(form, roomCards) {
@@ -216,12 +447,10 @@ function handleBookingSubmit(form, roomCards) {
     const feedback = document.getElementById("booking-feedback");
 
     let isValid = true;
-
     if (!room) {
         setFeedback(feedback, "error", "Select a room before submitting your reservation.");
         return;
     }
-
     isValid = validateRequired(form, "name", name, "Please enter your full name.") && isValid;
     isValid = validateEmailField(form, "email", email) && isValid;
     isValid = validateRequired(form, "checkin", checkin, "Select a check-in date.") && isValid;
@@ -237,12 +466,10 @@ function handleBookingSubmit(form, roomCards) {
             clearFieldState(form, "checkout");
         }
     }
-
     if (guests && room && Number(guests) > room.guests) {
         setFieldState(form, "guests", "error", `${room.name} allows up to ${room.guests} guests.`);
         isValid = false;
     }
-
     if (!isValid) {
         setFeedback(feedback, "error", "Please review the booking details.");
         return;
@@ -251,163 +478,16 @@ function handleBookingSubmit(form, roomCards) {
     const nights = calculateNights(checkin, checkout);
     const total = nights * room.price;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
-
     reservations.push({
-        roomId,
-        roomName: room.name,
-        title: room.title,
-        name,
-        email,
-        checkin,
-        checkout,
-        guests: Number(guests),
-        nights,
-        total,
-        createdAt: new Date().toISOString()
+        roomId, roomName: room.name, title: room.title, name, email, checkin, checkout,
+        guests: Number(guests), nights, total, createdAt: new Date().toISOString()
     });
-
     writeStorage(STORAGE_KEYS.reservations, reservations);
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
-
     setFeedback(feedback, "success", `Reservation request saved for ${room.name}. Estimated total: ${formatCurrency(total)}.`);
     clearNonRoomBookingFields(form);
     highlightSelectedRoom(roomId, roomCards);
     updateBookingTotal(form);
-}
-
-function handleLogin(form) {
-    const username = getFieldValue(form, "username");
-    const password = getFieldValue(form, "password");
-    const feedback = document.getElementById("login-feedback");
-
-    const isValid =
-        validateRequired(form, "username", username, "Enter your username.") &&
-        validateRequired(form, "password", password, "Enter your password.");
-
-    if (!isValid) {
-        setFeedback(feedback, "error", "Please complete the login form.");
-        return;
-    }
-
-    const users = readStorage(STORAGE_KEYS.users, []);
-    const matchedUser = users.find((user) => user.username === username && user.password === password);
-
-    if (!matchedUser) {
-        setFeedback(feedback, "error", "No matching account was found for this device.");
-        return;
-    }
-
-    writeStorage(STORAGE_KEYS.session, { username: matchedUser.username, email: matchedUser.email });
-    clearFormState(form);
-    form.reset();
-    setFeedback(feedback, "success", `Welcome back, ${matchedUser.username}.`);
-}
-
-function handleRegistration(registerForm, loginForm) {
-    const username = getFieldValue(registerForm, "username");
-    const email = getFieldValue(registerForm, "email");
-    const password = getFieldValue(registerForm, "password");
-    const confirmPassword = getFieldValue(registerForm, "confirm-password");
-    const feedback = document.getElementById("register-feedback");
-    const users = readStorage(STORAGE_KEYS.users, []);
-
-    let isValid = true;
-    isValid = validateRequired(registerForm, "username", username, "Choose a username.") && isValid;
-    isValid = validateEmailField(registerForm, "email", email) && isValid;
-    isValid = validatePassword(registerForm, "password", password) && isValid;
-    isValid = validateConfirmPassword(registerForm, password, confirmPassword) && isValid;
-
-    if (users.some((user) => user.username.toLowerCase() === username.toLowerCase())) {
-        setFieldState(registerForm, "username", "error", "That username is already registered.");
-        isValid = false;
-    }
-
-    if (users.some((user) => user.email.toLowerCase() === email.toLowerCase())) {
-        setFieldState(registerForm, "email", "error", "That email is already registered.");
-        isValid = false;
-    }
-
-    if (!isValid) {
-        setFeedback(feedback, "error", "Please review the registration fields.");
-        return;
-    }
-
-    users.push({ username, email, password, createdAt: new Date().toISOString() });
-    writeStorage(STORAGE_KEYS.users, users);
-    writeStorage(STORAGE_KEYS.session, { username, email });
-
-    registerForm.reset();
-    clearFormState(registerForm);
-    setFeedback(feedback, "success", "Registration successful. You can now log in.");
-
-    const loginUsername = loginForm.elements.namedItem("username");
-    if (loginUsername) {
-        loginUsername.value = username;
-    }
-}
-
-function bindFieldValidation(form) {
-    form.querySelectorAll("input, select, textarea").forEach((field) => {
-        field.addEventListener("focus", () => {
-            field.classList.add("is-focused");
-        });
-
-        field.addEventListener("blur", () => {
-            field.classList.remove("is-focused");
-            validateFieldOnBlur(form, field);
-        });
-
-        field.addEventListener("input", () => {
-            if (field.classList.contains("is-error")) {
-                validateFieldOnBlur(form, field);
-            }
-        });
-    });
-}
-
-function validateFieldOnBlur(form, field) {
-    const value = field.value.trim();
-    const fieldName = field.name;
-
-    if (fieldName === "email") {
-        if (!value) {
-            setFieldState(form, fieldName, "error", "This field is required.");
-            return false;
-        }
-        if (!isValidEmail(value)) {
-            setFieldState(form, fieldName, "error", "Enter a valid email address.");
-            return false;
-        }
-    }
-
-    if (fieldName === "password" && form.id === "register-form") {
-        return validatePassword(form, fieldName, value);
-    }
-
-    if (fieldName === "confirm-password" && form.id === "register-form") {
-        const password = getFieldValue(form, "password");
-        return validateConfirmPassword(form, password, value);
-    }
-
-    if (fieldName === "checkout" && form.id === "booking-form") {
-        const checkin = getFieldValue(form, "checkin");
-        if (!value) {
-            setFieldState(form, fieldName, "error", "This field is required.");
-            return false;
-        }
-        if (checkin && calculateNights(checkin, value) <= 0) {
-            setFieldState(form, fieldName, "error", "Check-out must be after check-in.");
-            return false;
-        }
-    }
-
-    if (!value) {
-        setFieldState(form, fieldName, "error", "This field is required.");
-        return false;
-    }
-
-    clearFieldState(form, fieldName);
-    return true;
 }
 
 function applyRoomFilters(form, roomCards) {
@@ -415,19 +495,14 @@ function applyRoomFilters(form, roomCards) {
     const typeValue = getFieldValue(form, "type");
     const priceValue = getFieldValue(form, "price");
     let visibleCount = 0;
-
     roomCards.forEach((card) => {
         const matchesGuests = !guestValue || Number(card.dataset.guests) >= Number(guestValue);
         const matchesType = !typeValue || card.dataset.type === typeValue;
         const matchesPrice = !priceValue || Number(card.dataset.price) <= Number(priceValue);
         const isVisible = matchesGuests && matchesType && matchesPrice;
-
         card.classList.toggle("is-hidden", !isVisible);
-        if (isVisible) {
-            visibleCount += 1;
-        }
+        if (isVisible) visibleCount++;
     });
-
     const feedback = document.getElementById("filter-feedback");
     const message = visibleCount === 0 ? "No rooms match the selected filters." : `Showing ${visibleCount} room${visibleCount > 1 ? "s" : ""}.`;
     setFeedback(feedback, visibleCount === 0 ? "error" : "success", message);
@@ -438,34 +513,43 @@ function preloadSelectedRoom(roomCards, form) {
     const roomFromQuery = params.get("room");
     const roomFromStorage = readStorage(STORAGE_KEYS.pendingRoom, "");
     const initialRoomId = roomFromQuery || roomFromStorage || roomCards[0]?.dataset.roomId;
-
     if (initialRoomId) {
         selectRoom(initialRoomId, roomCards, form);
+        if (roomFromQuery) {
+            scrollToRoomCard(initialRoomId);
+        }
+    }
+}
+
+function scrollToRoomCard(roomId) {
+    const targetCard = document.querySelector(`.room-listing[data-room-id="${roomId}"]`);
+    if (targetCard) {
+        setTimeout(() => {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+            targetCard.style.transition = "box-shadow 0.3s ease";
+            targetCard.style.boxShadow = "0 0 0 3px var(--primary), 0 20px 40px rgba(0,0,0,0.15)";
+            setTimeout(() => {
+                targetCard.style.boxShadow = "";
+            }, 1500);
+        }, 300);
     }
 }
 
 function selectRoom(roomId, roomCards, form) {
     const room = ROOM_DATA[roomId];
-    if (!room) {
-        return;
-    }
-
+    if (!room) return;
     highlightSelectedRoom(roomId, roomCards);
     form.elements.namedItem("roomId").value = roomId;
     const summary = document.getElementById("selected-room-summary");
-
     if (summary) {
         summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
     }
-
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
     updateBookingTotal(form);
 }
 
 function highlightSelectedRoom(roomId, roomCards) {
-    roomCards.forEach((card) => {
-        card.classList.toggle("is-selected", card.dataset.roomId === roomId);
-    });
+    roomCards.forEach((card) => card.classList.toggle("is-selected", card.dataset.roomId === roomId));
 }
 
 function updateBookingTotal(form) {
@@ -473,20 +557,15 @@ function updateBookingTotal(form) {
     const checkin = getFieldValue(form, "checkin");
     const checkout = getFieldValue(form, "checkout");
     const totalField = document.getElementById("booking-total");
-
     if (!totalField || !room || !checkin || !checkout) {
-        if (totalField) {
-            totalField.textContent = "Total: Select dates to calculate";
-        }
+        if (totalField) totalField.textContent = "Total: Select dates to calculate";
         return;
     }
-
     const nights = calculateNights(checkin, checkout);
     if (nights <= 0) {
         totalField.textContent = "Total: Check the selected dates";
         return;
     }
-
     totalField.textContent = `Total: ${formatCurrency(nights * room.price)} for ${nights} night${nights > 1 ? "s" : ""}`;
 }
 
@@ -495,69 +574,95 @@ function setDateMinimums() {
     const formatted = today.toISOString().split("T")[0];
     const checkin = document.getElementById("booking-checkin");
     const checkout = document.getElementById("booking-checkout");
-
     if (checkin) {
         checkin.min = formatted;
         checkin.addEventListener("change", () => {
-            if (checkout) {
-                checkout.min = checkin.value || formatted;
-            }
+            if (checkout) checkout.min = checkin.value || formatted;
         });
     }
+    if (checkout) checkout.min = formatted;
+}
 
-    if (checkout) {
-        checkout.min = formatted;
+// ---------- Contact form (used when view is loaded) ----------
+function initializeContactForm() {
+    const form = document.getElementById("contact-form");
+    if (!form) return;
+    bindFieldValidation(form);
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const values = { name: getFieldValue(form,"name"), email: getFieldValue(form,"email"), message: getFieldValue(form,"message") };
+        const isValid = validateRequired(form,"name",values.name,"Enter name") && validateEmailField(form,"email",values.email) && validateRequired(form,"message",values.message,"Enter message");
+        const feedback = document.getElementById("contact-feedback");
+        if (!isValid) { setFeedback(feedback,"error","Complete the form."); return; }
+        const msgs = readStorage(STORAGE_KEYS.contact, []);
+        msgs.push({...values, submittedAt: new Date().toISOString()});
+        writeStorage(STORAGE_KEYS.contact, msgs);
+        form.reset(); clearFormState(form); setFeedback(feedback,"success","Message saved.");
+    });
+}
+
+// ---------- Validation and form helpers ----------
+function bindFieldValidation(form) {
+    form.querySelectorAll("input, select, textarea").forEach((field) => {
+        field.addEventListener("focus", () => field.classList.add("is-focused"));
+        field.addEventListener("blur", () => {
+            field.classList.remove("is-focused");
+            validateFieldOnBlur(form, field);
+        });
+        field.addEventListener("input", () => {
+            if (field.classList.contains("is-error")) validateFieldOnBlur(form, field);
+        });
+    });
+}
+
+function validateFieldOnBlur(form, field) {
+    const value = field.value.trim();
+    const fieldName = field.name;
+    if (fieldName === "email") {
+        if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
+        if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Enter a valid email address."); return false; }
     }
+    if (fieldName === "password" && form.id === "register-form") return validatePassword(form, fieldName, value);
+    if (fieldName === "confirm-password" && form.id === "register-form") {
+        const password = getFieldValue(form, "password");
+        return validateConfirmPassword(form, password, value);
+    }
+    if (fieldName === "checkout" && form.id === "booking-form") {
+        const checkin = getFieldValue(form, "checkin");
+        if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
+        if (checkin && calculateNights(checkin, value) <= 0) {
+            setFieldState(form, fieldName, "error", "Check-out must be after check-in.");
+            return false;
+        }
+    }
+    if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
+    clearFieldState(form, fieldName);
+    return true;
 }
 
 function validateRequired(form, fieldName, value, message) {
-    if (!value) {
-        setFieldState(form, fieldName, "error", message);
-        return false;
-    }
-
+    if (!value) { setFieldState(form, fieldName, "error", message); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
 
 function validateEmailField(form, fieldName, value) {
-    if (!validateRequired(form, fieldName, value, "Please enter your email address.")) {
-        return false;
-    }
-
-    if (!isValidEmail(value)) {
-        setFieldState(form, fieldName, "error", "Enter a valid email address.");
-        return false;
-    }
-
+    if (!validateRequired(form, fieldName, value, "Please enter your email address.")) return false;
+    if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Enter a valid email address."); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
 
 function validatePassword(form, fieldName, value) {
-    if (!validateRequired(form, fieldName, value, "Please create a password.")) {
-        return false;
-    }
-
-    if (value.length < 6) {
-        setFieldState(form, fieldName, "error", "Password must be at least 6 characters.");
-        return false;
-    }
-
+    if (!validateRequired(form, fieldName, value, "Please create a password.")) return false;
+    if (value.length < 6) { setFieldState(form, fieldName, "error", "Password must be at least 6 characters."); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
 
 function validateConfirmPassword(form, password, confirmPassword) {
-    if (!validateRequired(form, "confirm-password", confirmPassword, "Please confirm your password.")) {
-        return false;
-    }
-
-    if (password !== confirmPassword) {
-        setFieldState(form, "confirm-password", "error", "Passwords do not match.");
-        return false;
-    }
-
+    if (!validateRequired(form, "confirm-password", confirmPassword, "Please confirm your password.")) return false;
+    if (password !== confirmPassword) { setFieldState(form, "confirm-password", "error", "Passwords do not match."); return false; }
     clearFieldState(form, "confirm-password");
     return true;
 }
@@ -565,9 +670,7 @@ function validateConfirmPassword(form, password, confirmPassword) {
 function clearNonRoomBookingFields(form) {
     ["name", "email", "checkin", "checkout", "guests"].forEach((fieldName) => {
         const field = form.elements.namedItem(fieldName);
-        if (field) {
-            field.value = "";
-        }
+        if (field) field.value = "";
         clearFieldState(form, fieldName);
     });
 }
@@ -577,7 +680,6 @@ function clearFormState(form) {
         message.textContent = "";
         message.classList.remove("is-visible", "is-error", "is-success");
     });
-
     form.querySelectorAll("input, select, textarea").forEach((field) => {
         field.classList.remove("is-error", "is-focused");
     });
@@ -587,11 +689,7 @@ function setFieldState(form, fieldName, state, message) {
     const field = form.elements.namedItem(fieldName);
     const container = field?.closest(".field");
     const fieldMessage = container?.querySelector(".field-message");
-
-    if (!field || !fieldMessage) {
-        return;
-    }
-
+    if (!field || !fieldMessage) return;
     field.classList.toggle("is-error", state === "error");
     fieldMessage.textContent = message;
     fieldMessage.classList.add("is-visible");
@@ -603,7 +701,6 @@ function clearFieldState(form, fieldName) {
     const field = form.elements.namedItem(fieldName);
     const container = field?.closest(".field");
     const fieldMessage = container?.querySelector(".field-message");
-
     field?.classList.remove("is-error");
     if (fieldMessage) {
         fieldMessage.textContent = "";
@@ -612,10 +709,7 @@ function clearFieldState(form, fieldName) {
 }
 
 function setFeedback(element, state, message) {
-    if (!element) {
-        return;
-    }
-
+    if (!element) return;
     element.textContent = message;
     element.classList.add("is-visible");
     element.classList.toggle("is-error", state === "error");
@@ -630,170 +724,128 @@ function getFieldValue(form, fieldName) {
 function calculateNights(checkin, checkout) {
     const start = new Date(checkin);
     const end = new Date(checkout);
-    const difference = end.getTime() - start.getTime();
-    return Math.round(difference / 86400000);
+    return Math.round((end.getTime() - start.getTime()) / 86400000);
 }
 
 function formatCurrency(value) {
-    return new Intl.NumberFormat("en-PH", {
-        style: "currency",
-        currency: "PHP",
-        maximumFractionDigits: 0
-    }).format(value);
+    return new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 }).format(value);
 }
 
 function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function formatDate(str) {
+    const date = new Date(str);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+// ---------- Carousel ----------
 function initializeCarousels() {
     const carousels = document.querySelectorAll("[data-carousel]");
-    if (carousels.length === 0) {
-        return;
-    }
-
-    carousels.forEach((carousel) => {
-        const track = carousel.querySelector(".carousel-track");
-        const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
-        const prevBtn = carousel.querySelector(".carousel-btn--prev");
-        const nextBtn = carousel.querySelector(".carousel-btn--next");
-        const dotsContainer = carousel.querySelector(".carousel-dots");
-
-        let currentIndex = slides.findIndex((slide) => slide.classList.contains("is-active"));
-        if (currentIndex === -1) {
-            currentIndex = 0;
-        }
-        
-        let autoPlayInterval = null;
-        const AUTO_PLAY_DELAY = 5000; // 5 seconds
-
-        function createDots() {
-            if (!dotsContainer) {
-                return;
+    if (!carousels.length) return;
+    carousels.forEach(c => {
+        const slides = Array.from(c.querySelectorAll(".carousel-slide"));
+        const prev = c.querySelector(".carousel-btn--prev");
+        const next = c.querySelector(".carousel-btn--next");
+        const dots = c.querySelector(".carousel-dots");
+        let idx = slides.findIndex(s => s.classList.contains("is-active"));
+        if (idx === -1) idx = 0;
+        let auto;
+        const update = () => {
+            slides.forEach((s,i)=>s.classList.toggle("is-active", i===idx));
+            if (dots) {
+                const btns = dots.querySelectorAll(".carousel-dot");
+                btns.forEach((d,i)=>d.classList.toggle("is-active", i===idx));
             }
-            dotsContainer.innerHTML = "";
-            slides.forEach((_, index) => {
-                const dot = document.createElement("button");
-                dot.className = "carousel-dot" + (index === currentIndex ? " is-active" : "");
-                dot.setAttribute("role", "tab");
-                dot.setAttribute("aria-label", `Slide ${index + 1} of ${slides.length}`);
-                dot.setAttribute("aria-selected", String(index === currentIndex));
-                dot.addEventListener("click", () => goToSlide(index));
-                dotsContainer.appendChild(dot);
+        };
+        const go = (i) => { idx = (i+slides.length)%slides.length; update(); };
+        const nextSlide = () => go(idx+1);
+        const prevSlide = () => go(idx-1);
+        const start = () => { if (auto) clearInterval(auto); auto = setInterval(nextSlide, 5000); };
+        const stop = () => { if (auto) clearInterval(auto); auto = null; };
+        if (prev) prev.onclick = (e) => { e.stopPropagation(); stop(); prevSlide(); start(); };
+        if (next) next.onclick = (e) => { e.stopPropagation(); stop(); nextSlide(); start(); };
+        if (dots) {
+            dots.innerHTML = '';
+            slides.forEach((_,i)=>{
+                let dot = document.createElement("button");
+                dot.className = "carousel-dot"+(i===idx?" is-active":"");
+                dot.onclick = () => { stop(); go(i); start(); };
+                dots.appendChild(dot);
             });
         }
-
-        function updateDots() {
-            if (!dotsContainer) {
-                return;
-            }
-            const dots = dotsContainer.querySelectorAll(".carousel-dot");
-            dots.forEach((dot, index) => {
-                dot.classList.toggle("is-active", index === currentIndex);
-                dot.setAttribute("aria-selected", String(index === currentIndex));
-            });
-        }
-
-        function goToSlide(index) {
-            slides[currentIndex].classList.remove("is-active");
-            currentIndex = index;
-            if (currentIndex < 0) {
-                currentIndex = slides.length - 1;
-            }
-            if (currentIndex >= slides.length) {
-                currentIndex = 0;
-            }
-            slides[currentIndex].classList.add("is-active");
-            updateDots();
-        }
-
-        function nextSlide() {
-            goToSlide(currentIndex + 1);
-        }
-
-        function prevSlide() {
-            goToSlide(currentIndex - 1);
-        }
-
-        function startAutoPlay() {
-            if (autoPlayInterval) {
-                clearInterval(autoPlayInterval);
-            }
-            autoPlayInterval = setInterval(nextSlide, AUTO_PLAY_DELAY);
-        }
-
-        function stopAutoPlay() {
-            if (autoPlayInterval) {
-                clearInterval(autoPlayInterval);
-                autoPlayInterval = null;
-            }
-        }
-
-        // Start auto play when carousel is initialized
-        startAutoPlay();
-
-        // Pause auto play when user interacts with carousel
-        if (prevBtn) {
-            prevBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                stopAutoPlay();
-                prevSlide();
-                // Restart auto play after interaction
-                startAutoPlay();
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                stopAutoPlay();
-                nextSlide();
-                // Restart auto play after interaction
-                startAutoPlay();
-            });
-        }
-
-        // Pause auto play when user hovers over carousel
-        carousel.addEventListener("mouseenter", stopAutoPlay);
-        carousel.addEventListener("mouseleave", startAutoPlay);
-
-        // Pause auto play when user focuses on carousel controls
-        const focusableElements = carousel.querySelectorAll("button");
-        focusableElements.forEach((el) => {
-            el.addEventListener("focus", stopAutoPlay);
-            el.addEventListener("blur", startAutoPlay);
-        });
-
-        createDots();
+        start();
+        c.onmouseenter = stop;
+        c.onmouseleave = start;
     });
 }
 
-function getCurrentPageName() {
-    const path = window.location.pathname.split("/").pop();
-    return path || "index.html";
-}
+// ---------- Storage helpers ----------
+function readStorage(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } }
+function writeStorage(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+function readSession(key, fallback) { try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } }
+function writeSession(key, val) { sessionStorage.setItem(key, JSON.stringify(val)); }
+function getCurrentPageName() { const p = window.location.pathname; return p.substring(p.lastIndexOf('/')+1) || "index.html"; }
+function shouldHandleNavigation(event, href) { if (!href || href.startsWith("#") || href.startsWith("javascript:")) return false; if (event.ctrlKey || event.metaKey || event.shiftKey) return false; return !event.defaultPrevented; }
 
-function shouldHandleNavigation(event, href) {
-    if (!href || href.startsWith("#")) {
-        return false;
+// ---------- Navigation update (places Dashboard before Logout) ----------
+function updateNavigationForSession() {
+    const session = readSession(STORAGE_KEYS.session);
+    const navList = document.querySelector('.site-links');
+    if (!navList) return;
+
+    let loginRegisterItem = null;
+    let dashboardItem = null;
+    let logoutItem = null;
+    for (const li of navList.querySelectorAll('li')) {
+        const link = li.querySelector('a');
+        if (link && link.getAttribute('href') === 'login.html') loginRegisterItem = li;
+        if (link && link.getAttribute('href') === 'user.html') dashboardItem = li;
+        if (link && link.id === 'logout-link') logoutItem = li;
     }
 
-    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-        return false;
+    if (session && session.username) {
+        if (!dashboardItem) {
+            const newLi = document.createElement('li');
+            const newLink = document.createElement('a');
+            newLink.href = 'user.html';
+            newLink.textContent = 'Dashboard';
+            newLi.appendChild(newLink);
+            if (logoutItem) navList.insertBefore(newLi, logoutItem);
+            else navList.appendChild(newLi);
+        }
+        if (loginRegisterItem) loginRegisterItem.remove();
+    } else {
+        if (!loginRegisterItem) {
+            const newLi = document.createElement('li');
+            const newLink = document.createElement('a');
+            newLink.href = 'login.html';
+            newLink.textContent = 'Login/Register';
+            newLi.appendChild(newLink);
+            if (logoutItem) navList.insertBefore(newLi, logoutItem);
+            else navList.appendChild(newLi);
+        }
+        if (dashboardItem) dashboardItem.remove();
     }
-
-    return !/^https?:\/\//i.test(href);
 }
 
-function readStorage(key, fallback) {
-    try {
-        const rawValue = window.localStorage.getItem(key);
-        return rawValue ? JSON.parse(rawValue) : fallback;
-    } catch {
-        return fallback;
-    }
+function prefillBookingFromSession() {
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session) return;
+    const nameField = document.getElementById('booking-name');
+    const emailField = document.getElementById('booking-email');
+    if (nameField && !nameField.value) nameField.value = session.username;
+    if (emailField && !emailField.value) emailField.value = session.email;
 }
 
-function writeStorage(key, value) {
-    window.localStorage.setItem(key, JSON.stringify(value));
+function initializeStaticLogout() {
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
 }

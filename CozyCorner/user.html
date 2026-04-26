@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | User Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-dashboard">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Main navigation">
+                <a class="site-logo" href="index.html">
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
+                <ul class="site-links" id="site-menu">
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+            </nav>
+        </header>
+
+        <main class="site-main" id="dashboard-main">
+            <!-- Dashboard internal navigation tabs -->
+            <div class="dashboard-nav">
+                <button class="dashboard-nav-btn active" data-view="dashboard">📊 Dashboard</button>
+                <button class="dashboard-nav-btn" data-view="reservations">📅 Reservations</button>
+                <button class="dashboard-nav-btn" data-view="contact">✉️ Contact Us</button>
+            </div>
+
+            <!-- Dynamic content will be injected here -->
+            <div id="dynamic-view"></div>
+        </main>
+
+        <footer class="site-footer">
+            <p>CozyCorner offers calm, comfortable stays with simple booking and thoughtful spaces.</p>
+        </footer>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

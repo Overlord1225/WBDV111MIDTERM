@@ -14,8 +14,8 @@
         <header class="site-header">
             <nav class="site-nav" aria-label="Main navigation">
                 <a class="site-logo" href="index.html">
-    <img src="img/logo.png" alt="CozyCorner">
-</a>
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
                 <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
                     <span></span>
                     <span></span>
@@ -33,6 +33,7 @@
         </header>
 
         <main class="site-main">
+            <!-- Page intro -->
             <section class="page-intro" aria-labelledby="reservations-heading">
                 <h2 id="reservations-heading" class="visually-hidden">Reservations Introduction</h2>
                 <p class="eyebrow">Plan your stay</p>
@@ -40,13 +41,15 @@
                 <p>Browse available rooms, filter by guest count or style, then complete a booking request using the reservation form.</p>
             </section>
 
-            <section class="reservation-layout">
-                <aside class="panel sidebar-panel">
-                    <section aria-labelledby="filter-title">
+            <!-- Main reservation layout: filters + booking form (left), rooms grid (right) -->
+            <div class="reservation-layout">
+                <!-- Sidebar with filters and booking form -->
+                <aside class="sidebar-panel">
+                    <!-- Filter section -->
+                    <section class="panel" aria-labelledby="filter-title">
                         <div class="panel-heading">
                             <h2 id="filter-title">Search filters</h2>
                         </div>
-
                         <form class="filter-form" id="filter-form">
                             <div class="field">
                                 <label for="filter-guests">Guests</label>
@@ -57,7 +60,6 @@
                                     <option value="3">3+ guests</option>
                                 </select>
                             </div>
-
                             <div class="field">
                                 <label for="filter-type">Room type</label>
                                 <select id="filter-type" name="type">
@@ -67,7 +69,6 @@
                                     <option value="family">Family</option>
                                 </select>
                             </div>
-
                             <div class="field">
                                 <label for="filter-price">Max price</label>
                                 <select id="filter-price" name="price">
@@ -77,7 +78,6 @@
                                     <option value="3800">PHP 3,800</option>
                                 </select>
                             </div>
-
                             <div class="form-actions">
                                 <button class="button button--primary" type="submit">Apply</button>
                                 <button class="button button--secondary" type="button" id="clear-filters">Reset</button>
@@ -86,43 +86,37 @@
                         </form>
                     </section>
 
-                    <section class="booking-section" aria-labelledby="booking-title">
+                    <!-- Booking form -->
+                    <section class="panel" aria-labelledby="booking-title">
                         <div class="panel-heading">
                             <h2 id="booking-title">Book your stay</h2>
                         </div>
-
                         <form class="booking-form" id="booking-form">
                             <input id="selected-room-id" type="hidden" name="roomId">
-
                             <div class="booking-summary" id="selected-room-summary" aria-live="polite">
                                 <strong>No room selected</strong>
                                 <span>Choose a room to start your booking.</span>
                             </div>
-
                             <div class="field">
                                 <label for="booking-name">Full name</label>
                                 <input id="booking-name" type="text" name="name" autocomplete="name">
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
-
                             <div class="field">
                                 <label for="booking-email">Email</label>
                                 <input id="booking-email" type="email" name="email" autocomplete="email">
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
-
                             <div class="field">
                                 <label for="booking-checkin">Check-in</label>
                                 <input id="booking-checkin" type="date" name="checkin">
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
-
                             <div class="field">
                                 <label for="booking-checkout">Check-out</label>
                                 <input id="booking-checkout" type="date" name="checkout">
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
-
                             <div class="field">
                                 <label for="booking-guests">Guests</label>
                                 <select id="booking-guests" name="guests">
@@ -133,7 +127,6 @@
                                 </select>
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
-
                             <div class="booking-total" id="booking-total" aria-live="polite">Total: Select dates to calculate</div>
                             <button class="button button--primary" type="submit">Reserve now</button>
                             <p class="form-feedback" id="booking-feedback" aria-live="polite"></p>
@@ -141,6 +134,7 @@
                     </section>
                 </aside>
 
+                <!-- Rooms grid (right side) -->
                 <section class="listing-panel" aria-labelledby="room-list-title">
                     <div class="section-heading section-heading--compact">
                         <div>
@@ -148,8 +142,8 @@
                             <h2 id="room-list-title">Choose a room</h2>
                         </div>
                     </div>
-
                     <div class="reservation-grid" id="room-grid">
+                        <!-- Room 1 -->
                         <article class="room-listing" data-room-id="room-1" data-price="2800" data-guests="2" data-type="suite">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -198,6 +192,7 @@
                             </div>
                         </article>
 
+                        <!-- Room 2 -->
                         <article class="room-listing" data-room-id="room-2" data-price="3000" data-guests="2" data-type="studio">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -246,6 +241,7 @@
                             </div>
                         </article>
 
+                        <!-- Room 3 -->
                         <article class="room-listing" data-room-id="room-3" data-price="3200" data-guests="2" data-type="suite">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -294,6 +290,7 @@
                             </div>
                         </article>
 
+                        <!-- Room 4 -->
                         <article class="room-listing" data-room-id="room-4" data-price="3400" data-guests="3" data-type="family">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -342,6 +339,7 @@
                             </div>
                         </article>
 
+                        <!-- Room 5 -->
                         <article class="room-listing" data-room-id="room-5" data-price="3600" data-guests="4" data-type="family">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -390,6 +388,7 @@
                             </div>
                         </article>
 
+                        <!-- Room 6 -->
                         <article class="room-listing" data-room-id="room-6" data-price="3800" data-guests="4" data-type="suite">
                             <figure class="room-listing__media">
                                 <div class="carousel" data-carousel>
@@ -439,7 +438,7 @@
                         </article>
                     </div>
                 </section>
-            </section>
+            </div>
         </main>
 
         <footer class="site-footer">
