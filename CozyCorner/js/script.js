@@ -26,7 +26,7 @@ const ROOM_IMAGES = {
 
 const USER_ROLES = { USER: "user", ADMIN: "admin", SUPER_ADMIN: "super_admin" };
 
-// ---------- User persistence (localStorage) ----------
+// ---------- User persistence ----------
 function getDefaultUsers() {
     return {
         admin: { username: "admin", email: "admin@example.com", password: "admin123", role: USER_ROLES.ADMIN },
@@ -34,45 +34,78 @@ function getDefaultUsers() {
         user: { username: "user", email: "user@example.com", password: "user123", role: USER_ROLES.USER }
     };
 }
-
 function getAllUsers() {
     const defaultUsers = getDefaultUsers();
     const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
     return { ...defaultUsers, ...registered };
 }
-
 function saveUser(user) {
     const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
     registered[user.username] = user;
     writeStorage(STORAGE_KEYS.registeredUsers, registered);
 }
 
-// ---------- Global cache for inline views ----------
+// ---------- Global cache ----------
 let cachedViews = {};
 
 document.addEventListener("DOMContentLoaded", () => {
     initializePageState();
     initializeNavigation();
     initializeButtons();
-    initializeAuthPage();      // handles login/register forms
+    initializeAuthPage();
     initializeCarousels();
-    initializeDashboardView(); // only runs on user.html
+    initializeDashboardView();
     updateNavigationForSession();
     initializeStaticLogout();
-    // Reservation and contact forms are loaded on-demand inside views
+
+    const currentPage = getCurrentPageName();
+    if (currentPage === "reservation.html") {
+        initializeReservationPage();
+    } else if (currentPage === "contactus.html") {
+        initializeContactForm();
+    }
 });
 
-// ---------- Core helpers ----------
+// ---------- Notification system ----------
+function showNotification(type, message, duration = 4000) {
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.setAttribute('aria-live', 'polite');
+    toast.innerHTML = `
+        <div class="toast-icon">${type === 'success' ? '✓' : (type === 'error' ? '⚠' : 'ℹ')}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" aria-label="Close">&times;</button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    });
+    if (duration > 0) {
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, duration);
+    }
+}
+
+// ---------- Core ----------
 function initializePageState() {
     requestAnimationFrame(() => document.body.classList.add("is-loaded"));
 }
-
 function initializeNavigation() {
     const currentPath = getCurrentPageName();
     const links = document.querySelectorAll(".site-links a");
     const navToggle = document.querySelector(".nav-toggle");
     const menu = document.querySelector(".site-links");
-
     links.forEach(link => {
         const href = link.getAttribute("href");
         const isCurrent = href === currentPath;
@@ -80,14 +113,12 @@ function initializeNavigation() {
         if (isCurrent) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
     });
-
     if (navToggle && menu) {
         navToggle.addEventListener("click", () => {
             const isOpen = menu.classList.toggle("is-open");
             navToggle.setAttribute("aria-expanded", String(isOpen));
         });
     }
-
     const navigableLinks = document.querySelectorAll(".site-links a, .site-logo, a.button:not([data-no-transition])");
     navigableLinks.forEach(link => {
         link.addEventListener("click", (event) => {
@@ -99,7 +130,6 @@ function initializeNavigation() {
         });
     });
 }
-
 function initializeButtons() {
     document.querySelectorAll(".button").forEach(button => {
         button.addEventListener("pointerdown", () => button.classList.add("is-pressed"));
@@ -109,60 +139,53 @@ function initializeButtons() {
     });
 }
 
-// ---------- Authentication (persistent) ----------
+// ---------- Auth ----------
 function initializeAuthPage() {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
     if (!loginForm || !registerForm) return;
-
     bindFieldValidation(loginForm);
     bindFieldValidation(registerForm);
-
     loginForm.addEventListener("submit", (e) => { e.preventDefault(); handleLogin(loginForm); });
     registerForm.addEventListener("submit", (e) => { e.preventDefault(); handleRegistration(registerForm, loginForm); });
 }
-
 function handleLogin(form) {
     const username = getFieldValue(form, "username");
     const password = getFieldValue(form, "password");
     const feedback = document.getElementById("login-feedback");
-
     if (!validateRequired(form, "username", username, "Enter your username.") ||
         !validateRequired(form, "password", password, "Enter your password.")) {
         setFeedback(feedback, "error", "Please complete the login form.");
+        showNotification("error", "Please complete all fields.");
         return;
     }
-
     const allUsers = getAllUsers();
     const matchedUser = allUsers[username];
-
     if (!matchedUser || matchedUser.password !== password) {
         setFeedback(feedback, "error", "Invalid username or password.");
+        showNotification("error", "Invalid credentials.");
         return;
     }
-
     writeSession(STORAGE_KEYS.session, {
         username: matchedUser.username,
         email: matchedUser.email,
         role: matchedUser.role
     });
     setFeedback(feedback, "success", `Welcome back, ${matchedUser.username}. Redirecting...`);
+    showNotification("success", `Welcome back, ${matchedUser.username}!`);
     setTimeout(() => { window.location.href = "user.html"; }, 600);
 }
-
 function handleRegistration(registerForm, loginForm) {
     const username = getFieldValue(registerForm, "username");
     const email = getFieldValue(registerForm, "email");
     const password = getFieldValue(registerForm, "password");
     const confirmPassword = getFieldValue(registerForm, "confirm-password");
     const feedback = document.getElementById("register-feedback");
-
     let isValid = true;
     isValid = validateRequired(registerForm, "username", username, "Choose a username.") && isValid;
     isValid = validateEmailField(registerForm, "email", email) && isValid;
     isValid = validatePassword(registerForm, "password", password) && isValid;
     isValid = validateConfirmPassword(registerForm, password, confirmPassword) && isValid;
-
     const allUsers = getAllUsers();
     if (allUsers[username]) {
         setFieldState(registerForm, "username", "error", "That username is already registered.");
@@ -172,37 +195,26 @@ function handleRegistration(registerForm, loginForm) {
         setFieldState(registerForm, "email", "error", "That email is already registered.");
         isValid = false;
     }
-
     if (!isValid) {
         setFeedback(feedback, "error", "Please review the registration fields.");
+        showNotification("error", "Registration failed. Check your inputs.");
         return;
     }
-
-    const newUser = {
-        username,
-        email,
-        password,
-        role: USER_ROLES.USER
-    };
+    const newUser = { username, email, password, role: USER_ROLES.USER };
     saveUser(newUser);
-
-    // Auto-login after registration
     writeSession(STORAGE_KEYS.session, { username, email, role: USER_ROLES.USER });
-
     registerForm.reset();
     clearFormState(registerForm);
     setFeedback(feedback, "success", `Welcome, ${username}! Redirecting to your dashboard...`);
-
     const loginUsername = loginForm.elements.namedItem("username");
     if (loginUsername) loginUsername.value = username;
-
+    showNotification("success", `Account created! Welcome ${username}.`);
     setTimeout(() => { window.location.href = "user.html"; }, 800);
 }
 
-// ---------- Dashboard inline view system (only for user.html) ----------
+// ---------- Dashboard view ----------
 function initializeDashboardView() {
     if (!window.location.pathname.includes("user.html")) return;
-
     const navBtns = document.querySelectorAll('.dashboard-nav-btn');
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -213,20 +225,16 @@ function initializeDashboardView() {
             loadView(view);
         });
     });
-    loadView('dashboard'); // default
+    loadView('dashboard');
 }
-
 async function loadView(viewName) {
     const container = document.getElementById('dynamic-view');
     if (!container) return;
-
     if (viewName === 'dashboard') {
         renderDashboardView();
         return;
     }
-
     container.innerHTML = '<div style="text-align: center; padding: 40px;">Loading...</div>';
-
     let htmlContent = cachedViews[viewName];
     if (!htmlContent) {
         const page = viewName === 'reservations' ? 'reservation.html' : 'contactus.html';
@@ -239,7 +247,6 @@ async function loadView(viewName) {
             return;
         }
     }
-
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const mainContent = doc.querySelector('main.site-main');
@@ -247,10 +254,8 @@ async function loadView(viewName) {
         container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--error);">Invalid page structure.</div>';
         return;
     }
-
     container.innerHTML = '';
     container.appendChild(mainContent.cloneNode(true));
-
     if (viewName === 'reservations') {
         initializeReservationPage();
     } else if (viewName === 'contact') {
@@ -258,80 +263,87 @@ async function loadView(viewName) {
     }
     initializeCarousels();
 }
-
 function renderDashboardView() {
     const container = document.getElementById('dynamic-view');
     if (!container) return;
-
     const session = readSession(STORAGE_KEYS.session);
     if (!session) {
         window.location.href = "login.html";
         return;
     }
-
     container.innerHTML = `
-        <div class="user-dashboard" style="display: grid; grid-template-columns: 280px minmax(0, 1fr) 300px; gap: 15px; align-items: start;">
+        <div class="user-dashboard">
             <section class="panel" style="text-align: center;">
-                <div class="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 2.4rem; font-weight: 700; color: #ffffff;">
-                    <span>${session.username.charAt(0).toUpperCase()}</span>
-                </div>
+                <div class="profile-avatar">${session.username.charAt(0).toUpperCase()}</div>
                 <p class="eyebrow" style="margin-bottom: 4px;">Welcome back,</p>
-                <h2 style="font-size: 1.6rem; letter-spacing: -0.03em;">${session.username}</h2>
+                <h2 style="font-size: 1.5rem;">${session.username}</h2>
             </section>
             <section class="panel">
                 <div class="panel-heading"><div><p class="eyebrow">Current Trip</p><h3>Your Stay</h3></div></div>
-                <div id="current-trip-content" style="padding: 6px 0;"><p style="color: var(--text-soft); text-align: center; padding: 36px 24px;">No active reservation. Your next getaway starts here.</p></div>
+                <div id="current-trip-content" style="padding: 6px 0;"><p style="color: var(--text-soft); text-align: center; padding: 30px 20px;">No active reservation.</p></div>
             </section>
             <section class="panel">
                 <div class="panel-heading"><div><p class="eyebrow">Account</p><h3>Quick Links</h3></div></div>
                 <nav style="display: grid; gap: 8px;">
-                    <a href="#" class="account-link" data-section="personal" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); text-decoration: none; color: var(--text);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <a href="#" class="account-link" data-section="personal" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <span style="font-weight: 500;">Personal info</span>
                     </a>
-                    <a href="#" class="account-link" data-section="payments" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); text-decoration: none; color: var(--text);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    <a href="#" class="account-link" data-section="payments" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                         <span style="font-weight: 500;">Payments</span>
                     </a>
                 </nav>
-                <div id="account-detail" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); min-height: 60px;">
-                    <p style="font-size: 0.88rem; color: var(--text-soft); text-align: center;">Select an option above</p>
+                <div id="account-detail" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.05); min-height: 50px;">
+                    <p style="font-size: 0.85rem; color: var(--text-soft); text-align: center;">Select an option</p>
                 </div>
             </section>
         </div>
     `;
-
     document.querySelectorAll('.account-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             showAccountDetail(link.dataset.section, session, document.getElementById('account-detail'));
         });
     });
-
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const userReservations = reservations.filter(r => r.email === (session.email || ""));
     const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
-
     const tripContent = document.getElementById('current-trip-content');
     if (activeReservation && tripContent) {
+        let pricePerNight = activeReservation.price;
+        if (!pricePerNight && activeReservation.total && activeReservation.nights) {
+            pricePerNight = activeReservation.total / activeReservation.nights;
+        }
+        const priceDisplay = pricePerNight ? formatCurrency(pricePerNight) : 'PHP 0';
         tripContent.innerHTML = `
             <div style="display: grid; gap: 12px;">
-                <div><h4 style="font-size: 1.2rem; margin:0;">${activeReservation.roomName} - ${activeReservation.title}</h4><p style="margin:4px 0 0; font-size:0.9rem; color:var(--text-soft);">${formatCurrency(activeReservation.price)}/night</p></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(147,99,63,0.06); padding:12px; border-radius:var(--radius-md);">
-                    <div><span style="font-size:0.8rem;">Check-in</span><div style="font-weight:600;">${formatDate(activeReservation.checkin)}</div></div>
-                    <div><span style="font-size:0.8rem;">Check-out</span><div style="font-weight:600;">${formatDate(activeReservation.checkout)}</div></div>
-                    <div><span style="font-size:0.8rem;">Guests</span><div style="font-weight:600;">${activeReservation.guests}</div></div>
-                    <div><span style="font-size:0.8rem;">Nights</span><div style="font-weight:600;">${activeReservation.nights}</div></div>
+                <div><h4 style="font-size: 1.1rem; margin:0;">${activeReservation.roomName} - ${activeReservation.title}</h4><p style="margin:4px 0 0; font-size:0.85rem;">${priceDisplay}/night</p></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(147,99,63,0.06); padding:10px; border-radius:var(--radius-md);">
+                    <div><span style="font-size:0.75rem;">Check-in</span><div style="font-weight:600;">${formatDate(activeReservation.checkin)}</div></div>
+                    <div><span style="font-size:0.75rem;">Check-out</span><div style="font-weight:600;">${formatDate(activeReservation.checkout)}</div></div>
+                    <div><span style="font-size:0.75rem;">Guests</span><div style="font-weight:600;">${activeReservation.guests}</div></div>
+                    <div><span style="font-size:0.75rem;">Nights</span><div style="font-weight:600;">${activeReservation.nights}</div></div>
                 </div>
-                <div><button id="viewPropertyBtn" class="button button--secondary" style="width:100%;">View Property</button></div>
+                <div class="form-action-group"><button id="viewPropertyBtn" class="button button--secondary" style="flex:1;">View Property</button><button id="cancelDashboardBookingBtn" class="button button--danger" style="flex:1;">Cancel Booking</button></div>
             </div>
         `;
         setupPropertyDropdown(activeReservation);
-    } else if (tripContent) {
-        tripContent.innerHTML = `<p style="color: var(--text-soft); text-align: center; padding: 36px 24px;">No active reservation. Your next getaway starts here.</p>`;
+        const cancelBtn = document.getElementById('cancelDashboardBookingBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                if (confirm(`Cancel your booking for ${activeReservation.roomName}? This action cannot be undone.`)) {
+                    const updated = reservations.filter(r => !(r.roomId === activeReservation.roomId && r.checkin === activeReservation.checkin && r.email === activeReservation.email));
+                    writeStorage(STORAGE_KEYS.reservations, updated);
+                    showNotification("success", "Booking cancelled successfully.");
+                    renderDashboardView();
+                }
+            });
+        }
+    } else {
+        tripContent.innerHTML = `<p style="color: var(--text-soft); text-align: center; padding: 30px 20px;">No active reservation. Your next getaway starts here.</p>`;
     }
 }
-
 function setupPropertyDropdown(reservation) {
     let dropdown = document.getElementById("propertyDropdownContainer");
     if (!dropdown) {
@@ -355,8 +367,8 @@ function setupPropertyDropdown(reservation) {
                         <div class="carousel-track">
                             ${images.map((img, idx) => `<div class="carousel-slide ${idx===0?'is-active':''}"><img src="${img}" alt="${room.name}"></div>`).join('')}
                         </div>
-                        <button class="carousel-btn carousel-btn--prev" type="button">‹</button>
-                        <button class="carousel-btn carousel-btn--next" type="button">›</button>
+                        <button class="carousel-btn carousel-btn--prev">‹</button>
+                        <button class="carousel-btn carousel-btn--next">›</button>
                         <div class="carousel-dots"></div>
                     </div>
                 `;
@@ -366,7 +378,7 @@ function setupPropertyDropdown(reservation) {
                     <div class="property-detail-grid">
                         <div class="property-carousel">${carouselHtml}</div>
                         <div class="property-info">
-                            <h3 style="margin-bottom:12px;">${room.name} – ${room.title}</h3>
+                            <h3>${room.name} – ${room.title}</h3>
                             <div class="price-badges">
                                 <span class="price-tag">${formatCurrency(room.price)}/night</span>
                                 <span class="price-tag">👥 Up to ${room.guests}</span>
@@ -393,7 +405,6 @@ function setupPropertyDropdown(reservation) {
         }
     };
 }
-
 function showAccountDetail(section, session, container) {
     if (!container) return;
     if (section === "personal") {
@@ -403,20 +414,17 @@ function showAccountDetail(section, session, container) {
     }
 }
 
-// ---------- Reservation page functions (used when view is loaded) ----------
+// ---------- Reservation page (with enhanced cancel & notifications) ----------
 function initializeReservationPage() {
     const filterForm = document.getElementById("filter-form");
     const bookingForm = document.getElementById("booking-form");
     const roomCards = Array.from(document.querySelectorAll(".room-listing"));
     const clearFilters = document.getElementById("clear-filters");
     if (!filterForm || !bookingForm || roomCards.length === 0) return;
-
     setDateMinimums();
     bindFieldValidation(bookingForm);
-
     filterForm.addEventListener("submit", (e) => { e.preventDefault(); applyRoomFilters(filterForm, roomCards); });
-    clearFilters?.addEventListener("click", () => { filterForm.reset(); applyRoomFilters(filterForm, roomCards); });
-
+    clearFilters?.addEventListener("click", () => { filterForm.reset(); applyRoomFilters(filterForm, roomCards); showNotification("info", "Filters cleared."); });
     roomCards.forEach(card => card.addEventListener("click", (e) => {
         if (e.target.closest(".reserve-trigger")) return;
         selectRoom(card.dataset.roomId, roomCards, bookingForm);
@@ -431,11 +439,49 @@ function initializeReservationPage() {
         field?.addEventListener("input", () => updateBookingTotal(bookingForm));
     });
     bookingForm.addEventListener("submit", (e) => { e.preventDefault(); handleBookingSubmit(bookingForm, roomCards); });
+    
+    // Enhanced cancel button
+    const existingCancel = bookingForm.querySelector(".cancel-booking-btn");
+    if (!existingCancel) {
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "button button--danger cancel-booking-btn";
+        cancelBtn.textContent = "Cancel selection";
+        const submitBtn = bookingForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            const group = document.createElement("div");
+            group.className = "form-action-group";
+            submitBtn.parentNode.insertBefore(group, submitBtn);
+            group.appendChild(submitBtn);
+            group.appendChild(cancelBtn);
+        } else {
+            bookingForm.appendChild(cancelBtn);
+        }
+        cancelBtn.addEventListener("click", () => {
+            if (confirm("Clear selected room and reset booking form?")) {
+                const roomIdField = bookingForm.elements.namedItem("roomId");
+                if (roomIdField) roomIdField.value = "";
+                const summary = document.getElementById("selected-room-summary");
+                if (summary) summary.innerHTML = `<strong>No room selected</strong><span>Choose a room to start your booking.</span>`;
+                roomCards.forEach(card => card.classList.remove("is-selected"));
+                writeStorage(STORAGE_KEYS.pendingRoom, "");
+                const totalField = document.getElementById("booking-total");
+                if (totalField) totalField.textContent = "Total: Select dates and room";
+                ["checkin", "checkout", "guests"].forEach(fname => {
+                    const f = bookingForm.elements.namedItem(fname);
+                    if (f) f.value = "";
+                    clearFieldState(bookingForm, fname);
+                });
+                const fb = document.getElementById("booking-feedback");
+                setFeedback(fb, "success", "Booking selection cleared.");
+                showNotification("info", "Booking selection cleared.");
+            }
+        });
+    }
     applyRoomFilters(filterForm, roomCards);
     preloadSelectedRoom(roomCards, bookingForm);
     prefillBookingFromSession();
 }
-
 function handleBookingSubmit(form, roomCards) {
     const roomId = getFieldValue(form, "roomId");
     const name = getFieldValue(form, "name");
@@ -445,10 +491,10 @@ function handleBookingSubmit(form, roomCards) {
     const guests = getFieldValue(form, "guests");
     const room = ROOM_DATA[roomId];
     const feedback = document.getElementById("booking-feedback");
-
     let isValid = true;
     if (!room) {
         setFeedback(feedback, "error", "Select a room before submitting your reservation.");
+        showNotification("error", "Please select a room.");
         return;
     }
     isValid = validateRequired(form, "name", name, "Please enter your full name.") && isValid;
@@ -456,7 +502,6 @@ function handleBookingSubmit(form, roomCards) {
     isValid = validateRequired(form, "checkin", checkin, "Select a check-in date.") && isValid;
     isValid = validateRequired(form, "checkout", checkout, "Select a check-out date.") && isValid;
     isValid = validateRequired(form, "guests", guests, "Select the number of guests.") && isValid;
-
     if (checkin && checkout) {
         const nights = calculateNights(checkin, checkout);
         if (nights <= 0) {
@@ -472,30 +517,35 @@ function handleBookingSubmit(form, roomCards) {
     }
     if (!isValid) {
         setFeedback(feedback, "error", "Please review the booking details.");
+        showNotification("error", "Please fix the highlighted errors.");
         return;
     }
-
     const nights = calculateNights(checkin, checkout);
     const total = nights * room.price;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     reservations.push({
-        roomId, roomName: room.name, title: room.title, name, email, checkin, checkout,
-        guests: Number(guests), nights, total, createdAt: new Date().toISOString()
+        roomId, roomName: room.name, title: room.title, price: room.price,
+        name, email, checkin, checkout, guests: Number(guests), nights, total, createdAt: new Date().toISOString()
     });
     writeStorage(STORAGE_KEYS.reservations, reservations);
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
-    setFeedback(feedback, "success", `Reservation request saved for ${room.name}. Estimated total: ${formatCurrency(total)}.`);
-    clearNonRoomBookingFields(form);
+    setFeedback(feedback, "success", `Reservation saved for ${room.name}. Total: ${formatCurrency(total)}.`);
+    showNotification("success", `Reservation confirmed! Total: ${formatCurrency(total)}.`);
+    // Clear only date/guests, keep name/email
+    ["checkin", "checkout", "guests"].forEach(fname => {
+        const field = form.elements.namedItem(fname);
+        if (field) field.value = "";
+        clearFieldState(form, fname);
+    });
     highlightSelectedRoom(roomId, roomCards);
     updateBookingTotal(form);
 }
-
 function applyRoomFilters(form, roomCards) {
     const guestValue = getFieldValue(form, "guests");
     const typeValue = getFieldValue(form, "type");
     const priceValue = getFieldValue(form, "price");
     let visibleCount = 0;
-    roomCards.forEach((card) => {
+    roomCards.forEach(card => {
         const matchesGuests = !guestValue || Number(card.dataset.guests) >= Number(guestValue);
         const matchesType = !typeValue || card.dataset.type === typeValue;
         const matchesPrice = !priceValue || Number(card.dataset.price) <= Number(priceValue);
@@ -507,7 +557,6 @@ function applyRoomFilters(form, roomCards) {
     const message = visibleCount === 0 ? "No rooms match the selected filters." : `Showing ${visibleCount} room${visibleCount > 1 ? "s" : ""}.`;
     setFeedback(feedback, visibleCount === 0 ? "error" : "success", message);
 }
-
 function preloadSelectedRoom(roomCards, form) {
     const params = new URLSearchParams(window.location.search);
     const roomFromQuery = params.get("room");
@@ -515,43 +564,33 @@ function preloadSelectedRoom(roomCards, form) {
     const initialRoomId = roomFromQuery || roomFromStorage || roomCards[0]?.dataset.roomId;
     if (initialRoomId) {
         selectRoom(initialRoomId, roomCards, form);
-        if (roomFromQuery) {
-            scrollToRoomCard(initialRoomId);
-        }
+        if (roomFromQuery) scrollToRoomCard(initialRoomId);
     }
 }
-
 function scrollToRoomCard(roomId) {
     const targetCard = document.querySelector(`.room-listing[data-room-id="${roomId}"]`);
     if (targetCard) {
         setTimeout(() => {
             targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
-            targetCard.style.transition = "box-shadow 0.3s ease";
             targetCard.style.boxShadow = "0 0 0 3px var(--primary), 0 20px 40px rgba(0,0,0,0.15)";
-            setTimeout(() => {
-                targetCard.style.boxShadow = "";
-            }, 1500);
+            setTimeout(() => { targetCard.style.boxShadow = ""; }, 1500);
         }, 300);
     }
 }
-
 function selectRoom(roomId, roomCards, form) {
     const room = ROOM_DATA[roomId];
     if (!room) return;
     highlightSelectedRoom(roomId, roomCards);
     form.elements.namedItem("roomId").value = roomId;
     const summary = document.getElementById("selected-room-summary");
-    if (summary) {
-        summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
-    }
+    if (summary) summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
     updateBookingTotal(form);
+    showNotification("info", `${room.name} selected. Fill in your dates.`);
 }
-
 function highlightSelectedRoom(roomId, roomCards) {
-    roomCards.forEach((card) => card.classList.toggle("is-selected", card.dataset.roomId === roomId));
+    roomCards.forEach(card => card.classList.toggle("is-selected", card.dataset.roomId === roomId));
 }
-
 function updateBookingTotal(form) {
     const room = ROOM_DATA[getFieldValue(form, "roomId")];
     const checkin = getFieldValue(form, "checkin");
@@ -568,7 +607,6 @@ function updateBookingTotal(form) {
     }
     totalField.textContent = `Total: ${formatCurrency(nights * room.price)} for ${nights} night${nights > 1 ? "s" : ""}`;
 }
-
 function setDateMinimums() {
     const today = new Date();
     const formatted = today.toISOString().split("T")[0];
@@ -576,14 +614,12 @@ function setDateMinimums() {
     const checkout = document.getElementById("booking-checkout");
     if (checkin) {
         checkin.min = formatted;
-        checkin.addEventListener("change", () => {
-            if (checkout) checkout.min = checkin.value || formatted;
-        });
+        checkin.addEventListener("change", () => { if (checkout) checkout.min = checkin.value || formatted; });
     }
     if (checkout) checkout.min = formatted;
 }
 
-// ---------- Contact form (used when view is loaded) ----------
+// ---------- Contact form ----------
 function initializeContactForm() {
     const form = document.getElementById("contact-form");
     if (!form) return;
@@ -593,15 +629,16 @@ function initializeContactForm() {
         const values = { name: getFieldValue(form,"name"), email: getFieldValue(form,"email"), message: getFieldValue(form,"message") };
         const isValid = validateRequired(form,"name",values.name,"Enter name") && validateEmailField(form,"email",values.email) && validateRequired(form,"message",values.message,"Enter message");
         const feedback = document.getElementById("contact-feedback");
-        if (!isValid) { setFeedback(feedback,"error","Complete the form."); return; }
+        if (!isValid) { setFeedback(feedback,"error","Complete the form."); showNotification("error","Please fill all fields correctly."); return; }
         const msgs = readStorage(STORAGE_KEYS.contact, []);
         msgs.push({...values, submittedAt: new Date().toISOString()});
         writeStorage(STORAGE_KEYS.contact, msgs);
         form.reset(); clearFormState(form); setFeedback(feedback,"success","Message saved.");
+        showNotification("success","Thank you! Your message has been sent.");
     });
 }
 
-// ---------- Validation and form helpers ----------
+// ---------- Validation helpers (unchanged, same as before) ----------
 function bindFieldValidation(form) {
     form.querySelectorAll("input, select, textarea").forEach((field) => {
         field.addEventListener("focus", () => field.classList.add("is-focused"));
@@ -614,13 +651,12 @@ function bindFieldValidation(form) {
         });
     });
 }
-
 function validateFieldOnBlur(form, field) {
     const value = field.value.trim();
     const fieldName = field.name;
     if (fieldName === "email") {
-        if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
-        if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Enter a valid email address."); return false; }
+        if (!value) { setFieldState(form, fieldName, "error", "Required."); return false; }
+        if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Valid email required."); return false; }
     }
     if (fieldName === "password" && form.id === "register-form") return validatePassword(form, fieldName, value);
     if (fieldName === "confirm-password" && form.id === "register-form") {
@@ -629,62 +665,55 @@ function validateFieldOnBlur(form, field) {
     }
     if (fieldName === "checkout" && form.id === "booking-form") {
         const checkin = getFieldValue(form, "checkin");
-        if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
+        if (!value) { setFieldState(form, fieldName, "error", "Required."); return false; }
         if (checkin && calculateNights(checkin, value) <= 0) {
             setFieldState(form, fieldName, "error", "Check-out must be after check-in.");
             return false;
         }
     }
-    if (!value) { setFieldState(form, fieldName, "error", "This field is required."); return false; }
+    if (!value) { setFieldState(form, fieldName, "error", "Required."); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
-
 function validateRequired(form, fieldName, value, message) {
     if (!value) { setFieldState(form, fieldName, "error", message); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
-
 function validateEmailField(form, fieldName, value) {
-    if (!validateRequired(form, fieldName, value, "Please enter your email address.")) return false;
-    if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Enter a valid email address."); return false; }
+    if (!validateRequired(form, fieldName, value, "Email required.")) return false;
+    if (!isValidEmail(value)) { setFieldState(form, fieldName, "error", "Valid email required."); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
-
 function validatePassword(form, fieldName, value) {
-    if (!validateRequired(form, fieldName, value, "Please create a password.")) return false;
-    if (value.length < 6) { setFieldState(form, fieldName, "error", "Password must be at least 6 characters."); return false; }
+    if (!validateRequired(form, fieldName, value, "Password required.")) return false;
+    if (value.length < 6) { setFieldState(form, fieldName, "error", "Minimum 6 characters."); return false; }
     clearFieldState(form, fieldName);
     return true;
 }
-
 function validateConfirmPassword(form, password, confirmPassword) {
-    if (!validateRequired(form, "confirm-password", confirmPassword, "Please confirm your password.")) return false;
+    if (!validateRequired(form, "confirm-password", confirmPassword, "Confirm password.")) return false;
     if (password !== confirmPassword) { setFieldState(form, "confirm-password", "error", "Passwords do not match."); return false; }
     clearFieldState(form, "confirm-password");
     return true;
 }
-
 function clearNonRoomBookingFields(form) {
-    ["name", "email", "checkin", "checkout", "guests"].forEach((fieldName) => {
+    ["name", "email", "checkin", "checkout", "guests"].forEach(fieldName => {
         const field = form.elements.namedItem(fieldName);
         if (field) field.value = "";
         clearFieldState(form, fieldName);
     });
 }
-
 function clearFormState(form) {
-    form.querySelectorAll(".field-message").forEach((message) => {
-        message.textContent = "";
-        message.classList.remove("is-visible", "is-error", "is-success");
+    form.querySelectorAll(".field-message").forEach(msg => {
+        msg.textContent = "";
+        msg.classList.remove("is-visible", "is-error", "is-success");
     });
-    form.querySelectorAll("input, select, textarea").forEach((field) => {
+    form.querySelectorAll("input, select, textarea").forEach(field => {
         field.classList.remove("is-error", "is-focused");
     });
 }
-
 function setFieldState(form, fieldName, state, message) {
     const field = form.elements.namedItem(fieldName);
     const container = field?.closest(".field");
@@ -696,7 +725,6 @@ function setFieldState(form, fieldName, state, message) {
     fieldMessage.classList.toggle("is-error", state === "error");
     fieldMessage.classList.toggle("is-success", state === "success");
 }
-
 function clearFieldState(form, fieldName) {
     const field = form.elements.namedItem(fieldName);
     const container = field?.closest(".field");
@@ -707,7 +735,6 @@ function clearFieldState(form, fieldName) {
         fieldMessage.classList.remove("is-visible", "is-error", "is-success");
     }
 }
-
 function setFeedback(element, state, message) {
     if (!element) return;
     element.textContent = message;
@@ -715,32 +742,26 @@ function setFeedback(element, state, message) {
     element.classList.toggle("is-error", state === "error");
     element.classList.toggle("is-success", state === "success");
 }
-
 function getFieldValue(form, fieldName) {
     const field = form.elements.namedItem(fieldName);
     return typeof field?.value === "string" ? field.value.trim() : "";
 }
-
 function calculateNights(checkin, checkout) {
     const start = new Date(checkin);
     const end = new Date(checkout);
     return Math.round((end.getTime() - start.getTime()) / 86400000);
 }
-
 function formatCurrency(value) {
+    if (value === undefined || value === null || isNaN(value)) return 'PHP 0';
     return new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 }).format(value);
 }
-
 function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
-
 function formatDate(str) {
     const date = new Date(str);
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
-
-// ---------- Carousel ----------
 function initializeCarousels() {
     const carousels = document.querySelectorAll("[data-carousel]");
     if (!carousels.length) return;
@@ -780,31 +801,23 @@ function initializeCarousels() {
         c.onmouseleave = start;
     });
 }
-
-// ---------- Storage helpers ----------
 function readStorage(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function writeStorage(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 function readSession(key, fallback) { try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function writeSession(key, val) { sessionStorage.setItem(key, JSON.stringify(val)); }
 function getCurrentPageName() { const p = window.location.pathname; return p.substring(p.lastIndexOf('/')+1) || "index.html"; }
 function shouldHandleNavigation(event, href) { if (!href || href.startsWith("#") || href.startsWith("javascript:")) return false; if (event.ctrlKey || event.metaKey || event.shiftKey) return false; return !event.defaultPrevented; }
-
-// ---------- Navigation update (places Dashboard before Logout) ----------
 function updateNavigationForSession() {
     const session = readSession(STORAGE_KEYS.session);
     const navList = document.querySelector('.site-links');
     if (!navList) return;
-
-    let loginRegisterItem = null;
-    let dashboardItem = null;
-    let logoutItem = null;
+    let loginRegisterItem = null, dashboardItem = null, logoutItem = null;
     for (const li of navList.querySelectorAll('li')) {
         const link = li.querySelector('a');
         if (link && link.getAttribute('href') === 'login.html') loginRegisterItem = li;
         if (link && link.getAttribute('href') === 'user.html') dashboardItem = li;
         if (link && link.id === 'logout-link') logoutItem = li;
     }
-
     if (session && session.username) {
         if (!dashboardItem) {
             const newLi = document.createElement('li');
@@ -829,7 +842,6 @@ function updateNavigationForSession() {
         if (dashboardItem) dashboardItem.remove();
     }
 }
-
 function prefillBookingFromSession() {
     const session = readSession(STORAGE_KEYS.session);
     if (!session) return;
@@ -838,7 +850,6 @@ function prefillBookingFromSession() {
     if (nameField && !nameField.value) nameField.value = session.username;
     if (emailField && !emailField.value) emailField.value = session.email;
 }
-
 function initializeStaticLogout() {
     const logoutLink = document.getElementById('logout-link');
     if (logoutLink) {
