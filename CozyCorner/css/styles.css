@@ -220,8 +220,12 @@ figure {
     color: #ffffff;
 }
 
+/* Hamburger button */
 .nav-toggle {
     display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 44px;
     height: 44px;
     padding: 0;
@@ -229,6 +233,7 @@ figure {
     border-radius: var(--radius-full);
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
+    cursor: pointer;
 }
 
 .nav-toggle:hover {
@@ -240,7 +245,7 @@ figure {
     display: block;
     width: 20px;
     height: 2px;
-    margin: 5px auto;
+    margin: 3px 0;
     background: currentColor;
     border-radius: var(--radius-full);
 }
@@ -657,6 +662,7 @@ figure {
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--primary);
+    word-break: break-word;
 }
 
 h1, h2, h3, h4 {
@@ -669,11 +675,13 @@ h1 {
     font-size: clamp(2.5rem, 5vw, 4.2rem);
     margin-bottom: var(--space-sm);
     line-height: 1.2;
+    word-break: break-word;
 }
 
 h2 {
     font-size: clamp(1.8rem, 3.5vw, 2.8rem);
     margin-bottom: var(--space-sm);
+    word-break: break-word;
 }
 
 h3 {
@@ -980,12 +988,14 @@ p + p {
     position: relative;
     z-index: 2;
     max-width: 720px;
+    width: 100%;
     margin: 0 auto;
     padding: var(--space-xl) var(--space-lg);
     background: rgba(255, 253, 245, 0.88);
     backdrop-filter: blur(12px);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
+    overflow-wrap: break-word;
 }
 
 .hero--fullscreen .eyebrow,
@@ -996,6 +1006,7 @@ p + p {
 .hero--fullscreen .hero-copy {
     color: var(--text-soft);
     margin-bottom: var(--space-md);
+    word-break: break-word;
 }
 
 /* ---------- UTILITIES ---------- */
@@ -1035,6 +1046,7 @@ p + p {
     }
     .nav-toggle {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
     }
@@ -1079,6 +1091,7 @@ p + p {
     .hero-content {
         padding: var(--space-lg) var(--space-md);
         margin: 0 var(--space-md);
+        max-width: 100%;
     }
 }
 
@@ -1108,8 +1121,266 @@ p + p {
     }
     .hero-content {
         padding: var(--space-md) var(--space-sm);
+        margin: 0 var(--space-sm);
     }
     .hero--fullscreen h1 {
         font-size: 1.9rem;
+    }
+    .dashboard-nav {
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+    .dashboard-nav-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem var(--space-md);
+        flex: 1 1 auto;
+        text-align: center;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --container-padding: var(--space-sm);
+        --section-gap: 2.5rem;
+    }
+
+    .site-header {
+        top: var(--space-xs);
+        margin-bottom: var(--space-lg);
+    }
+
+    .site-nav {
+        padding: 0.4rem var(--space-sm);
+        border-radius: var(--radius-lg);
+    }
+
+    .site-logo img {
+        height: 40px;
+    }
+
+    .hero--fullscreen {
+        min-height: 50vh;
+        border-radius: var(--radius-lg);
+    }
+    .hero--fullscreen h1 {
+        font-size: 1.5rem;
+    }
+    .hero-content {
+        padding: var(--spac-md) var(--space-sm);
+        margin: 0 var(--space-xs);
+        border-radius: var(--radius-lg);
+        max-width: 100%;
+    }
+    .hero--fullscreen .hero-copy {
+        font-size: 0.85rem;
+    }
+
+    .hero-actions {
+        gap: var(--space-xs);
+    }
+
+    .panel {
+        padding: var(--space-md) var(--space-sm);
+        border-radius: var(--radius-lg);
+    }
+
+    .panel--accent {
+        border-radius: var(--radius-lg);
+    }
+
+    .stay-card__body,
+    .room-listing__body {
+        padding: var(--space-sm);
+        gap: var(--space-xs);
+    }
+
+    .stay-card__header h3,
+    .room-listing__header h3 {
+        font-size: 1.3rem;
+    }
+
+    .price-tag {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.9rem;
+    }
+
+    .feature-list li {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.9rem;
+    }
+
+    .carousel-btn {
+        width: 30px;
+        height: 30px;
+    }
+    .carousel-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .carousel-dots {
+        bottom: 8px;
+        gap: 6px;
+    }
+    .carousel-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.2rem; }
+
+    .eyebrow {
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: none; /* prevent unreadable all-caps on tiny screens */
+    }
+
+    .button {
+        min-height: 44px;
+        padding: 0 var(--space-md);
+        font-size: 0.85rem;
+    }
+
+    .site-footer {
+        margin-top: var(--space-xl);
+        padding: var(--space-sm);
+        font-size: 0.78rem;
+        border-radius: var(--radius-lg);
+    }
+
+    .booking-summary,
+    .booking-total {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.85rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+        min-height: 44px;
+        padding: 0 var(--space-sm);
+        font-size: 0.85rem;
+    }
+
+    .field label {
+        font-size: 0.72rem;
+    }
+
+    .toast-notification {
+        left: var(--space-sm);
+        right: var(--space-sm);
+        transform: translateY(100px);
+        border-radius: var(--radius-md);
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+    .toast-notification.show {
+        transform: translateY(0);
+    }
+
+    .form-action-group {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+    .form-action-group .button {
+        width: 100%;
+    }
+
+    .reservation-layout,
+    .contact-layout,
+    .story-layout,
+    .auth-layout {
+        gap: var(--space-md);
+    }
+
+    .card-grid,
+    .info-grid,
+    .reservation-grid {
+        gap: var(--space-md);
+    }
+
+    .room-listing__header {
+        gap: var(--space-2xs);
+    }
+
+    .listing-subtitle {
+        font-size: 0.72rem;
+    }
+
+    .user-dashboard {
+        gap: var(--space-md);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .property-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .property-carousel {
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        min-height: 200px;
+    }
+    .property-info {
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        padding: var(--space-md) var(--space-sm);
+    }
+}
+
+/* ---------- EXTRA FINE‑TUNING ---------- */
+
+/* Ensure filter and booking button groups have breathing room */
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);          /* was missing a gap */
+    margin-top: var(--space-sm);
+}
+
+/* Booking form’s cancel/reserve group already uses .form-action-group */
+.form-action-group {
+    gap: var(--space-sm);
+}
+
+/* Keep sidebar panels nicely separated on all screens */
+.sidebar-panel {
+    gap: var(--space-xl);
+}
+
+/* Hero content – prevent any overflow and scale text further down */
+@media (max-width: 480px) {
+    .hero--fullscreen .eyebrow {
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+    }
+    .hero--fullscreen h1 {
+        font-size: 1.4rem;
+        line-height: 1.25;
+    }
+    .hero-content {
+        padding: var(--space-md) var(--space-sm);
+    }
+}
+
+/* Extra small devices (e.g., iPhone SE, 320‑374px) */
+@media (max-width: 375px) {
+    .hero--fullscreen {
+        min-height: 55vh;
+    }
+    .hero-content {
+        padding: var(--space-sm) var(--space-sm);
+        margin: 0 var(--space-2xs);
+    }
+    .hero--fullscreen h1 {
+        font-size: 1.2rem;
+    }
+    .hero--fullscreen .eyebrow {
+        font-size: 0.55rem;
     }
 }
