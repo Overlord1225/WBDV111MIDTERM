@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | Manage Rooms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-manage-rooms">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Admin navigation">
+                <a class="site-logo" href="index.html">
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="admin-menu">
+                    <span></span><span></span><span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="admin-menu">
+                    <li><a href="admin.html">Dashboard</a></li>
+                    <li><a href="manageReservations.html">Reservations</a></li>
+                    <li><a href="manageRooms.html" class="is-active">Rooms</a></li>
+                    <li><a href="support.html">Support</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <div class="reservation-layout">
+                <aside class="sidebar-panel">
+                    <section class="panel" aria-labelledby="actions-title">
+                        <div class="panel-heading">
+                            <h2 id="actions-title">Manage Rooms</h2>
+                        </div>
+                        <div class="form-actions">
+                            <button class="button button--primary" id="btn-add-room">Add room</button>
+                            <button class="button button--secondary" id="btn-update-room">Update selected</button>
+                            <button class="button button--danger" id="btn-delete-room">Delete selected</button>
+                        </div>
+                    </section>
+                </aside>
+
+                <section aria-labelledby="rooms-list-title">
+                    <div class="section-heading section-heading--compact">
+                        <div>
+                            <p class="eyebrow">Room inventory</p>
+                            <h2 id="rooms-list-title">All Rooms</h2>
+                        </div>
+                    </div>
+                    <div class="reservation-grid" id="rooms-container">
+                        <!-- dynamically filled -->
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <p>CozyCorner Admin – room management</p>
+        </footer>
+    </div>
+
+    <!-- Room edit/add modal -->
+    <div id="room-modal" class="modal" style="display:none;">
+        <div class="modal-content panel">
+            <div class="panel-heading">
+                <h2 id="room-modal-title">Add Room</h2>
+                <button class="modal-close" id="btn-close-room-modal">&times;</button>
+            </div>
+            <form id="room-form-modal" novalidate>
+                <input type="hidden" name="roomKey" value="">
+                <div class="field">
+                    <label for="room-name">Room ID (e.g., room-7)</label>
+                    <input id="room-name" type="text" name="roomId" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="room-title">Title</label>
+                    <input id="room-title" type="text" name="title" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="room-price">Price (PHP)</label>
+                    <input id="room-price" type="number" name="price" min="0" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="room-guests">Max guests</label>
+                    <input id="room-guests" type="number" name="guests" min="1" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="room-type">Type</label>
+                    <select id="room-type" name="type" required>
+                        <option value="">Select type</option>
+                        <option value="suite">Suite</option>
+                        <option value="studio">Studio</option>
+                        <option value="family">Family</option>
+                    </select>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="room-desc">Description</label>
+                    <textarea id="room-desc" name="description" rows="3" required></textarea>
+                    <p class="field-message"></p>
+                </div>
+                <button class="button button--primary" type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    
+</body>
+</html>

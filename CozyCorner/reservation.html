@@ -118,13 +118,8 @@
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
                             <div class="field">
-                                <label for="booking-guests">Guests</label>
-                                <select id="booking-guests" name="guests">
-                                    <option value="">Select guests</option>
-                                    <option value="1">1 guest</option>
-                                    <option value="2">2 guests</option>
-                                    <option value="3">3+ guests</option>
-                                </select>
+                                <label for="booking-guests">Number of guests</label>
+                                <input id="booking-guests" type="number" name="guests" min="1" placeholder="Enter number of guests">
                                 <p class="field-message" aria-live="polite"></p>
                             </div>
                             <div class="booking-total" id="booking-total" aria-live="polite">Total: Select dates to calculate</div>

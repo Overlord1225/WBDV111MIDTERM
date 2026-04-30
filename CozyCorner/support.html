@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | Admin Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-admin-support">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Admin navigation">
+                <a class="site-logo" href="index.html">
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="admin-menu">
+                    <span></span><span></span><span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="admin-menu">
+                    <li><a href="admin.html">Dashboard</a></li>
+                    <li><a href="manageReservations.html">Reservations</a></li>
+                    <li><a href="manageRooms.html">Rooms</a></li>
+                    <li><a href="support.html" class="is-active">Support</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <section class="stats-grid" aria-label="Support statistics">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-messages">0</div>
+                    <div class="stat-label">Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-issues">0</div>
+                    <div class="stat-label">Open issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-resolved">0</div>
+                    <div class="stat-label">Resolved</div>
+                </div>
+            </section>
+            <section class="panel" aria-labelledby="messages-title">
+                <div class="panel-heading">
+                    <h2 id="messages-title">Messages</h2>
+                </div>
+                <div id="messages-container">
+                    <p style="text-align:center;color:var(--text-soft);padding:30px;">No messages yet.</p>
+                </div>
+                <div style="margin-bottom: var(--space-lg);">
+                <button class="button button--danger" id="btn-clear-messages">Clear all messages</button>
+            </div>
+            </section>
+            
+        </main>
+
+        <footer class="site-footer">
+            <p>CozyCorner Admin – support inbox</p>
+        </footer>
+    </div>
+
+    <script src="js/script.js"></script>
+    
+</body>
+</html>

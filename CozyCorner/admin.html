@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-admin">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Admin navigation">
+                <a class="site-logo" href="index.html">
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="admin-menu">
+                    <span></span><span></span><span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="admin-menu">
+                    <li><a href="admin.html" class="is-active">Dashboard</a></li>
+                    <li><a href="manageReservations.html">Reservations</a></li>
+                    <li><a href="manageRooms.html">Rooms</a></li>
+                    <li><a href="support.html">Support</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+                
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <h1 class="visually-hidden">Admin Dashboard</h1>
+
+            <section class="stats-grid" aria-label="Quick statistics">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-reservations">0</div>
+                    <div class="stat-label">Current reservations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-guests">0</div>
+                    <div class="stat-label">Current guests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-revenue">PHP 0</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            </section>
+            <!-- After the stats-grid section -->
+
+            <section class="panel" aria-labelledby="recent-activities-title">
+                <div class="panel-heading">
+                    <h2 id="recent-activities-title">Recent activities</h2>
+                </div>
+                <div class="activity-log">
+                    <ul class="activity-list" id="activity-log">
+                        <li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>
+                    </ul>
+                    <div style="margin-top: var(--space-md);">
+                        <button class="button button--danger" id="btn-clear-activities">Clear all activities</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>CozyCorner Admin – internal management panel</p>
+        </footer>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

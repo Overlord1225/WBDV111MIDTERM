@@ -1,3 +1,6 @@
+/************************************************************
+ *  CozyCorner – Complete Refactored Front‑End Logic
+ ************************************************************/
 const STORAGE_KEYS = {
     registeredUsers: "cozycorner_registered_users",
     session: "cozycorner-session",
@@ -63,6 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeReservationPage();
     } else if (currentPage === "contactus.html") {
         initializeContactForm();
+    } else if (currentPage === "admin.html") {
+        initAdminDashboard();
+    } else if (currentPage === "manageReservations.html") {
+        initManageReservations();
+    } else if (currentPage === "manageRooms.html") {
+        initManageRooms();
+    } else if (currentPage === "support.html") {
+        initSupport();
+    } else if (currentPage === "superadmin.html") {
+        initSuperAdminDashboard();
+    } else if (currentPage === "manageAdmins.html") {
+        initManageAdmins();
     }
 });
 
@@ -70,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function showNotification(type, message, duration = 4000) {
     const existing = document.querySelector('.toast-notification');
     if (existing) existing.remove();
-
     const toast = document.createElement('div');
     toast.className = `toast-notification toast-${type}`;
     toast.setAttribute('aria-live', 'polite');
@@ -81,7 +95,6 @@ function showNotification(type, message, duration = 4000) {
     `;
     document.body.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 10);
-
     const closeBtn = toast.querySelector('.toast-close');
     closeBtn.addEventListener('click', () => {
         toast.classList.remove('show');
@@ -171,9 +184,11 @@ function handleLogin(form) {
         email: matchedUser.email,
         role: matchedUser.role
     });
+    const redirectTo = (matchedUser.role === USER_ROLES.SUPER_ADMIN) ? 'superadmin.html' :
+                      (matchedUser.role === USER_ROLES.ADMIN) ? 'admin.html' : 'user.html';
     setFeedback(feedback, "success", `Welcome back, ${matchedUser.username}. Redirecting...`);
     showNotification("success", `Welcome back, ${matchedUser.username}!`);
-    setTimeout(() => { window.location.href = "user.html"; }, 600);
+    setTimeout(() => { window.location.href = redirectTo; }, 600);
 }
 function handleRegistration(registerForm, loginForm) {
     const username = getFieldValue(registerForm, "username");
@@ -212,7 +227,7 @@ function handleRegistration(registerForm, loginForm) {
     setTimeout(() => { window.location.href = "user.html"; }, 800);
 }
 
-// ---------- Dashboard view ----------
+// ---------- Dashboard view (user) ----------
 function initializeDashboardView() {
     if (!window.location.pathname.includes("user.html")) return;
     const navBtns = document.querySelectorAll('.dashboard-nav-btn');
@@ -232,6 +247,10 @@ async function loadView(viewName) {
     if (!container) return;
     if (viewName === 'dashboard') {
         renderDashboardView();
+        return;
+    }
+    if (viewName === 'myreservations') {
+        renderMyReservations();
         return;
     }
     container.innerHTML = '<div style="text-align: center; padding: 40px;">Loading...</div>';
@@ -254,14 +273,72 @@ async function loadView(viewName) {
         container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--error);">Invalid page structure.</div>';
         return;
     }
+
+    // Instead of appending the <main> element (which adds duplicate spacing), we extract its children
     container.innerHTML = '';
-    container.appendChild(mainContent.cloneNode(true));
+    const wrapper = document.createElement('div');
+    wrapper.className = 'reservation-wrapper'; // new clean wrapper
+    // Copy all children from the fetched <main> into our wrapper
+    while (mainContent.firstChild) {
+        wrapper.appendChild(mainContent.firstChild);
+    }
+    container.appendChild(wrapper);
+
     if (viewName === 'reservations') {
         initializeReservationPage();
     } else if (viewName === 'contact') {
         initializeContactForm();
     }
     initializeCarousels();
+}
+
+function refreshDashboardTrip() {
+    // Only works on the user dashboard page
+    const dashMain = document.getElementById('dashboard-main');
+    if (!dashMain) return;
+
+    const session = readSession(STORAGE_KEYS.session);
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const userReservations = reservations.filter(r => r.email === (session.email || ""));
+    const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
+
+    const tripContent = document.getElementById('current-trip-content');
+    if (!tripContent) return; // dashboard not currently visible, nothing to update
+
+    if (activeReservation) {
+        let pricePerNight = activeReservation.price;
+        if (!pricePerNight && activeReservation.total && activeReservation.nights) {
+            pricePerNight = activeReservation.total / activeReservation.nights;
+        }
+        const priceDisplay = pricePerNight ? formatCurrency(pricePerNight) : 'PHP 0';
+        tripContent.innerHTML = `
+            <div style="display: grid; gap: 12px;">
+                <div><h4 style="font-size: 1.1rem; margin:0;">${activeReservation.roomName} - ${activeReservation.title}</h4><p style="margin:4px 0 0; font-size:0.85rem;">${priceDisplay}/night</p></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(147,99,63,0.06); padding:10px; border-radius:var(--radius-md);">
+                    <div><span style="font-size:0.75rem;">Check-in</span><div style="font-weight:600;">${formatDate(activeReservation.checkin)}</div></div>
+                    <div><span style="font-size:0.75rem;">Check-out</span><div style="font-weight:600;">${formatDate(activeReservation.checkout)}</div></div>
+                    <div><span style="font-size:0.75rem;">Guests</span><div style="font-weight:600;">${activeReservation.guests}</div></div>
+                    <div><span style="font-size:0.75rem;">Nights</span><div style="font-weight:600;">${activeReservation.nights}</div></div>
+                </div>
+                <div class="form-action-group"><button id="viewPropertyBtn" class="button button--secondary" style="flex:1;">View Property</button><button id="cancelDashboardBookingBtn" class="button button--danger" style="flex:1;">Cancel Booking</button></div>
+            </div>
+        `;
+        setupPropertyDropdown(activeReservation);
+        // Re‑attach cancel listener (important!)
+        const cancelBtn = document.getElementById('cancelDashboardBookingBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                if (confirm(`Cancel your booking for ${activeReservation.roomName}? This action cannot be undone.`)) {
+                    const updated = reservations.filter(r => !(r.roomId === activeReservation.roomId && r.checkin === activeReservation.checkin && r.email === activeReservation.email));
+                    writeStorage(STORAGE_KEYS.reservations, updated);
+                    showNotification("success", "Booking cancelled successfully.");
+                    refreshDashboardTrip();   // just refresh the trip, not the whole dashboard
+                }
+            });
+        }
+    } else {
+        tripContent.innerHTML = `<p style="color: var(--text-soft); text-align: center; padding: 30px 20px;">No active reservation. Your next getaway starts here.</p>`;
+    }
 }
 function renderDashboardView() {
     const container = document.getElementById('dynamic-view');
@@ -306,6 +383,8 @@ function renderDashboardView() {
             showAccountDetail(link.dataset.section, session, document.getElementById('account-detail'));
         });
     });
+
+    // Populate the trip data
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const userReservations = reservations.filter(r => r.email === (session.email || ""));
     const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
@@ -333,10 +412,11 @@ function renderDashboardView() {
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
                 if (confirm(`Cancel your booking for ${activeReservation.roomName}? This action cannot be undone.`)) {
+                    const reservations = readStorage(STORAGE_KEYS.reservations, []);
                     const updated = reservations.filter(r => !(r.roomId === activeReservation.roomId && r.checkin === activeReservation.checkin && r.email === activeReservation.email));
                     writeStorage(STORAGE_KEYS.reservations, updated);
                     showNotification("success", "Booking cancelled successfully.");
-                    renderDashboardView();
+                    refreshDashboardTrip();
                 }
             });
         }
@@ -372,11 +452,10 @@ function setupPropertyDropdown(reservation) {
                         <div class="carousel-dots"></div>
                     </div>
                 `;
-            } else carouselHtml = '<div style="background:#f0e3d6; padding:40px; text-align:center;">No images</div>';
+            } else carouselHtml = '<div class="no-image">No images</div>';
             dropdown.innerHTML = `
                 <div class="panel property-detail-panel" style="padding:0; overflow:hidden;">
-                    <div class="property-detail-grid">
-                        <div class="property-carousel">${carouselHtml}</div>
+                    <div class="property-detail-stacked">
                         <div class="property-info">
                             <h3>${room.name} – ${room.title}</h3>
                             <div class="price-badges">
@@ -387,6 +466,9 @@ function setupPropertyDropdown(reservation) {
                             <p>${room.description}</p>
                             <ul class="feature-list">${room.features.map(f=>`<li>${f}</li>`).join('')}</ul>
                             <a href="reservation.html?room=${reservation.roomId}" class="button button--primary" style="width:100%;">Book again</a>
+                        </div>
+                        <div class="property-carousel">
+                            ${carouselHtml}
                         </div>
                     </div>
                 </div>
@@ -414,7 +496,7 @@ function showAccountDetail(section, session, container) {
     }
 }
 
-// ---------- Reservation page (with enhanced cancel & notifications) ----------
+// ---------- Reservation page ----------
 function initializeReservationPage() {
     const filterForm = document.getElementById("filter-form");
     const bookingForm = document.getElementById("booking-form");
@@ -440,7 +522,6 @@ function initializeReservationPage() {
     });
     bookingForm.addEventListener("submit", (e) => { e.preventDefault(); handleBookingSubmit(bookingForm, roomCards); });
     
-    // Enhanced cancel button
     const existingCancel = bookingForm.querySelector(".cancel-booking-btn");
     if (!existingCancel) {
         const cancelBtn = document.createElement("button");
@@ -531,7 +612,6 @@ function handleBookingSubmit(form, roomCards) {
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
     setFeedback(feedback, "success", `Reservation saved for ${room.name}. Total: ${formatCurrency(total)}.`);
     showNotification("success", `Reservation confirmed! Total: ${formatCurrency(total)}.`);
-    // Clear only date/guests, keep name/email
     ["checkin", "checkout", "guests"].forEach(fname => {
         const field = form.elements.namedItem(fname);
         if (field) field.value = "";
@@ -539,6 +619,10 @@ function handleBookingSubmit(form, roomCards) {
     });
     highlightSelectedRoom(roomId, roomCards);
     updateBookingTotal(form);
+    // If we are inside the user dashboard, refresh the "Your Stay" panel
+    if (document.getElementById('dashboard-main')) {
+        refreshDashboardTrip();
+    }
 }
 function applyRoomFilters(form, roomCards) {
     const guestValue = getFieldValue(form, "guests");
@@ -582,6 +666,14 @@ function selectRoom(roomId, roomCards, form) {
     if (!room) return;
     highlightSelectedRoom(roomId, roomCards);
     form.elements.namedItem("roomId").value = roomId;
+
+    // Set max guests dynamically
+    const guestField = form.elements.namedItem("guests");
+    if (guestField && guestField.type === 'number') {
+        guestField.max = room.guests;
+        guestField.placeholder = `Up to ${room.guests} guests`;
+    }
+
     const summary = document.getElementById("selected-room-summary");
     if (summary) summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
@@ -608,15 +700,20 @@ function updateBookingTotal(form) {
     totalField.textContent = `Total: ${formatCurrency(nights * room.price)} for ${nights} night${nights > 1 ? "s" : ""}`;
 }
 function setDateMinimums() {
-    const today = new Date();
-    const formatted = today.toISOString().split("T")[0];
+    // Timezone-safe local date in YYYY-MM-DD format
+    const now = new Date();
+    const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
     const checkin = document.getElementById("booking-checkin");
     const checkout = document.getElementById("booking-checkout");
     if (checkin) {
-        checkin.min = formatted;
-        checkin.addEventListener("change", () => { if (checkout) checkout.min = checkin.value || formatted; });
+        checkin.min = today;
+        checkin.addEventListener("change", () => {
+            if (checkout) checkout.min = checkin.value || today;
+        });
     }
-    if (checkout) checkout.min = formatted;
+    if (checkout) checkout.min = today;
 }
 
 // ---------- Contact form ----------
@@ -638,7 +735,7 @@ function initializeContactForm() {
     });
 }
 
-// ---------- Validation helpers (unchanged, same as before) ----------
+// ---------- Validation helpers ----------
 function bindFieldValidation(form) {
     form.querySelectorAll("input, select, textarea").forEach((field) => {
         field.addEventListener("focus", () => field.classList.add("is-focused"));
@@ -807,7 +904,10 @@ function readSession(key, fallback) { try { const v = sessionStorage.getItem(key
 function writeSession(key, val) { sessionStorage.setItem(key, JSON.stringify(val)); }
 function getCurrentPageName() { const p = window.location.pathname; return p.substring(p.lastIndexOf('/')+1) || "index.html"; }
 function shouldHandleNavigation(event, href) { if (!href || href.startsWith("#") || href.startsWith("javascript:")) return false; if (event.ctrlKey || event.metaKey || event.shiftKey) return false; return !event.defaultPrevented; }
+
 function updateNavigationForSession() {
+    const adminPages = ['admin.html', 'manageReservations.html', 'manageRooms.html', 'support.html', 'superadmin.html', 'manageAdmins.html'];
+    if (adminPages.includes(getCurrentPageName())) return;
     const session = readSession(STORAGE_KEYS.session);
     const navList = document.querySelector('.site-links');
     if (!navList) return;
@@ -859,4 +959,863 @@ function initializeStaticLogout() {
             window.location.href = 'login.html';
         });
     }
+}
+
+function renderMyReservations() {
+    const container = document.getElementById('dynamic-view');
+    if (!container) return;
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const userReservations = reservations.filter(r => r.email === (session.email || ""));
+
+    if (userReservations.length === 0) {
+        container.innerHTML = `
+            <div class="panel" style="text-align:center;">
+                <h2>My Reservations</h2>
+                <p style="color: var(--text-soft); padding: 40px 0;">You have no reservations yet.</p>
+                <button class="button button--primary" onclick="document.querySelector('.dashboard-nav-btn[data-view=\'reservations\']').click()">Book a room</button>
+            </div>`;
+        return;
+    }
+
+    let html = `
+        <section class="panel">
+            <div class="panel-heading">
+                <h2>My Reservations</h2>
+            </div>
+            <div class="reservation-list" style="display:grid; gap:var(--space-md);">
+    `;
+
+    userReservations.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((r, idx) => {
+        const nights = calculateNights(r.checkin, r.checkout);
+        const total = r.total || (nights * (r.price || 0));
+        const isActive = new Date(r.checkout) >= new Date();
+        html += `
+            <div class="message-card" style="flex-direction:column; align-items:stretch;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size:1.2rem; margin:0;">${r.roomName} – ${r.title}</h3>
+                    <span class="price-tag">${formatCurrency(total)} total</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-xs); margin-top:var(--space-sm); font-size:0.9rem;">
+                    <div><strong>Check-in:</strong> ${formatDate(r.checkin)}</div>
+                    <div><strong>Check-out:</strong> ${formatDate(r.checkout)}</div>
+                    <div><strong>Guests:</strong> ${r.guests}</div>
+                    <div><strong>Nights:</strong> ${nights}</div>
+                </div>
+                <div style="margin-top:var(--space-sm); display:flex; gap:var(--space-xs); justify-content:flex-end;">
+                    ${isActive ? `<button class="button button--danger btn-cancel-booking" data-room="${r.roomId}" data-checkin="${r.checkin}" data-email="${r.email}">Cancel</button>` : '<span style="font-size:0.8rem; color:var(--text-soft);">Past booking</span>'}
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div></section>`;
+    container.innerHTML = html;
+
+    // Attach cancel handlers
+    container.querySelectorAll('.btn-cancel-booking').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const roomId = btn.dataset.room;
+            const checkin = btn.dataset.checkin;
+            const email = btn.dataset.email;
+            if (confirm(`Cancel this booking for ${roomId}?`)) {
+                const allReservations = readStorage(STORAGE_KEYS.reservations, []);
+                const updated = allReservations.filter(r => !(r.roomId === roomId && r.checkin === checkin && r.email === email));
+                writeStorage(STORAGE_KEYS.reservations, updated);
+                showNotification("success", "Booking cancelled.");
+                renderMyReservations();   // refresh list
+                // also refresh the dashboard trip if visible
+                if (document.getElementById('current-trip-content')) {
+                    refreshDashboardTrip();
+                }
+            }
+        });
+    });
+}
+// ============================================================
+// ADMIN & SUPER ADMIN FUNCTIONALITY
+// ============================================================
+function enforceAdminAccess() {
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session || (session.role !== USER_ROLES.ADMIN && session.role !== USER_ROLES.SUPER_ADMIN)) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+function enforceSuperAdminAccess() {
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session || session.role !== USER_ROLES.SUPER_ADMIN) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+function addActivity(action) {
+    const activityLog = readStorage('cozycorner-activity-log', []);
+    const entry = {
+        action,
+        timestamp: new Date().toISOString(),
+        user: readSession(STORAGE_KEYS.session)?.username || 'system'
+    };
+    activityLog.unshift(entry);
+    if (activityLog.length > 20) activityLog.pop();
+    writeStorage('cozycorner-activity-log', activityLog);
+}
+
+// ---- Clear Activities (reused by admin & super admin) ----
+function clearRecentActivities() {
+    const activities = readStorage('cozycorner-activity-log', []);
+    if (activities.length === 0) {
+        showNotification('info', 'No activities to clear.');
+        return;
+    }
+    if (!confirm(`Delete all ${activities.length} activity entries?`)) return;
+
+    writeStorage('cozycorner-activity-log', []);
+    addActivity('Cleared the activity log');
+    showNotification('success', 'Activity log cleared.');
+    // Refresh the activity list if present
+    const container = document.getElementById('activity-log');
+    if (container) {
+        container.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
+    }
+}
+
+// ---- ADMIN DASHBOARD ----
+function initAdminDashboard() {
+    if (!enforceAdminAccess()) return;
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const today = new Date().toISOString().split('T')[0];
+    const active = reservations.filter(r => r.checkin <= today && r.checkout >= today);
+    document.getElementById('stat-reservations').textContent = active.length;
+    const guests = active.reduce((sum, r) => sum + (r.guests || 0), 0);
+    document.getElementById('stat-guests').textContent = guests;
+    const revenue = reservations.reduce((sum, r) => sum + (r.total || 0), 0);
+    document.getElementById('stat-revenue').textContent = formatCurrency(revenue);
+    const activities = readStorage('cozycorner-activity-log', []);
+    const container = document.getElementById('activity-log');
+    if (activities.length === 0) {
+        container.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
+    } else {
+        container.innerHTML = activities.slice(0, 10).map(a => `
+            <li class="activity-item">
+                <span>${a.action}</span>
+                <time datetime="${a.timestamp}">${new Date(a.timestamp).toLocaleString()}</time>
+            </li>
+        `).join('');
+    }
+
+    // Attach clear activities button
+    const clearActBtn = document.getElementById('btn-clear-activities');
+    if (clearActBtn) {
+        clearActBtn.addEventListener('click', clearRecentActivities);
+    }
+}
+
+// ---- MANAGE RESERVATIONS (multi‑select deletion) ----
+function initManageReservations() {
+    if (!enforceAdminAccess()) return;
+
+    const roomSelect = document.getElementById('modal-room');
+    const modalTitle = document.getElementById('modal-title');
+    const form = document.getElementById('reservation-form-modal');
+    const modal = document.getElementById('reservation-modal');
+    const closeBtn = document.getElementById('btn-close-modal');
+
+    let selectedIndices = [];
+
+    function populateRoomDropdown() {
+        const allRooms = { ...ROOM_DATA, ...readStorage('cozycorner-custom-rooms', {}) };
+        roomSelect.innerHTML = '<option value="">Select room</option>';
+        Object.entries(allRooms).forEach(([key, room]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = `${room.name} – ${room.title} (${formatCurrency(room.price)})`;
+            roomSelect.appendChild(option);
+        });
+    }
+
+    function updateSelectionDependentButtons() {
+        const updateBtn = document.getElementById('btn-update-reservation');
+        const deleteBtn = document.getElementById('btn-delete-reservation');
+        if (updateBtn) {
+            updateBtn.disabled = selectedIndices.length !== 1;
+            updateBtn.style.opacity = selectedIndices.length === 1 ? '1' : '0.5';
+        }
+        if (deleteBtn) {
+            deleteBtn.disabled = selectedIndices.length === 0;
+            deleteBtn.style.opacity = selectedIndices.length > 0 ? '1' : '0.5';
+        }
+    }
+
+    function renderReservations() {
+        const reservations = readStorage(STORAGE_KEYS.reservations, []);
+        const container = document.getElementById('reservations-container');
+        if (reservations.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-soft); padding:40px;">No reservations found.</p>';
+            updateSelectionDependentButtons();
+            return;
+        }
+
+        let html = `<table class="reservations-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all-reservations" title="Select all"></th>
+                    <th>Room</th><th>Guest</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Total</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        reservations.forEach((r, idx) => {
+            const isSelected = selectedIndices.includes(idx);
+            html += `<tr class="${isSelected ? 'selected' : ''}" data-index="${idx}">
+                <td><input type="checkbox" class="reservation-checkbox" data-index="${idx}" ${isSelected ? 'checked' : ''}></td>
+                <td>${r.roomName}</td>
+                <td>${r.name} (${r.email})</td>
+                <td>${formatDate(r.checkin)}</td>
+                <td>${formatDate(r.checkout)}</td>
+                <td>${r.guests}</td>
+                <td>${formatCurrency(r.total)}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        const checkboxes = container.querySelectorAll('.reservation-checkbox');
+        const selectAll = container.querySelector('#select-all-reservations');
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const idx = parseInt(cb.dataset.index, 10);
+                if (cb.checked) {
+                    if (!selectedIndices.includes(idx)) selectedIndices.push(idx);
+                } else {
+                    selectedIndices = selectedIndices.filter(i => i !== idx);
+                }
+                cb.closest('tr').classList.toggle('selected', cb.checked);
+                updateSelectionDependentButtons();
+            });
+        });
+
+        container.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                const checkbox = row.querySelector('.reservation-checkbox');
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        if (selectAll) {
+            selectAll.addEventListener('change', () => {
+                const isChecked = selectAll.checked;
+                checkboxes.forEach(cb => {
+                    cb.checked = isChecked;
+                    const idx = parseInt(cb.dataset.index, 10);
+                    if (isChecked) {
+                        if (!selectedIndices.includes(idx)) selectedIndices.push(idx);
+                    } else {
+                        selectedIndices = [];
+                    }
+                    cb.closest('tr').classList.toggle('selected', isChecked);
+                });
+                if (!isChecked) selectedIndices = [];
+                updateSelectionDependentButtons();
+            });
+        }
+    }
+
+    function showModal(edit = false) {
+        populateRoomDropdown();
+        const reservations = readStorage(STORAGE_KEYS.reservations, []);
+        if (edit) {
+            const editIdx = selectedIndices[0];
+            if (editIdx !== undefined && editIdx >= 0 && editIdx < reservations.length) {
+                const r = reservations[editIdx];
+                form.elements['editIndex'].value = editIdx;
+                form.elements['roomId'].value = r.roomId;
+                form.elements['name'].value = r.name;
+                form.elements['email'].value = r.email;
+                form.elements['checkin'].value = r.checkin;
+                form.elements['checkout'].value = r.checkout;
+                form.elements['guests'].value = r.guests;
+            }
+        } else {
+            form.reset();
+            form.elements['editIndex'].value = '';
+        }
+        modalTitle.textContent = edit ? 'Update Reservation' : 'Add Reservation';
+        modal.style.display = 'flex';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+
+    document.getElementById('btn-add-reservation').addEventListener('click', () => {
+        selectedIndices = [];
+        renderReservations();
+        showModal(false);
+    });
+
+    document.getElementById('btn-update-reservation').addEventListener('click', () => {
+        if (selectedIndices.length !== 1) {
+            showNotification('error', 'Please select exactly one reservation to update.');
+            return;
+        }
+        showModal(true);
+    });
+
+    document.getElementById('btn-delete-reservation').addEventListener('click', () => {
+        if (selectedIndices.length === 0) {
+            showNotification('error', 'Please select at least one reservation to delete.');
+            return;
+        }
+        if (!confirm(`Delete ${selectedIndices.length} reservation(s) permanently?`)) return;
+
+        let reservations = readStorage(STORAGE_KEYS.reservations, []);
+        selectedIndices.sort((a, b) => b - a).forEach(idx => reservations.splice(idx, 1));
+        writeStorage(STORAGE_KEYS.reservations, reservations);
+
+        addActivity(`Deleted ${selectedIndices.length} reservation(s)`);
+        showNotification('success', `${selectedIndices.length} reservation(s) deleted.`);
+
+        selectedIndices = [];
+        renderReservations();
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const roomId = form.elements['roomId'].value;
+        const name = form.elements['name'].value;
+        const email = form.elements['email'].value;
+        const checkin = form.elements['checkin'].value;
+        const checkout = form.elements['checkout'].value;
+        const guests = parseInt(form.elements['guests'].value);
+        const editIndex = form.elements['editIndex'].value;
+
+        if (new Date(checkin) >= new Date(checkout)) {
+            showNotification('error', 'Check-out must be after check-in.');
+            return;
+        }
+
+        const allRooms = { ...ROOM_DATA, ...readStorage('cozycorner-custom-rooms', {}) };
+        const room = allRooms[roomId];
+        if (!room) {
+            showNotification('error', 'Invalid room selected.');
+            return;
+        }
+        if (guests > room.guests) {
+            showNotification('error', `Room allows max ${room.guests} guests.`);
+            return;
+        }
+
+        let reservations = readStorage(STORAGE_KEYS.reservations, []);
+        const nights = Math.round((new Date(checkout) - new Date(checkin)) / 86400000);
+        const total = nights * room.price;
+        const reservation = {
+            roomId, roomName: room.name, title: room.title, price: room.price,
+            name, email, checkin, checkout, guests, nights, total,
+            createdAt: new Date().toISOString()
+        };
+
+        if (editIndex !== '') {
+            reservations[editIndex] = reservation;
+            addActivity('Updated a reservation');
+            showNotification('success', 'Reservation updated.');
+        } else {
+            reservations.push(reservation);
+            addActivity('Added a new reservation');
+            showNotification('success', 'Reservation added.');
+        }
+
+        writeStorage(STORAGE_KEYS.reservations, reservations);
+        hideModal();
+        selectedIndices = [];
+        renderReservations();
+    });
+
+    renderReservations();
+}
+
+// ---- MANAGE ROOMS ----
+function initManageRooms() {
+    if (!enforceAdminAccess()) return;
+    const modal = document.getElementById('room-modal');
+    const form = document.getElementById('room-form-modal');
+    const modalTitle = document.getElementById('room-modal-title');
+    const closeBtn = document.getElementById('btn-close-room-modal');
+    let selectedRoomKey = null;
+
+    function renderRooms() {
+        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        const allRooms = { ...ROOM_DATA, ...customRooms };
+        const container = document.getElementById('rooms-container');
+        container.innerHTML = Object.entries(allRooms).map(([key, room]) => `
+            <article class="room-listing room-card ${key === selectedRoomKey ? 'is-selected' : ''}" data-room-id="${key}">
+                <div class="room-listing__body">
+                    <div class="room-listing__header">
+                        <div>
+                            <h3>${room.name}</h3>
+                            <p class="listing-subtitle">${room.title}</p>
+                        </div>
+                        <span class="price-tag">${formatCurrency(room.price)}</span>
+                    </div>
+                    <p>${room.description}</p>
+                    <ul class="feature-list">
+                        <li>${room.guests} guests</li>
+                        <li>${room.type}</li>
+                    </ul>
+                    <div class="room-actions">
+                        <button class="button button--secondary btn-select-room" data-room-key="${key}">Select</button>
+                        ${customRooms[key] ? '<button class="button button--danger btn-delete-room" data-room-key="'+key+'">Delete</button>' : ''}
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        container.querySelectorAll('.btn-select-room').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedRoomKey = btn.dataset.roomKey;
+                renderRooms();
+            });
+        });
+        container.querySelectorAll('.btn-delete-room').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm('Delete this custom room? Default rooms cannot be deleted.')) {
+                    const customRooms = readStorage('cozycorner-custom-rooms', {});
+                    delete customRooms[btn.dataset.roomKey];
+                    writeStorage('cozycorner-custom-rooms', customRooms);
+                    selectedRoomKey = null;
+                    renderRooms();
+                    addActivity('Deleted a room');
+                    showNotification('success', 'Room deleted.');
+                }
+            });
+        });
+    }
+
+    function showModal(edit = false) {
+        if (edit && selectedRoomKey) {
+            const customRooms = readStorage('cozycorner-custom-rooms', {});
+            const room = customRooms[selectedRoomKey] || ROOM_DATA[selectedRoomKey];
+            if (!room) return;
+            form.elements['roomKey'].value = selectedRoomKey;
+            form.elements['roomId'].value = selectedRoomKey;
+            form.elements['title'].value = room.title;
+            form.elements['price'].value = room.price;
+            form.elements['guests'].value = room.guests;
+            form.elements['type'].value = room.type;
+            form.elements['description'].value = room.description;
+            modalTitle.textContent = 'Update Room';
+        } else {
+            form.reset();
+            form.elements['roomKey'].value = '';
+            modalTitle.textContent = 'Add Room';
+        }
+        modal.style.display = 'flex';
+    }
+
+    function hideModal() { modal.style.display = 'none'; }
+
+    closeBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+
+    document.getElementById('btn-add-room').addEventListener('click', () => {
+        selectedRoomKey = null;
+        showModal(false);
+    });
+    document.getElementById('btn-update-room').addEventListener('click', () => {
+        if (!selectedRoomKey) { showNotification('error','Select a room first.'); return; }
+        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        if (!customRooms[selectedRoomKey] && ROOM_DATA[selectedRoomKey]) {
+            showNotification('error', 'Default rooms cannot be updated. Add a custom room instead.');
+            return;
+        }
+        showModal(true);
+    });
+    document.getElementById('btn-delete-room').addEventListener('click', () => {
+        if (!selectedRoomKey) { showNotification('error','Select a room first.'); return; }
+        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        if (!customRooms[selectedRoomKey]) { showNotification('error','Only custom rooms can be deleted.'); return; }
+        if (confirm('Delete this room?')) {
+            delete customRooms[selectedRoomKey];
+            writeStorage('cozycorner-custom-rooms', customRooms);
+            selectedRoomKey = null;
+            renderRooms();
+            addActivity('Deleted a room');
+            showNotification('success','Room deleted.');
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const roomId = form.elements['roomId'].value.trim();
+        const title = form.elements['title'].value.trim();
+        const price = parseInt(form.elements['price'].value);
+        const guests = parseInt(form.elements['guests'].value);
+        const type = form.elements['type'].value;
+        const description = form.elements['description'].value.trim();
+        if (!roomId || !title || isNaN(price) || isNaN(guests) || !type || !description) {
+            showNotification('error','All fields are required.');
+            return;
+        }
+        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        if (ROOM_DATA[roomId] && form.elements['roomKey'].value !== roomId) {
+            showNotification('error','That room ID is already used by a default room.');
+            return;
+        }
+        customRooms[roomId] = { name: roomId, title, price, guests, type, description, features: [`${guests} guests`, type.charAt(0).toUpperCase()+type.slice(1)] };
+        writeStorage('cozycorner-custom-rooms', customRooms);
+        hideModal();
+        renderRooms();
+        addActivity('Room saved');
+        showNotification('success','Room saved!');
+    });
+
+    renderRooms();
+}
+
+// ---- SUPPORT ----
+function initSupport() {
+    if (!enforceAdminAccess()) return;
+    const messages = readStorage(STORAGE_KEYS.contact, []);
+    messages.forEach(m => { if (!m.status) m.status = 'new'; });
+    writeStorage(STORAGE_KEYS.contact, messages);
+
+    function renderStats() {
+        const open = messages.filter(m => m.status==='new'||m.status==='in-progress').length;
+        document.getElementById('stat-messages').textContent = messages.length;
+        document.getElementById('stat-issues').textContent = open;
+        document.getElementById('stat-resolved').textContent = messages.filter(m => m.status==='resolved').length;
+    }
+    function renderMessages() {
+        const container = document.getElementById('messages-container');
+        if (!messages.length) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text-soft);padding:30px;">No messages yet.</p>';
+            return;
+        }
+        container.innerHTML = messages.map((m, idx) => `
+            <div class="message-card">
+                <div class="message-body">
+                    <h4>${m.name} <span style="font-size:0.75rem;color:var(--text-soft);">(${m.email})</span></h4>
+                    <p style="margin:4px 0;font-size:0.9rem;">${m.message}</p>
+                    <small style="color:var(--text-soft);">${new Date(m.submittedAt).toLocaleString()}</small>
+                </div>
+                <div class="message-actions">
+                    <select class="status-select" data-index="${idx}">
+                        <option value="new" ${m.status==='new'?'selected':''}>New</option>
+                        <option value="in-progress" ${m.status==='in-progress'?'selected':''}>In Progress</option>
+                        <option value="resolved" ${m.status==='resolved'?'selected':''}>Resolved</option>
+                    </select>
+                </div>
+            </div>
+        `).join('');
+        container.querySelectorAll('.status-select').forEach(sel => {
+            sel.addEventListener('change', () => {
+                messages[sel.dataset.index].status = sel.value;
+                writeStorage(STORAGE_KEYS.contact, messages);
+                addActivity(`Changed message status to ${sel.value}`);
+                showNotification('info','Status updated.');
+                renderStats();
+            });
+        });
+    }
+    renderStats();
+    renderMessages();
+
+    // Attach clear messages button
+    const clearMsgBtn = document.getElementById('btn-clear-messages');
+    if (clearMsgBtn && !clearMsgBtn.dataset.listenerAttached) {
+        clearMsgBtn.dataset.listenerAttached = 'true';
+        clearMsgBtn.addEventListener('click', clearSupportMessages);
+    }
+}
+
+function clearSupportMessages() {
+    const messages = readStorage(STORAGE_KEYS.contact, []);
+    if (messages.length === 0) {
+        showNotification('info', 'No messages to clear.');
+        return;
+    }
+    if (!confirm(`Delete all ${messages.length} messages? This cannot be undone.`)) return;
+
+    writeStorage(STORAGE_KEYS.contact, []);
+    addActivity('Cleared all support messages');
+    showNotification('success', 'All messages cleared.');
+    // Re‑render the messages list (without adding another listener)
+    initSupport();
+}
+
+// ---- SUPER ADMIN DASHBOARD ----
+function initSuperAdminDashboard() {
+    if (!enforceSuperAdminAccess()) return;
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const customRooms = readStorage('cozycorner-custom-rooms', {});
+    const allRooms = { ...ROOM_DATA, ...customRooms };
+
+    document.getElementById('stat-total-reservations').textContent = reservations.length;
+    document.getElementById('stat-total-properties').textContent = Object.keys(allRooms).length;
+    document.getElementById('stat-total-guests').textContent = reservations.reduce((sum,r) => sum + (r.guests||0), 0);
+
+    const activities = readStorage('cozycorner-activity-log', []);
+    const logContainer = document.getElementById('activity-log');
+    if (activities.length === 0) {
+        logContainer.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
+    } else {
+        logContainer.innerHTML = activities.slice(0,10).map(a => `
+            <li class="activity-item"><span>${a.action}</span><time datetime="${a.timestamp}">${new Date(a.timestamp).toLocaleString()}</time></li>
+        `).join('');
+    }
+
+    // Simple revenue chart (last 6 months)
+    const revenueContainer = document.getElementById('revenue-chart');
+    if (revenueContainer) {
+        const monthly = {};
+        const now = new Date();
+        for (let i=5; i>=0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+            monthly[d.toLocaleString('en-US',{month:'short',year:'numeric'})] = 0;
+        }
+        reservations.forEach(r => {
+            const d = new Date(r.createdAt);
+            const key = d.toLocaleString('en-US',{month:'short',year:'numeric'});
+            if (monthly.hasOwnProperty(key)) monthly[key] += r.total;
+        });
+        let html = '<div class="chart-bars">';
+        for (const [month,total] of Object.entries(monthly)) {
+            const height = total>0 ? Math.max(20, Math.min(200, total/200)) : 5;
+            html += `<div class="chart-bar" style="height:${height}px;" title="${month}: ${formatCurrency(total)}"><span>${month}</span></div>`;
+        }
+        html += '</div>';
+        revenueContainer.innerHTML = html;
+    }
+
+    // Attach clear activities button
+    const clearActBtn = document.getElementById('btn-clear-activities');
+    if (clearActBtn) {
+        clearActBtn.addEventListener('click', clearRecentActivities);
+    }
+}
+
+// ---- MANAGE ADMINS (super admin only) ----
+function initManageAdmins() {
+    if (!enforceSuperAdminAccess()) return;
+
+    const modal = document.getElementById('admin-modal');
+    const form = document.getElementById('admin-form-modal');
+    const modalTitle = document.getElementById('admin-modal-title');
+    const closeBtn = document.getElementById('btn-close-admin-modal');
+    let selectedUsername = null;
+
+    function renderAdmins() {
+        // Use getAllUsers() so we see both default and registered admins
+        const allUsers = getAllUsers();
+        // Get only admin / super_admin entries
+        const adminUsers = Object.entries(allUsers).filter(
+            ([_, u]) => u.role === USER_ROLES.ADMIN
+        );
+
+        // Normalise: ensure every admin account has an active boolean
+        let changed = false;
+        adminUsers.forEach(([uname, user]) => {
+            if (user.active === undefined) {
+                user.active = true;
+                changed = true;
+            }
+        });
+        // If we added the 'active' field to a default user, save it into localStorage
+        if (changed) {
+            const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+            adminUsers.forEach(([uname, user]) => {
+                if (registered[uname] === undefined) {
+                    registered[uname] = { ...user }; // copy the full object
+                } else {
+                    registered[uname].active = user.active;
+                }
+            });
+            writeStorage(STORAGE_KEYS.registeredUsers, registered);
+        }
+
+        const container = document.getElementById('admins-container');
+        if (!container) return;
+
+        if (!adminUsers.length) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text-soft);padding:40px;">No admin accounts found.</p>';
+            return;
+        }
+
+        let html = '<table class="reservations-table"><thead><tr><th>Select</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+        adminUsers.forEach(([uname, user]) => {
+            const isSel = uname === selectedUsername;
+            html += `<tr class="${isSel ? 'selected' : ''}" data-username="${uname}">
+                <td><input type="radio" name="selectAdmin" ${isSel ? 'checked' : ''}></td>
+                <td>${user.username}</td>
+                <td>${user.email}</td>
+                <td>${user.role === USER_ROLES.SUPER_ADMIN ? 'Super Admin' : 'Admin'}</td>
+                <td><span class="status-badge ${user.active === false ? 'status-disabled' : 'status-active'}">${user.active === false ? 'Disabled' : 'Active'}</span></td>
+                <td>
+                    <button class="button button--secondary btn-toggle-status" data-username="${uname}">${user.active === false ? 'Enable' : 'Disable'}</button>
+                    <button class="button button--danger btn-remove-admin" data-username="${uname}">Remove</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        // Row selection
+        container.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+                const radio = row.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+                selectedUsername = row.dataset.username;
+                container.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                row.classList.add('selected');
+            });
+        });
+
+        // Toggle status
+        container.querySelectorAll('.btn-toggle-status').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uname = btn.dataset.username;
+                const users = getAllUsers(); // work on the merged list
+                if (users[uname]) {
+                    users[uname].active = !(users[uname].active === false);
+                    // Save the changed field back to localStorage
+                    const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+                    registered[uname] = {
+                        ...(registered[uname] || {}),
+                        active: users[uname].active,
+                    };
+                    writeStorage(STORAGE_KEYS.registeredUsers, registered);
+                    addActivity(`${users[uname].active ? 'Enabled' : 'Disabled'} admin: ${uname}`);
+                    showNotification('success', `Admin '${uname}' ${users[uname].active ? 'enabled' : 'disabled'}.`);
+                    renderAdmins();
+                }
+            });
+        });
+
+        // Remove admin
+        container.querySelectorAll('.btn-remove-admin').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uname = btn.dataset.username;
+                if (confirm(`Remove admin '${uname}'?`)) {
+                    const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+                    delete registered[uname];
+                    writeStorage(STORAGE_KEYS.registeredUsers, registered);
+                    selectedUsername = null;
+                    addActivity('Removed admin: ' + uname);
+                    showNotification('success', 'Admin removed.');
+                    renderAdmins();
+                }
+            });
+        });
+    }
+
+    function showModal(edit = false) {
+        if (edit && selectedUsername) {
+            const users = getAllUsers();
+            const user = users[selectedUsername];
+            if (user) {
+                form.elements['username'].value = user.username;
+                form.elements['email'].value = user.email;
+                form.elements['role'].value = user.role;
+                form.elements['password'].value = '';
+                form.elements['username'].readOnly = true;
+            }
+            modalTitle.textContent = 'Update Admin Account';
+        } else {
+            form.reset();
+            form.elements['username'].readOnly = false;
+            modalTitle.textContent = 'Add Admin Account';
+        }
+        modal.style.display = 'flex';
+    }
+
+    function hideModal() { modal.style.display = 'none'; }
+
+    closeBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+
+    document.getElementById('btn-add-admin').addEventListener('click', () => {
+        selectedUsername = null;
+        showModal(false);
+    });
+    document.getElementById('btn-update-admin').addEventListener('click', () => {
+        if (!selectedUsername) {
+            showNotification('error', 'Select an admin first.');
+            return;
+        }
+        showModal(true);
+    });
+    document.getElementById('btn-disable-admin').addEventListener('click', () => {
+        if (!selectedUsername) {
+            showNotification('error', 'Select an admin first.');
+            return;
+        }
+        const users = getAllUsers();
+        if (users[selectedUsername]) {
+            users[selectedUsername].active = false;
+            const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+            registered[selectedUsername] = {
+                ...(registered[selectedUsername] || {}),
+                active: false,
+            };
+            writeStorage(STORAGE_KEYS.registeredUsers, registered);
+            addActivity('Disabled admin: ' + selectedUsername);
+            showNotification('success', 'Admin disabled.');
+            renderAdmins();
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = form.elements['username'].value.trim();
+        const email = form.elements['email'].value.trim();
+        const password = form.elements['password'].value;
+        const role = form.elements['role'].value;
+        if (!username || !email || (!selectedUsername && !password)) {
+            showNotification('error', 'Fill all required fields.');
+            return;
+        }
+        const allUsers = getAllUsers();
+        const isEdit = !!selectedUsername;
+        if (!isEdit && allUsers[username]) {
+            showNotification('error', 'Username already exists.');
+            return;
+        }
+        const userObj = {
+            username,
+            email,
+            password: isEdit ? (password || allUsers[selectedUsername]?.password) : password,
+            role,
+            active: true,
+        };
+        const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
+        registered[username] = userObj;
+        if (isEdit && username !== selectedUsername) {
+            delete registered[selectedUsername];
+        }
+        writeStorage(STORAGE_KEYS.registeredUsers, registered);
+        addActivity(isEdit ? 'Updated admin: ' + username : 'Added new admin: ' + username);
+        showNotification('success', isEdit ? 'Admin updated.' : 'Admin added.');
+        hideModal();
+        selectedUsername = null;
+        renderAdmins();
+    });
+
+    renderAdmins();
 }

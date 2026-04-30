@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyCorner | Manage Reservations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-manage-reservations">
+    <div class="site-frame">
+        <header class="site-header">
+            <nav class="site-nav" aria-label="Admin navigation">
+                <a class="site-logo" href="index.html">
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="admin-menu">
+                    <span></span><span></span><span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <ul class="site-links" id="admin-menu">
+                    <li><a href="admin.html">Dashboard</a></li>
+                    <li><a href="manageReservations.html" class="is-active">Reservations</a></li>
+                    <li><a href="manageRooms.html">Rooms</a></li>
+                    <li><a href="support.html">Support</a></li>
+                    <li><a href="#" id="logout-link">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <div class="reservation-layout">
+                <!-- Sidebar: Actions -->
+                <aside class="sidebar-panel">
+                    <section class="panel" aria-labelledby="actions-title">
+                        <div class="panel-heading">
+                            <h2 id="actions-title">Manage</h2>
+                        </div>
+                        <div class="form-actions">
+                            <button class="button button--primary" id="btn-add-reservation">Add reservation</button>
+                            <button class="button button--secondary" id="btn-update-reservation">Update selected</button>
+                            <button class="button button--danger" id="btn-delete-reservation">Delete selected</button>
+                        </div>
+                    </section>
+                </aside>
+
+                <!-- Main area: Reservations list -->
+                <section class="panel" aria-labelledby="reservations-list-title">
+                    <div class="panel-heading">
+                        <h2 id="reservations-list-title">All Reservations</h2>
+                    </div>
+                    <div id="reservations-container">
+                        <p style="text-align:center; color:var(--text-soft); padding:40px;">Loading reservations...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <p>CozyCorner Admin – manage bookings</p>
+        </footer>
+    </div>
+
+    <!-- Reservation edit/add modal (hidden by default) -->
+    <div id="reservation-modal" class="modal" style="display:none;">
+        <div class="modal-content panel">
+            <div class="panel-heading">
+                <h2 id="modal-title">Add Reservation</h2>
+                <button class="modal-close" id="btn-close-modal">&times;</button>
+            </div>
+            <form id="reservation-form-modal" class="booking-form" novalidate>
+                <input type="hidden" name="editIndex" value="">
+                <div class="field">
+                    <label for="modal-room">Room</label>
+                    <select id="modal-room" name="roomId" required>
+                        <option value="">Select room</option>
+                    </select>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="modal-name">Guest name</label>
+                    <input id="modal-name" type="text" name="name" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="modal-email">Email</label>
+                    <input id="modal-email" type="email" name="email" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="modal-checkin">Check-in</label>
+                    <input id="modal-checkin" type="date" name="checkin" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="modal-checkout">Check-out</label>
+                    <input id="modal-checkout" type="date" name="checkout" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="modal-guests">Guests</label>
+                    <input id="modal-guests" type="number" name="guests" min="1" required>
+                    <p class="field-message"></p>
+                </div>
+                <button class="button button--primary" type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    
+</body>
+</html>
