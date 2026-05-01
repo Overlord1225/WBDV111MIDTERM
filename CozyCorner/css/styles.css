@@ -1763,3 +1763,115 @@ p + p {
         height: 220px;
     }
 }
+
+/* ============================================
+   ENHANCED GLOBAL FOOTER
+   ============================================ */
+.site-footer {
+    background: var(--color-surface-muted);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-light);
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    margin-top: var(--space-4xl);
+    margin-bottom: var(--space-lg);
+    transition: all var(--transition-duration-fast) var(--transition-timing-ease);
+}
+
+.site-footer:hover {
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-level-1);
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    text-align: left;
+}
+
+.footer-brand img {
+    height: 44px;
+    width: auto;
+    margin-bottom: var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.footer-brand p {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.footer-links h4,
+.footer-contact h4 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+}
+
+.footer-links ul,
+.footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li,
+.footer-contact li {
+    margin-bottom: var(--space-xs);
+}
+
+.footer-links a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color var(--transition-duration-fast) var(--transition-timing-ease);
+}
+
+.footer-links a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.footer-contact li {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border-light);
+    font-size: 0.75rem;
+    color: var(--color-text-soft, #9C8B7A);
+}
+
+/* Responsive footer */
+@media (max-width: 640px) {
+    .site-footer {
+        padding: var(--space-lg) var(--space-md);
+    }
+    .footer-inner {
+        gap: var(--space-lg);
+        text-align: center;
+    }
+    .footer-brand {
+        text-align: center;
+    }
+    .footer-links ul,
+    .footer-contact ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-md);
+    }
+    .footer-links li,
+    .footer-contact li {
+        margin-bottom: 0;
+    }
+}
