@@ -496,6 +496,37 @@ function showAccountDetail(section, session, container) {
     }
 }
 
+// ========== DOUBLE BOOKING PREVENTION ==========
+/**
+ * Check if a room is available for the given date range.
+ * @param {string} roomId - e.g., "room-1"
+ * @param {string} checkin - YYYY-MM-DD
+ * @param {string} checkout - YYYY-MM-DD
+ * @param {number|string|null} excludeIndex - optional index of reservation to exclude (for updates)
+ * @returns {boolean}
+ */
+function isRoomAvailable(roomId, checkin, checkout, excludeIndex = null) {
+    const reservations = readStorage(STORAGE_KEYS.reservations, []);
+    const newStart = new Date(checkin);
+    const newEnd = new Date(checkout);
+
+    for (let i = 0; i < reservations.length; i++) {
+        const r = reservations[i];
+        if (excludeIndex !== null && i == excludeIndex) continue;
+        if (r.roomId !== roomId) continue;
+
+        const existingStart = new Date(r.checkin);
+        const existingEnd = new Date(r.checkout);
+
+        // Overlap occurs if newStart < existingEnd AND newEnd > existingStart
+        if (newStart < existingEnd && newEnd > existingStart) {
+            return false; // conflict
+        }
+    }
+    return true;
+}
+// =============================================
+
 // ---------- Reservation page ----------
 function initializeReservationPage() {
     const filterForm = document.getElementById("filter-form");
@@ -601,6 +632,14 @@ function handleBookingSubmit(form, roomCards) {
         showNotification("error", "Please fix the highlighted errors.");
         return;
     }
+
+    // ---- DOUBLE BOOKING CHECK ----
+    if (!isRoomAvailable(roomId, checkin, checkout)) {
+        setFeedback(feedback, "error", "This room is already booked for the selected dates. Please choose different dates or another room.");
+        showNotification("error", "Sorry, those dates are not available.");
+        return;
+    }
+
     const nights = calculateNights(checkin, checkout);
     const total = nights * room.price;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
@@ -1319,6 +1358,13 @@ function initManageReservations() {
         }
         if (guests > room.guests) {
             showNotification('error', `Room allows max ${room.guests} guests.`);
+            return;
+        }
+
+        // ---- DOUBLE BOOKING CHECK (exclude the current reservation if updating) ----
+        const excludeIdx = (editIndex !== '') ? parseInt(editIndex, 10) : null;
+        if (!isRoomAvailable(roomId, checkin, checkout, excludeIdx)) {
+            showNotification('error', 'This room is already booked for the selected date range.');
             return;
         }
 
