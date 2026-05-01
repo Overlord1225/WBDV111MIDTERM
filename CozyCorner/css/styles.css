@@ -1,52 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
 
 :root {
-    /* Fonts */
-    --font-heading: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Fonts – soft serif headings, clean sans‑serif body */
+    --font-heading: 'Lora', 'Playfair Display', serif;
     --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-    /* Colors – earthy, soothing, minimal */
-    --color-surface-rgb: 255, 255, 255;          /* #FFFFFF */
-    --color-text-primary-rgb: 61, 53, 44;        /* #3D352C */
-    --color-bg: #FEFAF5;
-    --color-surface: #FFFFFF;
-    --color-surface-elevated: #FDF8F0;
-    --color-surface-muted: #F5EFE6;
-    --color-primary: #B27A4A;
-    --color-primary-dark: #8E5A38;
-    --color-primary-soft: #EFE2D4;
-    --color-text-primary: #3D352C;
-    --color-text-secondary: #7A6A5A;
+    /* ── Brew Palette ── */
+    --color-primary: #5D4037;            /* Mocha */
+    --color-primary-dark: #4E342E;       /* Darker mocha */
+    --color-primary-soft: #E8DED5;       /* Light mocha tint */
+    --color-secondary: #8D6E63;          /* Warm Brown */
+
+    --color-bg: #FDFBF7;                 /* Creamy */
+    --color-bg-rgb: 253, 251, 247;
+    --color-surface: #F5F0E9;            /* Mocha Cream */
+    --color-surface-rgb: 245, 240, 233;
+    --color-surface-elevated: #FAF6F0;   /* Slightly lighter warm */
+    --color-surface-muted: #EFE9E3;      /* Warm muted surface */
+
+    --color-text-primary: #3E2723;       /* Deep Espresso */
+    --color-text-primary-rgb: 62, 39, 35;
+    --color-text-secondary: #A1887F;     /* Driftwood */
+    --text-soft: #A1887F;
     --color-text-inverted: #FFFFFF;
-    --color-border-light: #E8DDD2;
+
+    --color-border-light: #D7CCC8;       /* Mocha light border */
+
     --color-success: #2E7D32;
     --color-error: #C62828;
-    --color-info: #B27A4A;
+    --color-info: #8D6E63;               /* Warm Brown for info accents */
 
-    /* Additional text colour used in admin pages */
-    --text-soft: #9C8B7A;
+    /* ── Soft diffused shadows (mocha) ── */
+    --shadow-level-1: 0 1px 3px rgba(93,64,55,0.05), 0 1px 2px rgba(93,64,55,0.03);
+    --shadow-level-2: 0 4px 8px rgba(93,64,55,0.08), 0 1px 3px rgba(93,64,55,0.04);
+    --shadow-level-3: 0 10px 20px rgba(93,64,55,0.1), 0 3px 6px rgba(93,64,55,0.05);
+    --shadow-interactive: 0 8px 16px rgba(93,64,55,0.1), 0 3px 6px rgba(93,64,55,0.05);
+    --shadow-focus: 0 0 0 3px rgba(93,64,55,0.2);
 
-    /* Shadows – soft depth and layering */
-    --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-    --shadow-level-2: 0 4px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
-    --shadow-level-3: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
-    --shadow-interactive: 0 8px 16px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
-    --shadow-focus: 0 0 0 3px rgba(178, 122, 74, 0.3);
-
-    /* Border Radius – crisp, understated */
+    /* ── Border Radius ── */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 20px;
     --radius-full: 9999px;
 
-    /* Transitions – quick and responsive */
+    /* ── Transitions ── */
     --transition-duration-fast: 150ms;
     --transition-duration-base: 250ms;
     --transition-timing-ease: ease;
     --transition-timing-spring: cubic-bezier(0.2, 0.9, 0.4, 1.1);
 
-    /* Spacing Scale – generous whitespace */
+    /* ── Spacing Scale (unchanged) ── */
     --space-3xs: 0.25rem;
     --space-2xs: 0.5rem;
     --space-xs: 0.75rem;
@@ -58,7 +62,6 @@
     --space-3xl: 6rem;
     --space-4xl: 8rem;
 
-    /* Container & Gaps */
     --container-max: 1200px;
     --container-padding: var(--space-lg);
     --section-gap: var(--space-3xl);
@@ -66,17 +69,17 @@
 
 /* Smoother spacing inside room cards */
 .room-listing__body {
-    gap: var(--space-md);   /* was var(--space-sm) – slightly more breathing room */
+    gap: var(--space-md);
 }
 
 .room-listing__body .button {
-    margin-top: var(--space-sm);  /* push the button away from the content above */
+    margin-top: var(--space-sm);
 }
 
 /* View Property panel – equal‑height grid and proper inner spacing */
 .property-detail-grid {
     grid-template-columns: 1fr 1fr;
-    align-items: stretch;          /* force columns to match height */
+    align-items: stretch;
 }
 
 .property-carousel {
@@ -87,11 +90,12 @@
     padding: var(--space-lg);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;  /* distribute information nicely */
+    justify-content: space-between;
 }
 
 .property-info h3 {
     font-size: 1.6rem;
+    color: var(--color-primary);            /* heading mocha */
 }
 
 .property-info .price-badges {
@@ -99,7 +103,7 @@
 }
 
 .property-info p {
-    flex-grow: 1;  /* take available space */
+    flex-grow: 1;
 }
 
 .property-info ul.feature-list {
@@ -107,7 +111,7 @@
 }
 
 .property-info a.button {
-    align-self: stretch;  /* make the button full width */
+    align-self: stretch;
 }
 
 /* ============================================
@@ -159,6 +163,12 @@ a {
     color: inherit;
     text-decoration: none;
     transition: color var(--transition-duration-fast) var(--transition-timing-ease);
+}
+/* Soft underline on hover for all links except buttons */
+a:not(.button):hover {
+    text-decoration: underline;
+    text-decoration-color: var(--color-primary);
+    text-underline-offset: 2px;
 }
 
 button,
@@ -263,9 +273,34 @@ figure {
 }
 
 .auth-layout {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-2xl);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.auth-layout .panel {
+    max-width: 480px;
+    width: 100%;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: var(--space-md);
+    font-size: 0.9rem;
+}
+
+.auth-switch a {
+    color: var(--color-primary-dark);
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+#register-panel {
+    display: none;
+}
+
+#register-panel.is-visible {
+    display: block;
 }
 
 .story-layout {
@@ -411,10 +446,43 @@ figure {
     transform: translateY(0);
 }
 
+/* Image containers – warm overlay on hover */
+.stay-card__media,
+.room-listing__media,
+.story-media,
+.contact-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.stay-card__media::after,
+.room-listing__media::after,
+.story-media::after,
+.contact-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(93,64,55,0.2), rgba(93,64,55,0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.stay-card:hover .stay-card__media::after,
+.room-listing:hover .room-listing__media::after,
+.story-media:hover::after,
+.contact-image:hover::after {
+    opacity: 1;
+}
+
 .hero-media,
 .story-media,
 .contact-image {
-    overflow: hidden;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-level-1);
     transition: transform var(--transition-duration-base) var(--transition-timing-spring), box-shadow var(--transition-duration-base) var(--transition-timing-ease);
@@ -523,7 +591,7 @@ figure {
     font-weight: 600;
     margin: 0;
     line-height: 1.3;
-    color: var(--color-text-primary);
+    color: var(--color-primary);   /* headings use mocha */
 }
 
 .listing-subtitle {
@@ -718,7 +786,7 @@ h1, h2, h3, h4 {
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.2;
-    color: var(--color-text-primary);
+    color: var(--color-primary);    /* headings in mocha */
 }
 
 h1 {
@@ -779,10 +847,10 @@ p + p {
     min-height: 52px;
     padding: 0 var(--space-xl);
     border: 1px solid transparent;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-full);      /* very friendly pill */
     font-size: 0.95rem;
     font-weight: 600;
-    transition: all var(--transition-duration-fast) var(--transition-timing-ease);
+    transition: background-color 0.3s ease-in-out, transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -1054,7 +1122,7 @@ p + p {
     width: 100%;
     margin: 0 auto;
     padding: var(--space-2xl) var(--space-xl);
-    background: rgba(255, 250, 240, 0.92);
+    background: rgba(var(--color-bg-rgb), 0.92);   /* creamy overlay */
     backdrop-filter: blur(8px);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-level-3);
@@ -1063,7 +1131,7 @@ p + p {
 
 .hero--fullscreen .eyebrow,
 .hero--fullscreen h1 {
-    color: var(--color-text-primary);
+    color: var(--color-primary);   /* mocha heading */
 }
 
 .hero--fullscreen .hero-copy {
@@ -1285,7 +1353,7 @@ p + p {
         --container-padding: var(--space-md);
         --section-gap: var(--space-2xl);
     }
-    .hero, .reservation-layout, .story-layout, .contact-layout, .auth-layout {
+    .hero, .reservation-layout, .story-layout, .contact-layout {
         grid-template-columns: 1fr;
     }
     .sidebar-panel {
@@ -1306,6 +1374,9 @@ p + p {
         max-width: 500px;
         margin-left: auto;
         margin-right: auto;
+    }
+    .auth-layout {
+        justify-content: center;
     }
 }
 
@@ -1386,6 +1457,9 @@ p + p {
     h2 {
         font-size: clamp(1.6rem, 3.5vw, 2.2rem);
     }
+    .auth-layout .panel {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 640px) {
@@ -1445,6 +1519,9 @@ p + p {
         width: 90px;
         height: 90px;
         font-size: 2.2rem;
+    }
+    .auth-layout .panel {
+        max-width: 100%;
     }
 }
 
@@ -1579,8 +1656,7 @@ p + p {
     }
     .reservation-layout,
     .contact-layout,
-    .story-layout,
-    .auth-layout {
+    .story-layout {
         gap: var(--space-md);
     }
     .card-grid,
@@ -1650,7 +1726,6 @@ p + p {
    FIX “VIEW PROPERTY” DROPDOWN LAYOUT
    ============================================ */
 
-/* Allow the dropdown to break out of any narrow parent */
 #propertyDropdownContainer {
     width: 100%;
     max-width: 100%;
@@ -1663,7 +1738,6 @@ p + p {
     box-shadow: none;
 }
 
-/* Force two‑column layout on desktop */
 .property-detail-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -1671,14 +1745,12 @@ p + p {
     gap: 0;
 }
 
-/* Give the carousel a solid background and fixed minimum height */
 .property-carousel {
     background: var(--color-surface-muted);
     min-height: 350px;
     overflow: hidden;
 }
 
-/* If no images, center the fallback text */
 .property-carousel > div[style*="background:#f0e3d6"] {
     display: flex;
     align-items: center;
@@ -1687,7 +1759,6 @@ p + p {
     min-height: inherit;
 }
 
-/* Improve readability of the info panel */
 .property-info {
     padding: var(--space-lg);
     display: flex;
@@ -1698,6 +1769,7 @@ p + p {
 .property-info h3 {
     font-size: 1.5rem;
     margin-bottom: var(--space-sm);
+    color: var(--color-primary);
 }
 
 .price-badges {
@@ -1713,7 +1785,6 @@ p + p {
     align-self: stretch;
 }
 
-/* On smaller screens, stack the columns */
 @media (max-width: 720px) {
     .property-detail-grid {
         grid-template-columns: 1fr !important;
@@ -1731,25 +1802,21 @@ p + p {
    FIX SQUASHED IMAGE IN VIEW PROPERTY
    ============================================ */
 
-/* Give the carousel column a definitive height on larger screens */
 .property-carousel {
-    height: 350px;              /* fixed height prevents image distortion */
+    height: 350px;
     background: var(--color-surface-muted);
     overflow: hidden;
 }
 
-/* Ensure the carousel itself fills the column */
 .property-carousel .carousel {
     height: 100%;
 }
 
-/* Carousel track and slides inherit height */
 .property-carousel .carousel-track,
 .property-carousel .carousel-slide {
     height: 100%;
 }
 
-/* The image covers the slide area without distortion */
 .property-carousel .carousel-slide img {
     width: 100%;
     height: 100%;
@@ -1757,7 +1824,6 @@ p + p {
     display: block;
 }
 
-/* On smaller screens, reduce the fixed height and allow it to be flexible */
 @media (max-width: 720px) {
     .property-carousel {
         height: 220px;
@@ -1810,7 +1876,7 @@ p + p {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: var(--space-md);
-    color: var(--color-text-primary);
+    color: var(--color-primary);
     letter-spacing: -0.02em;
 }
 
@@ -1848,7 +1914,7 @@ p + p {
     padding-top: var(--space-lg);
     border-top: 1px solid var(--color-border-light);
     font-size: 0.75rem;
-    color: var(--color-text-soft, #9C8B7A);
+    color: var(--text-soft);
 }
 
 /* Responsive footer */
@@ -1874,4 +1940,8 @@ p + p {
     .footer-contact li {
         margin-bottom: 0;
     }
+}
+
+.panel--accent h1, .panel--accent h2, .panel--accent h3, .panel--accent h4 {
+    color: var(--color-text-inverted);
 }

@@ -152,11 +152,32 @@ function initializeButtons() {
     });
 }
 
-// ---------- Auth ----------
+// ---------- Auth (with PANEL TOGGLE) ----------
 function initializeAuthPage() {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
     if (!loginForm || !registerForm) return;
+
+    // ---- NEW: Toggle between Login and Register panels ----
+    const loginPanel = document.getElementById("login-panel");
+    const registerPanel = document.getElementById("register-panel");
+    const showRegisterLink = document.getElementById("show-register-link");
+    const showLoginLink = document.getElementById("show-login-link");
+
+    if (loginPanel && registerPanel && showRegisterLink && showLoginLink) {
+        showRegisterLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            loginPanel.style.display = "none";
+            registerPanel.classList.add("is-visible");
+        });
+        showLoginLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            registerPanel.classList.remove("is-visible");
+            loginPanel.style.display = "";
+        });
+    }
+    // ---- End of toggle code ----
+
     bindFieldValidation(loginForm);
     bindFieldValidation(registerForm);
     loginForm.addEventListener("submit", (e) => { e.preventDefault(); handleLogin(loginForm); });
@@ -274,11 +295,9 @@ async function loadView(viewName) {
         return;
     }
 
-    // Instead of appending the <main> element (which adds duplicate spacing), we extract its children
     container.innerHTML = '';
     const wrapper = document.createElement('div');
-    wrapper.className = 'reservation-wrapper'; // new clean wrapper
-    // Copy all children from the fetched <main> into our wrapper
+    wrapper.className = 'reservation-wrapper';
     while (mainContent.firstChild) {
         wrapper.appendChild(mainContent.firstChild);
     }
@@ -293,7 +312,6 @@ async function loadView(viewName) {
 }
 
 function refreshDashboardTrip() {
-    // Only works on the user dashboard page
     const dashMain = document.getElementById('dashboard-main');
     if (!dashMain) return;
 
@@ -303,7 +321,7 @@ function refreshDashboardTrip() {
     const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
 
     const tripContent = document.getElementById('current-trip-content');
-    if (!tripContent) return; // dashboard not currently visible, nothing to update
+    if (!tripContent) return;
 
     if (activeReservation) {
         let pricePerNight = activeReservation.price;
@@ -324,7 +342,6 @@ function refreshDashboardTrip() {
             </div>
         `;
         setupPropertyDropdown(activeReservation);
-        // Re‑attach cancel listener (important!)
         const cancelBtn = document.getElementById('cancelDashboardBookingBtn');
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
@@ -332,7 +349,7 @@ function refreshDashboardTrip() {
                     const updated = reservations.filter(r => !(r.roomId === activeReservation.roomId && r.checkin === activeReservation.checkin && r.email === activeReservation.email));
                     writeStorage(STORAGE_KEYS.reservations, updated);
                     showNotification("success", "Booking cancelled successfully.");
-                    refreshDashboardTrip();   // just refresh the trip, not the whole dashboard
+                    refreshDashboardTrip();
                 }
             });
         }
@@ -384,7 +401,6 @@ function renderDashboardView() {
         });
     });
 
-    // Populate the trip data
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const userReservations = reservations.filter(r => r.email === (session.email || ""));
     const activeReservation = userReservations.find(r => new Date(r.checkout) >= new Date()) || userReservations[userReservations.length - 1];
@@ -497,14 +513,6 @@ function showAccountDetail(section, session, container) {
 }
 
 // ========== DOUBLE BOOKING PREVENTION ==========
-/**
- * Check if a room is available for the given date range.
- * @param {string} roomId - e.g., "room-1"
- * @param {string} checkin - YYYY-MM-DD
- * @param {string} checkout - YYYY-MM-DD
- * @param {number|string|null} excludeIndex - optional index of reservation to exclude (for updates)
- * @returns {boolean}
- */
 function isRoomAvailable(roomId, checkin, checkout, excludeIndex = null) {
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const newStart = new Date(checkin);
@@ -518,9 +526,8 @@ function isRoomAvailable(roomId, checkin, checkout, excludeIndex = null) {
         const existingStart = new Date(r.checkin);
         const existingEnd = new Date(r.checkout);
 
-        // Overlap occurs if newStart < existingEnd AND newEnd > existingStart
         if (newStart < existingEnd && newEnd > existingStart) {
-            return false; // conflict
+            return false;
         }
     }
     return true;
@@ -633,7 +640,6 @@ function handleBookingSubmit(form, roomCards) {
         return;
     }
 
-    // ---- DOUBLE BOOKING CHECK ----
     if (!isRoomAvailable(roomId, checkin, checkout)) {
         setFeedback(feedback, "error", "This room is already booked for the selected dates. Please choose different dates or another room.");
         showNotification("error", "Sorry, those dates are not available.");
@@ -658,7 +664,6 @@ function handleBookingSubmit(form, roomCards) {
     });
     highlightSelectedRoom(roomId, roomCards);
     updateBookingTotal(form);
-    // If we are inside the user dashboard, refresh the "Your Stay" panel
     if (document.getElementById('dashboard-main')) {
         refreshDashboardTrip();
     }
@@ -705,14 +710,11 @@ function selectRoom(roomId, roomCards, form) {
     if (!room) return;
     highlightSelectedRoom(roomId, roomCards);
     form.elements.namedItem("roomId").value = roomId;
-
-    // Set max guests dynamically
     const guestField = form.elements.namedItem("guests");
     if (guestField && guestField.type === 'number') {
         guestField.max = room.guests;
         guestField.placeholder = `Up to ${room.guests} guests`;
     }
-
     const summary = document.getElementById("selected-room-summary");
     if (summary) summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
     writeStorage(STORAGE_KEYS.pendingRoom, roomId);
@@ -739,7 +741,6 @@ function updateBookingTotal(form) {
     totalField.textContent = `Total: ${formatCurrency(nights * room.price)} for ${nights} night${nights > 1 ? "s" : ""}`;
 }
 function setDateMinimums() {
-    // Timezone-safe local date in YYYY-MM-DD format
     const now = new Date();
     const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
         .toISOString()
@@ -1056,7 +1057,6 @@ function renderMyReservations() {
     html += `</div></section>`;
     container.innerHTML = html;
 
-    // Attach cancel handlers
     container.querySelectorAll('.btn-cancel-booking').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const roomId = btn.dataset.room;
@@ -1067,8 +1067,7 @@ function renderMyReservations() {
                 const updated = allReservations.filter(r => !(r.roomId === roomId && r.checkin === checkin && r.email === email));
                 writeStorage(STORAGE_KEYS.reservations, updated);
                 showNotification("success", "Booking cancelled.");
-                renderMyReservations();   // refresh list
-                // also refresh the dashboard trip if visible
+                renderMyReservations();
                 if (document.getElementById('current-trip-content')) {
                     refreshDashboardTrip();
                 }
@@ -1107,7 +1106,6 @@ function addActivity(action) {
     writeStorage('cozycorner-activity-log', activityLog);
 }
 
-// ---- Clear Activities (reused by admin & super admin) ----
 function clearRecentActivities() {
     const activities = readStorage('cozycorner-activity-log', []);
     if (activities.length === 0) {
@@ -1119,14 +1117,12 @@ function clearRecentActivities() {
     writeStorage('cozycorner-activity-log', []);
     addActivity('Cleared the activity log');
     showNotification('success', 'Activity log cleared.');
-    // Refresh the activity list if present
     const container = document.getElementById('activity-log');
     if (container) {
         container.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
     }
 }
 
-// ---- ADMIN DASHBOARD ----
 function initAdminDashboard() {
     if (!enforceAdminAccess()) return;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
@@ -1149,15 +1145,12 @@ function initAdminDashboard() {
             </li>
         `).join('');
     }
-
-    // Attach clear activities button
     const clearActBtn = document.getElementById('btn-clear-activities');
     if (clearActBtn) {
         clearActBtn.addEventListener('click', clearRecentActivities);
     }
 }
 
-// ---- MANAGE RESERVATIONS (multi‑select deletion) ----
 function initManageReservations() {
     if (!enforceAdminAccess()) return;
 
@@ -1361,7 +1354,6 @@ function initManageReservations() {
             return;
         }
 
-        // ---- DOUBLE BOOKING CHECK (exclude the current reservation if updating) ----
         const excludeIdx = (editIndex !== '') ? parseInt(editIndex, 10) : null;
         if (!isRoomAvailable(roomId, checkin, checkout, excludeIdx)) {
             showNotification('error', 'This room is already booked for the selected date range.');
@@ -1396,7 +1388,6 @@ function initManageReservations() {
     renderReservations();
 }
 
-// ---- MANAGE ROOMS ----
 function initManageRooms() {
     if (!enforceAdminAccess()) return;
     const modal = document.getElementById('room-modal');
@@ -1534,7 +1525,6 @@ function initManageRooms() {
     renderRooms();
 }
 
-// ---- SUPPORT ----
 function initSupport() {
     if (!enforceAdminAccess()) return;
     const messages = readStorage(STORAGE_KEYS.contact, []);
@@ -1582,7 +1572,6 @@ function initSupport() {
     renderStats();
     renderMessages();
 
-    // Attach clear messages button
     const clearMsgBtn = document.getElementById('btn-clear-messages');
     if (clearMsgBtn && !clearMsgBtn.dataset.listenerAttached) {
         clearMsgBtn.dataset.listenerAttached = 'true';
@@ -1601,11 +1590,9 @@ function clearSupportMessages() {
     writeStorage(STORAGE_KEYS.contact, []);
     addActivity('Cleared all support messages');
     showNotification('success', 'All messages cleared.');
-    // Re‑render the messages list (without adding another listener)
     initSupport();
 }
 
-// ---- SUPER ADMIN DASHBOARD ----
 function initSuperAdminDashboard() {
     if (!enforceSuperAdminAccess()) return;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
@@ -1626,7 +1613,6 @@ function initSuperAdminDashboard() {
         `).join('');
     }
 
-    // Simple revenue chart (last 6 months)
     const revenueContainer = document.getElementById('revenue-chart');
     if (revenueContainer) {
         const monthly = {};
@@ -1649,14 +1635,12 @@ function initSuperAdminDashboard() {
         revenueContainer.innerHTML = html;
     }
 
-    // Attach clear activities button
     const clearActBtn = document.getElementById('btn-clear-activities');
     if (clearActBtn) {
         clearActBtn.addEventListener('click', clearRecentActivities);
     }
 }
 
-// ---- MANAGE ADMINS (super admin only) ----
 function initManageAdmins() {
     if (!enforceSuperAdminAccess()) return;
 
@@ -1667,14 +1651,11 @@ function initManageAdmins() {
     let selectedUsername = null;
 
     function renderAdmins() {
-        // Use getAllUsers() so we see both default and registered admins
         const allUsers = getAllUsers();
-        // Get only admin / super_admin entries
         const adminUsers = Object.entries(allUsers).filter(
             ([_, u]) => u.role === USER_ROLES.ADMIN
         );
 
-        // Normalise: ensure every admin account has an active boolean
         let changed = false;
         adminUsers.forEach(([uname, user]) => {
             if (user.active === undefined) {
@@ -1682,12 +1663,11 @@ function initManageAdmins() {
                 changed = true;
             }
         });
-        // If we added the 'active' field to a default user, save it into localStorage
         if (changed) {
             const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
             adminUsers.forEach(([uname, user]) => {
                 if (registered[uname] === undefined) {
-                    registered[uname] = { ...user }; // copy the full object
+                    registered[uname] = { ...user };
                 } else {
                     registered[uname].active = user.active;
                 }
@@ -1721,7 +1701,6 @@ function initManageAdmins() {
         html += '</tbody></table>';
         container.innerHTML = html;
 
-        // Row selection
         container.querySelectorAll('tbody tr').forEach(row => {
             row.addEventListener('click', (e) => {
                 if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
@@ -1733,14 +1712,12 @@ function initManageAdmins() {
             });
         });
 
-        // Toggle status
         container.querySelectorAll('.btn-toggle-status').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uname = btn.dataset.username;
-                const users = getAllUsers(); // work on the merged list
+                const users = getAllUsers();
                 if (users[uname]) {
                     users[uname].active = !(users[uname].active === false);
-                    // Save the changed field back to localStorage
                     const registered = readStorage(STORAGE_KEYS.registeredUsers, {});
                     registered[uname] = {
                         ...(registered[uname] || {}),
@@ -1754,7 +1731,6 @@ function initManageAdmins() {
             });
         });
 
-        // Remove admin
         container.querySelectorAll('.btn-remove-admin').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uname = btn.dataset.username;

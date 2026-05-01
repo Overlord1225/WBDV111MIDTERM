@@ -14,8 +14,8 @@
         <header class="site-header">
             <nav class="site-nav" aria-label="Main navigation">
                 <a class="site-logo" href="index.html">
-    <img src="img/logo.png" alt="CozyCorner">
-</a>
+                    <img src="img/logo.png" alt="CozyCorner">
+                </a>
                 <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
                     <span></span>
                     <span></span>
@@ -34,14 +34,13 @@
 
         <main class="site-main">
             <section class="auth-layout" aria-labelledby="auth-forms-heading">
-                <h2 id="auth-forms-heading" class="visually-hidden">Authentication Forms</h2>
-                <section class="panel" aria-labelledby="login-title">
+                <h2 id="auth-forms-heading" class="visually-hidden">Authentication Form</h2>
+
+                <!-- LOGIN PANEL – visible by default -->
+                <section class="panel" id="login-panel" aria-labelledby="login-title">
                     <div class="panel-heading">
                         <h2 id="login-title">Login</h2>
-                        <p>Use an account you already registered on this device.</p>
-                        <p> Username: user / Password: user123</p>
-                        <p> Admin Username: admin / Password: admin123</p>
-                        <p> Super Admin Username: super / Password: super123</p>
+                        
                     </div>
 
                     <form class="auth-form" id="login-form" novalidate>
@@ -60,9 +59,14 @@
                         <button class="button button--primary" type="submit">Login</button>
                         <p class="form-feedback" id="login-feedback" aria-live="polite"></p>
                     </form>
+
+                    <div class="auth-switch">
+                        Don't have an account? <a href="#" id="show-register-link">Register</a>
+                    </div>
                 </section>
 
-                <section class="panel" aria-labelledby="register-title">
+                <!-- REGISTER PANEL – hidden initially, shown via JS/CSS -->
+                <section class="panel" id="register-panel" aria-labelledby="register-title">
                     <div class="panel-heading">
                         <h2 id="register-title">Register</h2>
                         <p>Create an account to reuse your details for future bookings.</p>
@@ -96,41 +100,45 @@
                         <button class="button button--primary" type="submit">Register</button>
                         <p class="form-feedback" id="register-feedback" aria-live="polite"></p>
                     </form>
+
+                    <div class="auth-switch">
+                        Already have an account? <a href="#" id="show-login-link">Back to login</a>
+                    </div>
                 </section>
             </section>
         </main>
+    </div>
 
-        
-    </div>
     <footer class="site-footer">
-    <div class="footer-inner">
-        <div class="footer-brand">
-            <img src="img/logo.png" alt="CozyCorner">
-            <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="img/logo.png" alt="CozyCorner">
+                <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reservation.html">Reservations</a></li>
+                    <li><a href="aboutus.html">About us</a></li>
+                    <li><a href="contactus.html">Contact us</a></li>
+                    <li><a href="login.html">Login/Register</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <ul>
+                    <li>Email: hello@cozycorner.example</li>
+                    <li>Phone: +63 912 345 6789</li>
+                    <li>Daily, 8:00 AM – 8:00 PM</li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-links">
-            <h4>Explore</h4>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="reservation.html">Reservations</a></li>
-                <li><a href="aboutus.html">About us</a></li>
-                <li><a href="contactus.html">Contact us</a></li>
-                <li><a href="login.html">Login/Register</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CozyCorner. All rights reserved.</p>
         </div>
-        <div class="footer-contact">
-            <h4>Contact</h4>
-            <ul>
-                <li>Email: hello@cozycorner.example</li>
-                <li>Phone: +63 912 345 6789</li>
-                <li>Daily, 8:00 AM – 8:00 PM</li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2025 CozyCorner. All rights reserved.</p>
-    </div>
-</footer>
+    </footer>
+
     <script src="js/script.js"></script>
 </body>
 </html>
