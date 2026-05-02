@@ -597,9 +597,7 @@ function initializeReservationPage() {
             }
         });
     }
-    applyRoomFilters(filterForm, roomCards);
-    preloadSelectedRoom(roomCards, bookingForm);
-    prefillBookingFromSession();
+    
 }
 function handleBookingSubmit(form, roomCards) {
     const roomId = getFieldValue(form, "roomId");
@@ -689,7 +687,7 @@ function preloadSelectedRoom(roomCards, form) {
     const params = new URLSearchParams(window.location.search);
     const roomFromQuery = params.get("room");
     const roomFromStorage = readStorage(STORAGE_KEYS.pendingRoom, "");
-    const initialRoomId = roomFromQuery || roomFromStorage || roomCards[0]?.dataset.roomId;
+    const initialRoomId = roomFromQuery || roomFromStorage || null;
     if (initialRoomId) {
         selectRoom(initialRoomId, roomCards, form);
         if (roomFromQuery) scrollToRoomCard(initialRoomId);
@@ -1394,34 +1392,113 @@ function initManageRooms() {
     const form = document.getElementById('room-form-modal');
     const modalTitle = document.getElementById('room-modal-title');
     const closeBtn = document.getElementById('btn-close-room-modal');
+    const imageInput = document.getElementById('room-images-upload');
+    const previewContainer = document.getElementById('image-preview-container');
     let selectedRoomKey = null;
+    let existingImages = [];        // for edit mode
+    let newImageFiles = [];        // File objects from current selection
 
+    // ── Helper: clear previews ──
+    function clearImagePreviews() {
+        if (previewContainer) previewContainer.innerHTML = '';
+        newImageFiles = [];
+        if (imageInput) imageInput.value = '';
+    }
+
+    // ── Helper: show existing + new previews ──
+    function refreshPreviews() {
+        if (!previewContainer) return;
+        previewContainer.innerHTML = '';
+        // existing images (data URLs)
+        existingImages.forEach((url, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'position:relative;width:80px;height:60px;overflow:hidden;border-radius:var(--radius-sm);border:1px solid var(--color-border-light);';
+            const img = document.createElement('img');
+            img.src = url;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.textContent = '×';
+            removeBtn.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;line-height:1;cursor:pointer;';
+            removeBtn.addEventListener('click', () => {
+                existingImages.splice(idx, 1);
+                refreshPreviews();
+            });
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            previewContainer.appendChild(wrapper);
+        });
+        // new file thumbnails
+        newImageFiles.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'position:relative;width:80px;height:60px;overflow:hidden;border-radius:var(--radius-sm);border:1px solid var(--color-border-light);';
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.textContent = '×';
+                removeBtn.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;line-height:1;cursor:pointer;';
+                removeBtn.addEventListener('click', () => {
+                    newImageFiles.splice(idx, 1);
+                    refreshPreviews();
+                });
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ── File input change handler ──
+    if (imageInput) {
+        imageInput.addEventListener('change', () => {
+            newImageFiles = Array.from(imageInput.files);
+            refreshPreviews();
+        });
+    }
+
+    // ── Render rooms (updated to show image thumbnails) ──
     function renderRooms() {
         const customRooms = readStorage('cozycorner-custom-rooms', {});
         const allRooms = { ...ROOM_DATA, ...customRooms };
         const container = document.getElementById('rooms-container');
-        container.innerHTML = Object.entries(allRooms).map(([key, room]) => `
-            <article class="room-listing room-card ${key === selectedRoomKey ? 'is-selected' : ''}" data-room-id="${key}">
-                <div class="room-listing__body">
-                    <div class="room-listing__header">
-                        <div>
-                            <h3>${room.name}</h3>
-                            <p class="listing-subtitle">${room.title}</p>
+        container.innerHTML = Object.entries(allRooms).map(([key, room]) => {
+            // if room has images, use the first one as thumbnail; else show placeholder or nothing
+            let imageHtml = '';
+            if (room.images && room.images.length > 0) {
+                imageHtml = `<div class="room-listing__media" style="aspect-ratio:4/3;overflow:hidden;background:var(--color-surface-muted);"><img src="${room.images[0]}" style="width:100%;height:100%;object-fit:cover;" alt="${room.name}"></div>`;
+            } else {
+                imageHtml = `<div class="room-listing__media" style="aspect-ratio:4/3;overflow:hidden;background:var(--color-surface-muted);display:flex;align-items:center;justify-content:center;color:var(--text-soft);">No image</div>`;
+            }
+
+            return `
+                <article class="room-listing room-card ${key === selectedRoomKey ? 'is-selected' : ''}" data-room-id="${key}">
+                    ${imageHtml}
+                    <div class="room-listing__body">
+                        <div class="room-listing__header">
+                            <div>
+                                <h3>${room.name}</h3>
+                                <p class="listing-subtitle">${room.title}</p>
+                            </div>
+                            <span class="price-tag">${formatCurrency(room.price)}</span>
                         </div>
-                        <span class="price-tag">${formatCurrency(room.price)}</span>
+                        <p>${room.description}</p>
+                        <ul class="feature-list">
+                            <li>${room.guests} guests</li>
+                            <li>${room.type}</li>
+                        </ul>
+                        <div class="room-actions">
+                            <button class="button button--secondary btn-select-room" data-room-key="${key}">Select</button>
+                            ${customRooms[key] ? '<button class="button button--danger btn-delete-room" data-room-key="'+key+'">Delete</button>' : ''}
+                        </div>
                     </div>
-                    <p>${room.description}</p>
-                    <ul class="feature-list">
-                        <li>${room.guests} guests</li>
-                        <li>${room.type}</li>
-                    </ul>
-                    <div class="room-actions">
-                        <button class="button button--secondary btn-select-room" data-room-key="${key}">Select</button>
-                        ${customRooms[key] ? '<button class="button button--danger btn-delete-room" data-room-key="'+key+'">Delete</button>' : ''}
-                    </div>
-                </div>
-            </article>
-        `).join('');
+                </article>
+            `;
+        }).join('');
 
         container.querySelectorAll('.btn-select-room').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1444,7 +1521,13 @@ function initManageRooms() {
         });
     }
 
+    // ── Show modal (now includes image previews) ──
     function showModal(edit = false) {
+        clearImagePreviews();
+        existingImages = [];
+        newImageFiles = [];
+        if (imageInput) imageInput.value = '';
+
         if (edit && selectedRoomKey) {
             const customRooms = readStorage('cozycorner-custom-rooms', {});
             const room = customRooms[selectedRoomKey] || ROOM_DATA[selectedRoomKey];
@@ -1457,11 +1540,16 @@ function initManageRooms() {
             form.elements['type'].value = room.type;
             form.elements['description'].value = room.description;
             modalTitle.textContent = 'Update Room';
+            // load existing images if any
+            if (room.images && Array.isArray(room.images)) {
+                existingImages = [...room.images];
+            }
         } else {
             form.reset();
             form.elements['roomKey'].value = '';
             modalTitle.textContent = 'Add Room';
         }
+        refreshPreviews();
         modal.style.display = 'flex';
     }
 
@@ -1470,6 +1558,7 @@ function initManageRooms() {
     closeBtn.addEventListener('click', hideModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
 
+    // ── Button event listeners (unchanged) ──
     document.getElementById('btn-add-room').addEventListener('click', () => {
         selectedRoomKey = null;
         showModal(false);
@@ -1497,7 +1586,8 @@ function initManageRooms() {
         }
     });
 
-    form.addEventListener('submit', (e) => {
+    // ── Form submit (now handles image files) ──
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const roomId = form.elements['roomId'].value.trim();
         const title = form.elements['title'].value.trim();
@@ -1505,6 +1595,7 @@ function initManageRooms() {
         const guests = parseInt(form.elements['guests'].value);
         const type = form.elements['type'].value;
         const description = form.elements['description'].value.trim();
+
         if (!roomId || !title || isNaN(price) || isNaN(guests) || !type || !description) {
             showNotification('error','All fields are required.');
             return;
@@ -1514,12 +1605,38 @@ function initManageRooms() {
             showNotification('error','That room ID is already used by a default room.');
             return;
         }
-        customRooms[roomId] = { name: roomId, title, price, guests, type, description, features: [`${guests} guests`, type.charAt(0).toUpperCase()+type.slice(1)] };
+
+        // Process image files into data URLs
+        const newDataUrls = await Promise.all(
+            newImageFiles.map(file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            }))
+        );
+
+        // Combine existing + new images
+        const finalImages = [...existingImages, ...newDataUrls];
+
+        customRooms[roomId] = {
+            name: roomId,
+            title,
+            price,
+            guests,
+            type,
+            description,
+            features: [`${guests} guests`, type.charAt(0).toUpperCase()+type.slice(1)],
+            images: finalImages   // <-- stored as array of data URLs
+        };
+
         writeStorage('cozycorner-custom-rooms', customRooms);
         hideModal();
         renderRooms();
-        addActivity('Room saved');
+        addActivity('Room saved with images');
         showNotification('success','Room saved!');
+        clearImagePreviews();
+        existingImages = [];
     });
 
     renderRooms();

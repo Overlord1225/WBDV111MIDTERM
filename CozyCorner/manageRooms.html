@@ -59,9 +59,7 @@
             </div>
         </main>
 
-        <footer class="site-footer">
-            <p>CozyCorner Admin – room management</p>
-        </footer>
+        
     </div>
 
     <!-- Room edit/add modal -->
@@ -108,8 +106,17 @@
                     <textarea id="room-desc" name="description" rows="3" required></textarea>
                     <p class="field-message"></p>
                 </div>
-                <button class="button button--primary" type="submit">Save</button>
+                
+                <div class="field">
+                <label for="room-images-upload">Room Images</label>
+                <input id="room-images-upload" type="file" name="images" accept="image/*" multiple>
+                <div id="image-preview-container" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
+                <p class="field-message"></p>
+            </div>
+
+            <button class="button button--primary" type="submit">Save</button>
             </form>
+                
         </div>
     </div>
     <footer class="site-footer">
