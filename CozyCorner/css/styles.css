@@ -1945,3 +1945,51 @@ p + p {
 .panel--accent h1, .panel--accent h2, .panel--accent h3, .panel--accent h4 {
     color: var(--color-text-inverted);
 }
+
+/* ---------- Improved Logo (Header) ---------- */
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-logo img {
+  height: 44px;                 /* slightly smaller for a refined look */
+  width: auto;
+  border-radius: var(--radius-md);   /* 12px – matches card rounding */
+  background: var(--color-surface);
+  padding: 6px 10px;
+  box-shadow: var(--shadow-level-1);
+  transition: transform 0.25s var(--transition-timing-spring),
+              box-shadow 0.25s var(--transition-timing-ease);
+}
+
+.site-logo:hover img {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-level-2);
+}
+
+/* Responsive – keep logo readable on small screens */
+@media (max-width: 480px) {
+  .site-logo img {
+    height: 38px;
+    padding: 4px 8px;
+  }
+}
+
+/* ---------- Improved Logo (Footer) ---------- */
+.footer-brand img {
+  height: 40px;
+  width: auto;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 6px 10px;
+  box-shadow: var(--shadow-level-1);
+  transition: transform 0.25s var(--transition-timing-spring);
+  margin-bottom: var(--space-sm);
+}
+
+.footer-brand img:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-level-2);
+}
