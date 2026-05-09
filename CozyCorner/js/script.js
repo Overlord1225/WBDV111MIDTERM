@@ -5,7 +5,8 @@ const STORAGE_KEYS = {
     reservations: "cozycorner-reservations",
     pendingRoom: "cozycorner-pending-room",
     customRooms: "cozycorner-custom-rooms",
-    activityLog: "cozycorner-activity-log"
+    activityLog: "cozycorner-activity-log",
+    pendingBooking: "cozycorner-pending-booking"
 };
 
 const ROOM_DATA = {
@@ -234,6 +235,19 @@ function handleLogin(form) {
         email: matchedUser.email,
         role: matchedUser.role
     });
+
+    // Check for pending booking
+    const pending = readSession(STORAGE_KEYS.pendingBooking, null);
+    if (pending) {
+        writeSession(STORAGE_KEYS.pendingBooking, null);   // clear it
+        const params = `room=${encodeURIComponent(pending.roomId)}` +
+                       (pending.checkin ? `&checkin=${encodeURIComponent(pending.checkin)}` : '') +
+                       (pending.checkout ? `&checkout=${encodeURIComponent(pending.checkout)}` : '') +
+                       (pending.guests ? `&guests=${encodeURIComponent(pending.guests)}` : '');
+        window.location.href = 'reservation.html?' + params;
+        return;
+    }
+
     const redirectTo = (matchedUser.role === USER_ROLES.SUPER_ADMIN) ? 'superadmin.html' :
                       (matchedUser.role === USER_ROLES.ADMIN) ? 'admin.html' : 'user.html';
     setFeedback(feedback, "success", `Welcome back, ${matchedUser.username}. Redirecting...`);
@@ -288,6 +302,19 @@ function handleRegistration(registerForm, loginForm) {
     const loginUsername = loginForm.elements.namedItem("username");
     if (loginUsername) loginUsername.value = username;
     showNotification("success", `Account created! Welcome ${username}.`);
+
+    // Check for pending booking
+    const pending = readSession(STORAGE_KEYS.pendingBooking, null);
+    if (pending) {
+        writeSession(STORAGE_KEYS.pendingBooking, null);
+        const params = `room=${encodeURIComponent(pending.roomId)}` +
+                       (pending.checkin ? `&checkin=${encodeURIComponent(pending.checkin)}` : '') +
+                       (pending.checkout ? `&checkout=${encodeURIComponent(pending.checkout)}` : '') +
+                       (pending.guests ? `&guests=${encodeURIComponent(pending.guests)}` : '');
+        window.location.href = 'reservation.html?' + params;
+        return;
+    }
+
     setTimeout(() => { window.location.href = "user.html"; }, 800);
 }
 
@@ -771,7 +798,7 @@ function closeTermsOverlay() {
     if (overlay) overlay.style.display = 'none';
 }
 
-function openBookingOverlay(roomId) {
+function openBookingOverlay(roomId, options = {}) {
     try {
         ensureBookingOverlay();
         const overlay = document.getElementById('booking-overlay');
@@ -793,6 +820,23 @@ function openBookingOverlay(roomId) {
         form.elements['roomId'].value = roomId;
         form.reset();
         clearFormState(form);
+
+        // --- Pre‑fill fields if options provided ---
+        if (options.checkin) form.elements['checkin'].value = options.checkin;
+        if (options.checkout) form.elements['checkout'].value = options.checkout;
+        if (options.guests) form.elements['guests'].value = options.guests;
+
+        // --- Pre‑fill name and email from session (logged‑in user) ---
+        const session = readSession(STORAGE_KEYS.session);
+        if (session) {
+            if (!options.keepName && session.username) {
+                form.elements['name'].value = session.username;
+            }
+            if (session.email) {
+                form.elements['email'].value = session.email;
+            }
+        }
+
         document.getElementById('overlay-total').textContent = 'Total: select dates';
         document.getElementById('overlay-feedback').textContent = '';
 
@@ -802,7 +846,6 @@ function openBookingOverlay(roomId) {
         form.elements['guests'].max = room.guests;
         form.elements['guests'].placeholder = `Up to ${room.guests}`;
 
-        // No per‑field addEventListener – the delegated listener from ensureBookingOverlay handles it
         overlay.style.display = 'flex';
     } catch (err) {
         console.error('Error in openBookingOverlay:', err);
@@ -863,13 +906,13 @@ function handleOverlayBookingSubmit() {
     const guests = getFieldValue(form, 'guests');
     const termsChecked = form.elements['terms'].checked;
 
-    // If every field is empty, just show one quick message
-    if (!name && !email && !checkin && !checkout && !guests) {
-        setFeedback(
-            document.getElementById('overlay-feedback'),
-            'error',
-            'Please fill in all required fields before booking.'
-        );
+    // --- 1. Not logged in? Save intent and redirect to login ---
+    const session = readSession(STORAGE_KEYS.session);
+    if (!session) {
+        const pending = { roomId, checkin, checkout, guests };
+        writeSession(STORAGE_KEYS.pendingBooking, pending);
+        // Redirect to login with a parameter so we know to come back
+        window.location.href = 'login.html?redirect=reservation.html%3Froom%3D' + encodeURIComponent(roomId);
         return;
     }
 
@@ -1055,16 +1098,25 @@ function initializeReservationPage() {
     // Initialize overlay listeners (will also bind if overlay already exists)
     initOverlayBookingListeners();
 
-    // Pre‑select room from URL if present
+    // Pre‑select room from URL if present, with optional checkin/checkout/guests
     const urlParams = new URLSearchParams(window.location.search);
     const roomFromURL = urlParams.get("room");
+    const checkinFromURL = urlParams.get("checkin");
+    const checkoutFromURL = urlParams.get("checkout");
+    const guestsFromURL = urlParams.get("guests");
+
     if (roomFromURL) {
         setTimeout(() => {
             const card = document.querySelector(`.room-listing[data-room-id="${roomFromURL}"]`);
             if (card) {
                 card.scrollIntoView({ behavior: "smooth", block: "center" });
-                const reserveBtn = card.querySelector('.reserve-trigger');
-                if (reserveBtn) reserveBtn.click();
+                // Open the overlay with pre‑filled data if available
+                const options = {
+                    checkin: checkinFromURL || '',
+                    checkout: checkoutFromURL || '',
+                    guests: guestsFromURL || '',
+                };
+                openBookingOverlay(roomFromURL, options);
             }
         }, 300);
     }
@@ -1305,7 +1357,7 @@ function initializeStaticLogout() {
     if (logoutLink) {
         logoutLink.addEventListener('click', (e) => {
             e.preventDefault();
-            sessionStorage.clear();
+            sessionStorage.clear();  // also clears pendingBooking
             window.location.href = 'login.html';
         });
     }
