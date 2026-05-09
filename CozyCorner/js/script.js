@@ -1,12 +1,11 @@
-/************************************************************
- *  CozyCorner – Complete Refactored Front‑End Logic
- ************************************************************/
 const STORAGE_KEYS = {
     registeredUsers: "cozycorner_registered_users",
     session: "cozycorner-session",
     contact: "cozycorner-contact-messages",
     reservations: "cozycorner-reservations",
-    pendingRoom: "cozycorner-pending-room"
+    pendingRoom: "cozycorner-pending-room",
+    customRooms: "cozycorner-custom-rooms",
+    activityLog: "cozycorner-activity-log"
 };
 
 const ROOM_DATA = {
@@ -26,6 +25,13 @@ const ROOM_IMAGES = {
     "room-5": ["img/room5/9340069e-24d2-4c0f-9558-364744bdfe78.jpeg", "img/room5/bbffdf0b-6926-4800-ac7a-021e97a662de.jpeg", "img/room5/ea2b8597-0abb-44d9-9ee6-3f3a4396a8f7.jpeg", "img/room5/e2ab49e2-aeb9-4308-969e-8329e514bdf4.jpeg"],
     "room-6": ["img/room6/9535844c-f80b-46dc-bf47-8c62001e2175.jpeg", "img/room6/e8b4e5c7-3f13-4d7f-8a83-7a75ed3888ec.jpeg", "img/room6/c47f2b9a-e2b7-4368-b112-39b9ea3cec7d.jpeg", "img/room6/9af22104-09aa-4dbc-a7f4-d844c9fce34d.jpeg"]
 };
+
+const MOCK_REVIEWS = [
+    { roomId: "room-1", user: "Alice", rating: 5, comment: "Absolutely loved the cozy atmosphere!", date: "2026-04-01" },
+    { roomId: "room-1", user: "Bob", rating: 4, comment: "Beautiful room, but a bit pricey.", date: "2026-03-28" },
+    { roomId: "room-2", user: "Charlie", rating: 5, comment: "Perfect for a solo traveller.", date: "2026-04-05" },
+    { roomId: "room-3", user: "Diana", rating: 4, comment: "Great work desk, very bright.", date: "2026-04-02" },
+];
 
 const USER_ROLES = { USER: "user", ADMIN: "admin", SUPER_ADMIN: "super_admin" };
 
@@ -48,7 +54,6 @@ function saveUser(user) {
     writeStorage(STORAGE_KEYS.registeredUsers, registered);
 }
 
-// ---------- Global cache ----------
 let cachedViews = {};
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -62,8 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeStaticLogout();
 
     const currentPage = getCurrentPageName();
+    
     if (currentPage === "reservation.html") {
         initializeReservationPage();
+    } else if (currentPage === "index.html") {
+        renderRoomCardsOnHome();
+        renderGuestReviews();
     } else if (currentPage === "contactus.html") {
         initializeContactForm();
     } else if (currentPage === "admin.html") {
@@ -152,13 +161,12 @@ function initializeButtons() {
     });
 }
 
-// ---------- Auth (with PANEL TOGGLE) ----------
+// ---------- Auth ----------
 function initializeAuthPage() {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
     if (!loginForm || !registerForm) return;
 
-    // ---- NEW: Toggle between Login and Register panels ----
     const loginPanel = document.getElementById("login-panel");
     const registerPanel = document.getElementById("register-panel");
     const showRegisterLink = document.getElementById("show-register-link");
@@ -176,7 +184,6 @@ function initializeAuthPage() {
             loginPanel.style.display = "";
         });
     }
-    // ---- End of toggle code ----
 
     bindFieldValidation(loginForm);
     bindFieldValidation(registerForm);
@@ -187,19 +194,41 @@ function handleLogin(form) {
     const username = getFieldValue(form, "username");
     const password = getFieldValue(form, "password");
     const feedback = document.getElementById("login-feedback");
-    if (!validateRequired(form, "username", username, "Enter your username.") ||
-        !validateRequired(form, "password", password, "Enter your password.")) {
-        setFeedback(feedback, "error", "Please complete the login form.");
-        showNotification("error", "Please complete all fields.");
+    // Clear previous states
+    clearFieldState(form, 'username');
+    clearFieldState(form, 'password');
+
+    let loginError = '';
+    let matchedUser = null;   // <-- declared here so it's available later
+
+    if (!username && !password) {
+        loginError = 'Please enter your username and password.';
+        setFieldState(form, 'username', 'error', 'Required');
+        setFieldState(form, 'password', 'error', 'Required');
+    } else if (!username) {
+        loginError = 'Please enter your username.';
+        setFieldState(form, 'username', 'error', 'Required');
+    } else if (!password) {
+        loginError = 'Please enter your password.';
+        setFieldState(form, 'password', 'error', 'Required');
+    } else {
+        // Both filled – now check credentials
+        const allUsers = getAllUsers();
+        matchedUser = allUsers[username];   // assign inside this block
+        if (!matchedUser || matchedUser.password !== password) {
+            loginError = 'Invalid username or password. Please try again.';
+            setFieldState(form, 'username', 'error', 'Invalid credentials');
+            setFieldState(form, 'password', 'error', 'Invalid credentials');
+        }
+    }
+
+    if (loginError) {
+        setFeedback(feedback, 'error', loginError);
+        showNotification('error', loginError);
         return;
     }
-    const allUsers = getAllUsers();
-    const matchedUser = allUsers[username];
-    if (!matchedUser || matchedUser.password !== password) {
-        setFeedback(feedback, "error", "Invalid username or password.");
-        showNotification("error", "Invalid credentials.");
-        return;
-    }
+
+    // --- success ---
     writeSession(STORAGE_KEYS.session, {
         username: matchedUser.username,
         email: matchedUser.email,
@@ -217,25 +246,39 @@ function handleRegistration(registerForm, loginForm) {
     const password = getFieldValue(registerForm, "password");
     const confirmPassword = getFieldValue(registerForm, "confirm-password");
     const feedback = document.getElementById("register-feedback");
-    let isValid = true;
-    isValid = validateRequired(registerForm, "username", username, "Choose a username.") && isValid;
-    isValid = validateEmailField(registerForm, "email", email) && isValid;
-    isValid = validatePassword(registerForm, "password", password) && isValid;
-    isValid = validateConfirmPassword(registerForm, password, confirmPassword) && isValid;
     const allUsers = getAllUsers();
-    if (allUsers[username]) {
-        setFieldState(registerForm, "username", "error", "That username is already registered.");
-        isValid = false;
+
+    let regError = '';
+    const setRegError = (field, msg) => {
+        setFieldState(registerForm, field, 'error', msg);
+        regError = msg;
+    };
+
+    if (!username) setRegError('username', 'Please choose a username.');
+    else if (allUsers[username]) setRegError('username', 'This username is already taken.');
+
+    if (!regError || regError === 'This username is already taken.') {
+        if (!email) setRegError('email', 'Please enter your email address.');
+        else if (!isValidEmail(email)) setRegError('email', 'Please enter a valid email.');
+        else if (Object.values(allUsers).some(u => u.email === email)) setRegError('email', 'This email is already registered.');
     }
-    if (Object.values(allUsers).some(u => u.email === email)) {
-        setFieldState(registerForm, "email", "error", "That email is already registered.");
-        isValid = false;
+
+    if (!regError || regError === 'This email is already registered.') {
+        if (!password) setRegError('password', 'Please create a password.');
+        else if (password.length < 6) setRegError('password', 'Password must be at least 6 characters.');
     }
-    if (!isValid) {
-        setFeedback(feedback, "error", "Please review the registration fields.");
-        showNotification("error", "Registration failed. Check your inputs.");
+
+    if (!regError || regError === 'Password must be at least 6 characters.') {
+        if (!confirmPassword) setRegError('confirm-password', 'Please confirm your password.');
+        else if (password !== confirmPassword) setRegError('confirm-password', 'Passwords do not match.');
+    }
+
+    if (regError) {
+        setFeedback(feedback, 'error', regError);
+        showNotification('error', regError);
         return;
     }
+    // … rest unchanged
     const newUser = { username, email, password, role: USER_ROLES.USER };
     saveUser(newUser);
     writeSession(STORAGE_KEYS.session, { username, email, role: USER_ROLES.USER });
@@ -454,8 +497,8 @@ function setupPropertyDropdown(reservation) {
     let isOpen = false;
     btn.onclick = () => {
         if (!isOpen) {
-            const room = ROOM_DATA[reservation.roomId];
-            const images = ROOM_IMAGES[reservation.roomId] || [];
+            const room = ROOM_DATA[reservation.roomId] || readStorage(STORAGE_KEYS.customRooms, {})[reservation.roomId];
+            const images = (ROOM_IMAGES[reservation.roomId] || room?.images || []);
             let carouselHtml = '';
             if (images.length) {
                 carouselHtml = `
@@ -480,7 +523,7 @@ function setupPropertyDropdown(reservation) {
                                 <span class="price-tag">🏷️ ${room.type}</span>
                             </div>
                             <p>${room.description}</p>
-                            <ul class="feature-list">${room.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+                            <ul class="feature-list">${(room.features||[]).map(f=>`<li>${f}</li>`).join('')}</ul>
                             <a href="reservation.html?room=${reservation.roomId}" class="button button--primary" style="width:100%;">Book again</a>
                         </div>
                         <div class="property-carousel">
@@ -517,130 +560,383 @@ function isRoomAvailable(roomId, checkin, checkout, excludeIndex = null) {
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const newStart = new Date(checkin);
     const newEnd = new Date(checkout);
-
     for (let i = 0; i < reservations.length; i++) {
         const r = reservations[i];
         if (excludeIndex !== null && i == excludeIndex) continue;
         if (r.roomId !== roomId) continue;
-
         const existingStart = new Date(r.checkin);
         const existingEnd = new Date(r.checkout);
-
         if (newStart < existingEnd && newEnd > existingStart) {
             return false;
         }
     }
     return true;
 }
-// =============================================
 
-// ---------- Reservation page ----------
-function initializeReservationPage() {
-    const filterForm = document.getElementById("filter-form");
-    const bookingForm = document.getElementById("booking-form");
-    const roomCards = Array.from(document.querySelectorAll(".room-listing"));
-    const clearFilters = document.getElementById("clear-filters");
-    if (!filterForm || !bookingForm || roomCards.length === 0) return;
-    setDateMinimums();
-    bindFieldValidation(bookingForm);
-    filterForm.addEventListener("submit", (e) => { e.preventDefault(); applyRoomFilters(filterForm, roomCards); });
-    clearFilters?.addEventListener("click", () => { filterForm.reset(); applyRoomFilters(filterForm, roomCards); showNotification("info", "Filters cleared."); });
-    roomCards.forEach(card => card.addEventListener("click", (e) => {
-        if (e.target.closest(".reserve-trigger")) return;
-        selectRoom(card.dataset.roomId, roomCards, bookingForm);
-    }));
-    document.querySelectorAll(".reserve-trigger").forEach(btn => btn.addEventListener("click", () => {
-        const roomId = btn.dataset.roomSelect;
-        selectRoom(roomId, roomCards, bookingForm);
-        bookingForm.scrollIntoView({ behavior: "smooth", block: "center" });
-    }));
-    ["checkin","checkout","guests"].forEach(name => {
-        const field = bookingForm.elements.namedItem(name);
-        field?.addEventListener("input", () => updateBookingTotal(bookingForm));
-    });
-    bookingForm.addEventListener("submit", (e) => { e.preventDefault(); handleBookingSubmit(bookingForm, roomCards); });
-    
-    const existingCancel = bookingForm.querySelector(".cancel-booking-btn");
-    if (!existingCancel) {
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button";
-        cancelBtn.className = "button button--danger cancel-booking-btn";
-        cancelBtn.textContent = "Cancel selection";
-        const submitBtn = bookingForm.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            const group = document.createElement("div");
-            group.className = "form-action-group";
-            submitBtn.parentNode.insertBefore(group, submitBtn);
-            group.appendChild(submitBtn);
-            group.appendChild(cancelBtn);
-        } else {
-            bookingForm.appendChild(cancelBtn);
+// ========== Dynamic Room Card Builder ==========
+function buildRoomCard(room, roomId) {
+    const defaultImages = ROOM_IMAGES[roomId] || [];
+    const customImages = room.images || [];
+    const allImages = customImages.length > 0 ? customImages : defaultImages;
+    const firstImage = allImages.length > 0 ? allImages[0] : 'img/placeholder.jpg';
+
+    const carouselHtml = allImages.length > 1 ? `
+        <div class="carousel" data-carousel>
+            <div class="carousel-track">
+                ${allImages.map((img, i) => `<div class="carousel-slide ${i===0?'is-active':''}"><img src="${img}" alt="${room.name}"></div>`).join('')}
+            </div>
+            <button class="carousel-btn carousel-btn--prev"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+            <button class="carousel-btn carousel-btn--next"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+            <div class="carousel-dots"></div>
+        </div>
+    ` : `<img src="${firstImage}" alt="${room.name}" style="width:100%; height:100%; object-fit:cover;">`;
+
+    const featuresHtml = room.features ? room.features.map(f => `<li>${f}</li>`).join('') : '';
+
+    return `
+    <article class="room-listing" data-room-id="${roomId}" data-price="${room.price}" data-guests="${room.guests}" data-type="${room.type}">
+        <figure class="room-listing__media">
+            ${carouselHtml}
+        </figure>
+        <div class="room-listing__body">
+            <div class="room-listing__header">
+                <div>
+                    <h3>${room.name}</h3>
+                    <p class="listing-subtitle">${room.title}</p>
+                </div>
+                <span class="price-tag">PHP ${room.price.toLocaleString()}</span>
+            </div>
+            <p>${room.description}</p>
+            <ul class="feature-list">
+                <li>${room.guests} guest${room.guests!==1?'s':''}</li>
+                <li>${room.type.charAt(0).toUpperCase()+room.type.slice(1)}</li>
+                ${featuresHtml}
+            </ul>
+            <div class="room-rating" data-room-id="${roomId}">
+                <!-- stars injected by renderRatingOnCards() -->
+            </div>
+            <button class="button button--primary reserve-trigger" type="button">Reserve</button>
+        </div>
+    </article>`;
+}
+
+function renderRoomGrid(applyFilters = false) {
+    const grid = document.getElementById('room-grid');
+    if (!grid) return;
+    const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
+    const allRooms = { ...ROOM_DATA, ...customRooms };
+    let html = '';
+    for (const [roomId, room] of Object.entries(allRooms)) {
+        html += buildRoomCard(room, roomId);
+    }
+    grid.innerHTML = html;
+    initializeCarousels();
+    renderRatingOnCards();
+    if (applyFilters) {
+        const filterForm = document.getElementById('filter-form');
+        if (filterForm) applyRoomFilters(filterForm, Array.from(grid.querySelectorAll('.room-listing')));
+    }
+}
+
+// ---------- Overlay booking (with failsafe auto‑creation) ----------
+function ensureBookingOverlay() {
+    if (document.getElementById('booking-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'booking-overlay';
+    overlay.className = 'modal';
+    overlay.style.display = 'none';
+    overlay.innerHTML = `
+        <div class="modal-content panel">
+            <div class="panel-heading">
+                <h2 id="overlay-room-title">Reserve a Room</h2>
+                <button class="modal-close" id="btn-close-overlay">&times;</button>
+            </div>
+            <form class="booking-form" id="overlay-booking-form" novalidate>
+                <input type="hidden" name="roomId" value="">
+                <div class="booking-summary" id="overlay-room-summary"></div>
+                <div class="field">
+                    <label for="overlay-name">Full name</label>
+                    <input id="overlay-name" type="text" name="name" autocomplete="name" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="overlay-email">Email</label>
+                    <input id="overlay-email" type="email" name="email" autocomplete="email" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="overlay-checkin">Check-in</label>
+                    <input id="overlay-checkin" type="date" name="checkin" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="overlay-checkout">Check-out</label>
+                    <input id="overlay-checkout" type="date" name="checkout" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field">
+                    <label for="overlay-guests">Guests</label>
+                    <input id="overlay-guests" type="number" name="guests" min="1" required>
+                    <p class="field-message"></p>
+                </div>
+                <div class="field terms-field">
+                    <label>
+                        <input type="checkbox" name="terms" required>
+                        I agree to the <a href="#" onclick="event.preventDefault(); showTermsOverlay();" data-no-transition>Terms & Conditions</a>
+                    </label>
+                    <p class="field-message"></p>
+                </div>
+                <div class="booking-overlay-total" id="overlay-total">Total: select dates</div>
+                <div class="form-actions">
+                    <button class="button button--primary" type="submit">Book now</button>
+                    <button class="button button--secondary" type="button" id="btn-cancel-overlay">Cancel</button>
+                </div>
+                <p class="form-feedback" id="overlay-feedback"></p>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // ✅ Attach delegated input listener ONCE, right after creation
+    overlay.addEventListener('input', (e) => {
+        const field = e.target;
+        if (field.name === 'checkin' || field.name === 'checkout' || field.name === 'guests') {
+            const form = document.getElementById('overlay-booking-form');
+            const roomId = form.elements['roomId'].value;
+            const allRooms = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
+            const room = allRooms[roomId];
+            if (room) updateOverlayTotal(room);
         }
-        cancelBtn.addEventListener("click", () => {
-            if (confirm("Clear selected room and reset booking form?")) {
-                const roomIdField = bookingForm.elements.namedItem("roomId");
-                if (roomIdField) roomIdField.value = "";
-                const summary = document.getElementById("selected-room-summary");
-                if (summary) summary.innerHTML = `<strong>No room selected</strong><span>Choose a room to start your booking.</span>`;
-                roomCards.forEach(card => card.classList.remove("is-selected"));
-                writeStorage(STORAGE_KEYS.pendingRoom, "");
-                const totalField = document.getElementById("booking-total");
-                if (totalField) totalField.textContent = "Total: Select dates and room";
-                ["checkin", "checkout", "guests"].forEach(fname => {
-                    const f = bookingForm.elements.namedItem(fname);
-                    if (f) f.value = "";
-                    clearFieldState(bookingForm, fname);
-                });
-                const fb = document.getElementById("booking-feedback");
-                setFeedback(fb, "success", "Booking selection cleared.");
-                showNotification("info", "Booking selection cleared.");
-            }
+    });
+
+    // Re‑bind overlay listeners after creation
+    initOverlayBookingListeners();
+}
+
+// ---------- Terms & Conditions overlay ----------
+function createTermsOverlay() {
+    if (document.getElementById('terms-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'terms-overlay';
+    overlay.className = 'modal';
+    overlay.style.display = 'none';
+    overlay.innerHTML = `
+        <div class="modal-content panel" style="max-width:700px;">
+            <div class="panel-heading">
+                <h2>Terms & Conditions</h2>
+                <button class="modal-close" onclick="closeTermsOverlay()">&times;</button>
+            </div>
+            <div style="max-height:65vh; overflow-y:auto; padding-right:5px;">
+                <h3>1. General</h3>
+                <p>These Terms and Conditions govern your use of the CozyCorner website and services. By making a reservation, you agree to these Terms.</p>
+
+                <h3>2. Reservations & Booking</h3>
+                <p>All reservations are subject to availability. A booking is confirmed only after you receive a confirmation notification. You must provide accurate information (name, email, dates, and number of guests).</p>
+
+                <h3>3. Payment & Cancellation</h3>
+                <p>Payment details will be collected at the time of booking. Cancellations may be subject to fees. If you cancel at least 48 hours before check-in, you may receive a full refund. Late cancellations may result in partial or no refund. CozyCorner reserves the right to cancel bookings due to unforeseen circumstances – in such cases you will receive a full refund.</p>
+
+                <h3>4. Guest Responsibilities</h3>
+                <p>Guests must respect the property. Any damage caused may result in additional charges. The number of guests must not exceed the room's stated capacity. Quiet hours are from 10:00 PM to 7:00 AM. Parties are not allowed without prior consent.</p>
+
+                <h3>5. Privacy & Data Protection</h3>
+                <p>Personal data is collected solely for processing reservations and improving services. Your information is stored securely and will not be shared without your consent, except as required by law.</p>
+
+                <h3>6. Limitation of Liability</h3>
+                <p>CozyCorner is not liable for direct or indirect losses arising from your stay, including personal injury or travel disruptions. Total liability is limited to the amount paid for the reservation.</p>
+
+                <h3>7. Governing Law</h3>
+                <p>These Terms are governed by the laws of the Republic of the Philippines.</p>
+
+                <h3>8. Contact</h3>
+                <p>Questions about these Terms can be directed to <strong>hello@cozycorner.example</strong>.</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Close on background click
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeTermsOverlay();
+    });
+}
+
+function showTermsOverlay() {
+    createTermsOverlay();
+    document.getElementById('terms-overlay').style.display = 'flex';
+}
+
+function closeTermsOverlay() {
+    const overlay = document.getElementById('terms-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function openBookingOverlay(roomId) {
+    try {
+        ensureBookingOverlay();
+        const overlay = document.getElementById('booking-overlay');
+
+        const allRooms = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
+        const room = allRooms[roomId];
+        if (!room) {
+            console.error('Room not found:', roomId);
+            return;
+        }
+
+        document.getElementById('overlay-room-title').textContent = `Reserve ${room.name} – ${room.title}`;
+        document.getElementById('overlay-room-summary').innerHTML = `
+            <strong>${room.name} – ${room.title}</strong><br>
+            <span>${formatCurrency(room.price)} per night &nbsp;|&nbsp; Up to ${room.guests} guests</span>
+        `;
+
+        const form = document.getElementById('overlay-booking-form');
+        form.elements['roomId'].value = roomId;
+        form.reset();
+        clearFormState(form);
+        document.getElementById('overlay-total').textContent = 'Total: select dates';
+        document.getElementById('overlay-feedback').textContent = '';
+
+        const today = new Date().toISOString().split('T')[0];
+        form.elements['checkin'].min = today;
+        form.elements['checkout'].min = today;
+        form.elements['guests'].max = room.guests;
+        form.elements['guests'].placeholder = `Up to ${room.guests}`;
+
+        // No per‑field addEventListener – the delegated listener from ensureBookingOverlay handles it
+        overlay.style.display = 'flex';
+    } catch (err) {
+        console.error('Error in openBookingOverlay:', err);
+    }
+}
+function closeBookingOverlay() {
+    const overlay = document.getElementById('booking-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function updateOverlayTotal(room) {
+    const form = document.getElementById('overlay-booking-form');
+    const checkin = getFieldValue(form, 'checkin');
+    const checkout = getFieldValue(form, 'checkout');
+    const totalField = document.getElementById('overlay-total');
+    if (!checkin || !checkout) {
+        totalField.textContent = 'Total: select dates';
+        return;
+    }
+    const nights = calculateNights(checkin, checkout);
+    if (nights <= 0) {
+        totalField.textContent = 'Total: invalid dates';
+        return;
+    }
+    totalField.textContent = `Total: ${formatCurrency(nights * room.price)} (${nights} night${nights>1?'s':''})`;
+}
+
+function initOverlayBookingListeners() {
+    
+    const closeBtn = document.getElementById('btn-close-overlay');
+    const cancelBtn = document.getElementById('btn-cancel-overlay');
+    const overlay = document.getElementById('booking-overlay');
+    if (closeBtn) closeBtn.addEventListener('click', closeBookingOverlay);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeBookingOverlay);
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeBookingOverlay();
         });
     }
-    
+    const form = document.getElementById('overlay-booking-form');
+    if (form && !form.hasAttribute('data-bound')) {
+        form.setAttribute('data-bound', 'true');
+        bindFieldValidation(form);
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleOverlayBookingSubmit();
+        });
+    }
 }
-function handleBookingSubmit(form, roomCards) {
-    const roomId = getFieldValue(form, "roomId");
-    const name = getFieldValue(form, "name");
-    const email = getFieldValue(form, "email");
-    const checkin = getFieldValue(form, "checkin");
-    const checkout = getFieldValue(form, "checkout");
-    const guests = getFieldValue(form, "guests");
-    const room = ROOM_DATA[roomId];
-    const feedback = document.getElementById("booking-feedback");
-    let isValid = true;
-    if (!room) {
-        setFeedback(feedback, "error", "Select a room before submitting your reservation.");
-        showNotification("error", "Please select a room.");
-        return;
-    }
-    isValid = validateRequired(form, "name", name, "Please enter your full name.") && isValid;
-    isValid = validateEmailField(form, "email", email) && isValid;
-    isValid = validateRequired(form, "checkin", checkin, "Select a check-in date.") && isValid;
-    isValid = validateRequired(form, "checkout", checkout, "Select a check-out date.") && isValid;
-    isValid = validateRequired(form, "guests", guests, "Select the number of guests.") && isValid;
-    if (checkin && checkout) {
-        const nights = calculateNights(checkin, checkout);
-        if (nights <= 0) {
-            setFieldState(form, "checkout", "error", "Check-out must be after check-in.");
-            isValid = false;
-        } else {
-            clearFieldState(form, "checkout");
-        }
-    }
-    if (guests && room && Number(guests) > room.guests) {
-        setFieldState(form, "guests", "error", `${room.name} allows up to ${room.guests} guests.`);
-        isValid = false;
-    }
-    if (!isValid) {
-        setFeedback(feedback, "error", "Please review the booking details.");
-        showNotification("error", "Please fix the highlighted errors.");
+
+function handleOverlayBookingSubmit() {
+    const form = document.getElementById('overlay-booking-form');
+    const roomId = getFieldValue(form, 'roomId');
+    const name = getFieldValue(form, 'name');
+    const email = getFieldValue(form, 'email');
+    const checkin = getFieldValue(form, 'checkin');
+    const checkout = getFieldValue(form, 'checkout');
+    const guests = getFieldValue(form, 'guests');
+    const termsChecked = form.elements['terms'].checked;
+
+    // If every field is empty, just show one quick message
+    if (!name && !email && !checkin && !checkout && !guests) {
+        setFeedback(
+            document.getElementById('overlay-feedback'),
+            'error',
+            'Please fill in all required fields before booking.'
+        );
         return;
     }
 
+    let firstError = true;
+    const markError = (fieldName, msg) => {
+        setFieldState(form, fieldName, 'error', msg);
+        if (firstError) {
+            setFeedback(document.getElementById('overlay-feedback'), 'error', msg);
+            firstError = false;
+        }
+    };
+
+    // Name
+    if (!name) markError('name', 'Please enter your full name.');
+    // Email
+    if (!email) markError('email', 'Please enter your email address.');
+    else if (!isValidEmail(email)) markError('email', 'Please enter a valid email (e.g., your@email.com).');
+    // Check‑in
+    if (!checkin) markError('checkin', 'Please choose a check‑in date.');
+    // Check‑out
+    if (!checkout) markError('checkout', 'Please choose a check‑out date.');
+    // Guests
+    if (!guests) markError('guests', 'Please enter the number of guests.');
+    else if (Number(guests) < 1) markError('guests', 'You must have at least 1 guest.');
+
+    // Date order
+    if (checkin && checkout && calculateNights(checkin, checkout) <= 0) {
+        markError('checkout', 'Check‑out must be after check‑in.');
+    }
+
+    // Guest limit
+    const allRoomsData = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
+    const roomData = allRoomsData[roomId];
+    if (roomData && guests && Number(guests) > roomData.guests) {
+        markError('guests', `This room allows a maximum of ${roomData.guests} guest${roomData.guests !== 1 ? 's' : ''}.`);
+    }
+
+    // Terms
+    if (!termsChecked) {
+        setFeedback(document.getElementById('overlay-feedback'), 'error', 'You must agree to the Terms & Conditions before booking.');
+        const termsMsg = form.querySelector('.terms-field .field-message');
+        if (termsMsg) {
+            termsMsg.textContent = 'Please accept the Terms & Conditions.';
+            termsMsg.classList.add('is-visible', 'is-error');
+        }
+        return;
+    }
+
+    // Stop if any error was found
+    if (!firstError) return;
+
+    // ---- No field errors – proceed with final checks ----
+    const allRooms = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
+    const room = allRooms[roomId];
+    if (!room) {
+        showNotification('error', 'Room not found.');
+        return;
+    }
+
+    // Double‑booking check
     if (!isRoomAvailable(roomId, checkin, checkout)) {
-        setFeedback(feedback, "error", "This room is already booked for the selected dates. Please choose different dates or another room.");
-        showNotification("error", "Sorry, those dates are not available.");
+        setFeedback(
+            document.getElementById('overlay-feedback'),
+            'error',
+            `Sorry, ${room.name} is already booked for these dates. Please choose different dates or another room.`
+        );
+        showNotification('error', 'These dates are unavailable.');
         return;
     }
 
@@ -649,23 +945,16 @@ function handleBookingSubmit(form, roomCards) {
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     reservations.push({
         roomId, roomName: room.name, title: room.title, price: room.price,
-        name, email, checkin, checkout, guests: Number(guests), nights, total, createdAt: new Date().toISOString()
+        name, email, checkin, checkout, guests: Number(guests), nights, total,
+        createdAt: new Date().toISOString()
     });
     writeStorage(STORAGE_KEYS.reservations, reservations);
-    writeStorage(STORAGE_KEYS.pendingRoom, roomId);
-    setFeedback(feedback, "success", `Reservation saved for ${room.name}. Total: ${formatCurrency(total)}.`);
-    showNotification("success", `Reservation confirmed! Total: ${formatCurrency(total)}.`);
-    ["checkin", "checkout", "guests"].forEach(fname => {
-        const field = form.elements.namedItem(fname);
-        if (field) field.value = "";
-        clearFieldState(form, fname);
-    });
-    highlightSelectedRoom(roomId, roomCards);
-    updateBookingTotal(form);
-    if (document.getElementById('dashboard-main')) {
-        refreshDashboardTrip();
-    }
+    showNotification('success', `Reserved ${room.name} for ${formatCurrency(total)}`);
+    closeBookingOverlay();
+    if (document.getElementById('dashboard-main')) refreshDashboardTrip();
 }
+
+// ---------- Filter logic ----------
 function applyRoomFilters(form, roomCards) {
     const guestValue = getFieldValue(form, "guests");
     const typeValue = getFieldValue(form, "type");
@@ -683,75 +972,102 @@ function applyRoomFilters(form, roomCards) {
     const message = visibleCount === 0 ? "No rooms match the selected filters." : `Showing ${visibleCount} room${visibleCount > 1 ? "s" : ""}.`;
     setFeedback(feedback, visibleCount === 0 ? "error" : "success", message);
 }
-function preloadSelectedRoom(roomCards, form) {
-    const params = new URLSearchParams(window.location.search);
-    const roomFromQuery = params.get("room");
-    const roomFromStorage = readStorage(STORAGE_KEYS.pendingRoom, "");
-    const initialRoomId = roomFromQuery || roomFromStorage || null;
-    if (initialRoomId) {
-        selectRoom(initialRoomId, roomCards, form);
-        if (roomFromQuery) scrollToRoomCard(initialRoomId);
-    }
+
+// ---------- Ratings and Reviews ----------
+function calculateAverageRating(roomId) {
+    const reviews = MOCK_REVIEWS.filter(r => r.roomId === roomId);
+    if (!reviews.length) return { avg: 0, count: 0 };
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    return { avg: avg.toFixed(1), count: reviews.length };
 }
-function scrollToRoomCard(roomId) {
-    const targetCard = document.querySelector(`.room-listing[data-room-id="${roomId}"]`);
-    if (targetCard) {
-        setTimeout(() => {
-            targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
-            targetCard.style.boxShadow = "0 0 0 3px var(--primary), 0 20px 40px rgba(0,0,0,0.15)";
-            setTimeout(() => { targetCard.style.boxShadow = ""; }, 1500);
-        }, 300);
-    }
+
+function renderRatingOnCards() {
+    document.querySelectorAll('.room-rating[data-room-id]').forEach(el => {
+        const roomId = el.dataset.roomId;
+        const { avg, count } = calculateAverageRating(roomId);
+        if (count > 0) {
+            const full = Math.round(avg);
+            el.innerHTML = `<span class="stars">${'★'.repeat(full)}${'☆'.repeat(5-full)}</span>
+                             <span class="rating-text">${avg} (${count} reviews)</span>`;
+        } else {
+            el.innerHTML = `<span class="stars">☆☆☆☆☆</span>
+                             <span class="rating-text">No reviews yet</span>`;
+        }
+    });
 }
-function selectRoom(roomId, roomCards, form) {
-    const room = ROOM_DATA[roomId];
-    if (!room) return;
-    highlightSelectedRoom(roomId, roomCards);
-    form.elements.namedItem("roomId").value = roomId;
-    const guestField = form.elements.namedItem("guests");
-    if (guestField && guestField.type === 'number') {
-        guestField.max = room.guests;
-        guestField.placeholder = `Up to ${room.guests} guests`;
-    }
-    const summary = document.getElementById("selected-room-summary");
-    if (summary) summary.innerHTML = `<strong>${room.name} - ${room.title}</strong><span>${formatCurrency(room.price)} per night, up to ${room.guests} guests.</span>`;
-    writeStorage(STORAGE_KEYS.pendingRoom, roomId);
-    updateBookingTotal(form);
-    showNotification("info", `${room.name} selected. Fill in your dates.`);
+
+function renderGuestReviews() {
+    const grid = document.getElementById('reviews-grid');
+    if (!grid) return;
+    const reviews = MOCK_REVIEWS.slice(0, 4);
+    grid.innerHTML = reviews.map(r => `
+        <article class="panel">
+            <div class="review-stars" style="color:#F5A623;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            <p>“${r.comment}”</p>
+            <small style="color:var(--text-soft);">- ${r.user}, ${new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</small>
+        </article>
+    `).join('');
 }
-function highlightSelectedRoom(roomId, roomCards) {
-    roomCards.forEach(card => card.classList.toggle("is-selected", card.dataset.roomId === roomId));
+
+function renderRoomCardsOnHome() {
+    renderRatingOnCards();
 }
-function updateBookingTotal(form) {
-    const room = ROOM_DATA[getFieldValue(form, "roomId")];
-    const checkin = getFieldValue(form, "checkin");
-    const checkout = getFieldValue(form, "checkout");
-    const totalField = document.getElementById("booking-total");
-    if (!totalField || !room || !checkin || !checkout) {
-        if (totalField) totalField.textContent = "Total: Select dates to calculate";
-        return;
-    }
-    const nights = calculateNights(checkin, checkout);
-    if (nights <= 0) {
-        totalField.textContent = "Total: Check the selected dates";
-        return;
-    }
-    totalField.textContent = `Total: ${formatCurrency(nights * room.price)} for ${nights} night${nights > 1 ? "s" : ""}`;
-}
-function setDateMinimums() {
-    const now = new Date();
-    const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-    const checkin = document.getElementById("booking-checkin");
-    const checkout = document.getElementById("booking-checkout");
-    if (checkin) {
-        checkin.min = today;
-        checkin.addEventListener("change", () => {
-            if (checkout) checkout.min = checkin.value || today;
+
+// ---------- Initialize Reservation page ----------
+function initializeReservationPage() {
+    renderRoomGrid(false);
+
+    // Filter bindings
+    const filterForm = document.getElementById("filter-form");
+    const clearFilters = document.getElementById("clear-filters");
+    if (filterForm) {
+        filterForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const cards = Array.from(document.querySelectorAll('.room-listing'));
+            applyRoomFilters(filterForm, cards);
         });
     }
-    if (checkout) checkout.min = today;
+    if (clearFilters) {
+        clearFilters.addEventListener("click", () => {
+            filterForm.reset();
+            const cards = Array.from(document.querySelectorAll('.room-listing'));
+            applyRoomFilters(filterForm, cards);
+            showNotification("info", "Filters cleared.");
+        });
+    }
+
+    // Event delegation for Reserve buttons
+    const roomGrid = document.getElementById('room-grid');
+    if (roomGrid) {
+        roomGrid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reserve-trigger');
+            if (!btn) return;
+            const card = btn.closest('.room-listing');
+            if (!card) return;
+            const roomId = card.dataset.roomId;
+           
+            openBookingOverlay(roomId);
+        });
+    } else {
+        console.error('room-grid element not found!');
+    }
+
+    // Initialize overlay listeners (will also bind if overlay already exists)
+    initOverlayBookingListeners();
+
+    // Pre‑select room from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomFromURL = urlParams.get("room");
+    if (roomFromURL) {
+        setTimeout(() => {
+            const card = document.querySelector(`.room-listing[data-room-id="${roomFromURL}"]`);
+            if (card) {
+                card.scrollIntoView({ behavior: "smooth", block: "center" });
+                const reserveBtn = card.querySelector('.reserve-trigger');
+                if (reserveBtn) reserveBtn.click();
+            }
+        }, 300);
+    }
 }
 
 // ---------- Contact form ----------
@@ -762,9 +1078,28 @@ function initializeContactForm() {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const values = { name: getFieldValue(form,"name"), email: getFieldValue(form,"email"), message: getFieldValue(form,"message") };
-        const isValid = validateRequired(form,"name",values.name,"Enter name") && validateEmailField(form,"email",values.email) && validateRequired(form,"message",values.message,"Enter message");
         const feedback = document.getElementById("contact-feedback");
-        if (!isValid) { setFeedback(feedback,"error","Complete the form."); showNotification("error","Please fill all fields correctly."); return; }
+
+        let contactError = '';
+        if (!values.name) {
+            setFieldState(form, 'name', 'error', 'Please enter your name.');
+            contactError = 'Please enter your name.';
+        } else if (!values.email) {
+            setFieldState(form, 'email', 'error', 'Please enter your email address.');
+            contactError = 'Please enter your email address.';
+        } else if (!isValidEmail(values.email)) {
+            setFieldState(form, 'email', 'error', 'Please enter a valid email.');
+            contactError = 'Please enter a valid email address.';
+        } else if (!values.message) {
+            setFieldState(form, 'message', 'error', 'Please write your message.');
+            contactError = 'Please write a message.';
+        }
+
+        if (contactError) {
+            setFeedback(feedback, 'error', contactError);
+            showNotification('error', contactError);
+            return;
+        }
         const msgs = readStorage(STORAGE_KEYS.contact, []);
         msgs.push({...values, submittedAt: new Date().toISOString()});
         writeStorage(STORAGE_KEYS.contact, msgs);
@@ -798,14 +1133,6 @@ function validateFieldOnBlur(form, field) {
         const password = getFieldValue(form, "password");
         return validateConfirmPassword(form, password, value);
     }
-    if (fieldName === "checkout" && form.id === "booking-form") {
-        const checkin = getFieldValue(form, "checkin");
-        if (!value) { setFieldState(form, fieldName, "error", "Required."); return false; }
-        if (checkin && calculateNights(checkin, value) <= 0) {
-            setFieldState(form, fieldName, "error", "Check-out must be after check-in.");
-            return false;
-        }
-    }
     if (!value) { setFieldState(form, fieldName, "error", "Required."); return false; }
     clearFieldState(form, fieldName);
     return true;
@@ -832,13 +1159,6 @@ function validateConfirmPassword(form, password, confirmPassword) {
     if (password !== confirmPassword) { setFieldState(form, "confirm-password", "error", "Passwords do not match."); return false; }
     clearFieldState(form, "confirm-password");
     return true;
-}
-function clearNonRoomBookingFields(form) {
-    ["name", "email", "checkin", "checkout", "guests"].forEach(fieldName => {
-        const field = form.elements.namedItem(fieldName);
-        if (field) field.value = "";
-        clearFieldState(form, fieldName);
-    });
 }
 function clearFormState(form) {
     form.querySelectorAll(".field-message").forEach(msg => {
@@ -980,14 +1300,6 @@ function updateNavigationForSession() {
         if (dashboardItem) dashboardItem.remove();
     }
 }
-function prefillBookingFromSession() {
-    const session = readSession(STORAGE_KEYS.session);
-    if (!session) return;
-    const nameField = document.getElementById('booking-name');
-    const emailField = document.getElementById('booking-email');
-    if (nameField && !nameField.value) nameField.value = session.username;
-    if (emailField && !emailField.value) emailField.value = session.email;
-}
 function initializeStaticLogout() {
     const logoutLink = document.getElementById('logout-link');
     if (logoutLink) {
@@ -1007,10 +1319,8 @@ function renderMyReservations() {
         window.location.href = "login.html";
         return;
     }
-
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
     const userReservations = reservations.filter(r => r.email === (session.email || ""));
-
     if (userReservations.length === 0) {
         container.innerHTML = `
             <div class="panel" style="text-align:center;">
@@ -1020,7 +1330,6 @@ function renderMyReservations() {
             </div>`;
         return;
     }
-
     let html = `
         <section class="panel">
             <div class="panel-heading">
@@ -1028,8 +1337,7 @@ function renderMyReservations() {
             </div>
             <div class="reservation-list" style="display:grid; gap:var(--space-md);">
     `;
-
-    userReservations.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((r, idx) => {
+    userReservations.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((r) => {
         const nights = calculateNights(r.checkin, r.checkout);
         const total = r.total || (nights * (r.price || 0));
         const isActive = new Date(r.checkout) >= new Date();
@@ -1051,10 +1359,8 @@ function renderMyReservations() {
             </div>
         `;
     });
-
     html += `</div></section>`;
     container.innerHTML = html;
-
     container.querySelectorAll('.btn-cancel-booking').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const roomId = btn.dataset.room;
@@ -1073,6 +1379,7 @@ function renderMyReservations() {
         });
     });
 }
+
 // ============================================================
 // ADMIN & SUPER ADMIN FUNCTIONALITY
 // ============================================================
@@ -1093,7 +1400,7 @@ function enforceSuperAdminAccess() {
     return true;
 }
 function addActivity(action) {
-    const activityLog = readStorage('cozycorner-activity-log', []);
+    const activityLog = readStorage(STORAGE_KEYS.activityLog, []);
     const entry = {
         action,
         timestamp: new Date().toISOString(),
@@ -1101,18 +1408,17 @@ function addActivity(action) {
     };
     activityLog.unshift(entry);
     if (activityLog.length > 20) activityLog.pop();
-    writeStorage('cozycorner-activity-log', activityLog);
+    writeStorage(STORAGE_KEYS.activityLog, activityLog);
 }
 
 function clearRecentActivities() {
-    const activities = readStorage('cozycorner-activity-log', []);
+    const activities = readStorage(STORAGE_KEYS.activityLog, []);
     if (activities.length === 0) {
         showNotification('info', 'No activities to clear.');
         return;
     }
     if (!confirm(`Delete all ${activities.length} activity entries?`)) return;
-
-    writeStorage('cozycorner-activity-log', []);
+    writeStorage(STORAGE_KEYS.activityLog, []);
     addActivity('Cleared the activity log');
     showNotification('success', 'Activity log cleared.');
     const container = document.getElementById('activity-log');
@@ -1131,7 +1437,7 @@ function initAdminDashboard() {
     document.getElementById('stat-guests').textContent = guests;
     const revenue = reservations.reduce((sum, r) => sum + (r.total || 0), 0);
     document.getElementById('stat-revenue').textContent = formatCurrency(revenue);
-    const activities = readStorage('cozycorner-activity-log', []);
+    const activities = readStorage(STORAGE_KEYS.activityLog, []);
     const container = document.getElementById('activity-log');
     if (activities.length === 0) {
         container.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
@@ -1151,17 +1457,15 @@ function initAdminDashboard() {
 
 function initManageReservations() {
     if (!enforceAdminAccess()) return;
-
     const roomSelect = document.getElementById('modal-room');
     const modalTitle = document.getElementById('modal-title');
     const form = document.getElementById('reservation-form-modal');
     const modal = document.getElementById('reservation-modal');
     const closeBtn = document.getElementById('btn-close-modal');
-
     let selectedIndices = [];
 
     function populateRoomDropdown() {
-        const allRooms = { ...ROOM_DATA, ...readStorage('cozycorner-custom-rooms', {}) };
+        const allRooms = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
         roomSelect.innerHTML = '<option value="">Select room</option>';
         Object.entries(allRooms).forEach(([key, room]) => {
             const option = document.createElement('option');
@@ -1192,7 +1496,6 @@ function initManageReservations() {
             updateSelectionDependentButtons();
             return;
         }
-
         let html = `<table class="reservations-table">
             <thead>
                 <tr>
@@ -1201,7 +1504,6 @@ function initManageReservations() {
                 </tr>
             </thead>
             <tbody>`;
-
         reservations.forEach((r, idx) => {
             const isSelected = selectedIndices.includes(idx);
             html += `<tr class="${isSelected ? 'selected' : ''}" data-index="${idx}">
@@ -1214,7 +1516,6 @@ function initManageReservations() {
                 <td>${formatCurrency(r.total)}</td>
             </tr>`;
         });
-
         html += '</tbody></table>';
         container.innerHTML = html;
 
@@ -1299,7 +1600,6 @@ function initManageReservations() {
         renderReservations();
         showModal(false);
     });
-
     document.getElementById('btn-update-reservation').addEventListener('click', () => {
         if (selectedIndices.length !== 1) {
             showNotification('error', 'Please select exactly one reservation to update.');
@@ -1307,21 +1607,17 @@ function initManageReservations() {
         }
         showModal(true);
     });
-
     document.getElementById('btn-delete-reservation').addEventListener('click', () => {
         if (selectedIndices.length === 0) {
             showNotification('error', 'Please select at least one reservation to delete.');
             return;
         }
         if (!confirm(`Delete ${selectedIndices.length} reservation(s) permanently?`)) return;
-
         let reservations = readStorage(STORAGE_KEYS.reservations, []);
         selectedIndices.sort((a, b) => b - a).forEach(idx => reservations.splice(idx, 1));
         writeStorage(STORAGE_KEYS.reservations, reservations);
-
         addActivity(`Deleted ${selectedIndices.length} reservation(s)`);
         showNotification('success', `${selectedIndices.length} reservation(s) deleted.`);
-
         selectedIndices = [];
         renderReservations();
     });
@@ -1337,24 +1633,24 @@ function initManageReservations() {
         const editIndex = form.elements['editIndex'].value;
 
         if (new Date(checkin) >= new Date(checkout)) {
-            showNotification('error', 'Check-out must be after check-in.');
-            return;
+        showNotification('error', 'Check‑out date must be after check‑in date.');
+        return;
         }
 
-        const allRooms = { ...ROOM_DATA, ...readStorage('cozycorner-custom-rooms', {}) };
+        const allRooms = { ...ROOM_DATA, ...readStorage(STORAGE_KEYS.customRooms, {}) };
         const room = allRooms[roomId];
         if (!room) {
             showNotification('error', 'Invalid room selected.');
             return;
         }
         if (guests > room.guests) {
-            showNotification('error', `Room allows max ${room.guests} guests.`);
+            showNotification('error', `This room accommodates up to ${room.guests} guest${room.guests !== 1 ? 's' : ''}. Please adjust the guest count.`);
             return;
         }
 
         const excludeIdx = (editIndex !== '') ? parseInt(editIndex, 10) : null;
         if (!isRoomAvailable(roomId, checkin, checkout, excludeIdx)) {
-            showNotification('error', 'This room is already booked for the selected date range.');
+            showNotification('error', `Sorry, ${room.name} is already booked for these dates. Please choose different dates or another room.`);
             return;
         }
 
@@ -1366,7 +1662,6 @@ function initManageReservations() {
             name, email, checkin, checkout, guests, nights, total,
             createdAt: new Date().toISOString()
         };
-
         if (editIndex !== '') {
             reservations[editIndex] = reservation;
             addActivity('Updated a reservation');
@@ -1376,7 +1671,6 @@ function initManageReservations() {
             addActivity('Added a new reservation');
             showNotification('success', 'Reservation added.');
         }
-
         writeStorage(STORAGE_KEYS.reservations, reservations);
         hideModal();
         selectedIndices = [];
@@ -1395,21 +1689,18 @@ function initManageRooms() {
     const imageInput = document.getElementById('room-images-upload');
     const previewContainer = document.getElementById('image-preview-container');
     let selectedRoomKey = null;
-    let existingImages = [];        // for edit mode
-    let newImageFiles = [];        // File objects from current selection
+    let existingImages = [];
+    let newImageFiles = [];
 
-    // ── Helper: clear previews ──
     function clearImagePreviews() {
         if (previewContainer) previewContainer.innerHTML = '';
         newImageFiles = [];
         if (imageInput) imageInput.value = '';
     }
 
-    // ── Helper: show existing + new previews ──
     function refreshPreviews() {
         if (!previewContainer) return;
         previewContainer.innerHTML = '';
-        // existing images (data URLs)
         existingImages.forEach((url, idx) => {
             const wrapper = document.createElement('div');
             wrapper.style.cssText = 'position:relative;width:80px;height:60px;overflow:hidden;border-radius:var(--radius-sm);border:1px solid var(--color-border-light);';
@@ -1428,7 +1719,6 @@ function initManageRooms() {
             wrapper.appendChild(removeBtn);
             previewContainer.appendChild(wrapper);
         });
-        // new file thumbnails
         newImageFiles.forEach((file, idx) => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1453,7 +1743,6 @@ function initManageRooms() {
         });
     }
 
-    // ── File input change handler ──
     if (imageInput) {
         imageInput.addEventListener('change', () => {
             newImageFiles = Array.from(imageInput.files);
@@ -1461,20 +1750,17 @@ function initManageRooms() {
         });
     }
 
-    // ── Render rooms (updated to show image thumbnails) ──
     function renderRooms() {
-        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
         const allRooms = { ...ROOM_DATA, ...customRooms };
         const container = document.getElementById('rooms-container');
         container.innerHTML = Object.entries(allRooms).map(([key, room]) => {
-            // if room has images, use the first one as thumbnail; else show placeholder or nothing
             let imageHtml = '';
             if (room.images && room.images.length > 0) {
                 imageHtml = `<div class="room-listing__media" style="aspect-ratio:4/3;overflow:hidden;background:var(--color-surface-muted);"><img src="${room.images[0]}" style="width:100%;height:100%;object-fit:cover;" alt="${room.name}"></div>`;
             } else {
                 imageHtml = `<div class="room-listing__media" style="aspect-ratio:4/3;overflow:hidden;background:var(--color-surface-muted);display:flex;align-items:center;justify-content:center;color:var(--text-soft);">No image</div>`;
             }
-
             return `
                 <article class="room-listing room-card ${key === selectedRoomKey ? 'is-selected' : ''}" data-room-id="${key}">
                     ${imageHtml}
@@ -1509,9 +1795,9 @@ function initManageRooms() {
         container.querySelectorAll('.btn-delete-room').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (confirm('Delete this custom room? Default rooms cannot be deleted.')) {
-                    const customRooms = readStorage('cozycorner-custom-rooms', {});
+                    const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
                     delete customRooms[btn.dataset.roomKey];
-                    writeStorage('cozycorner-custom-rooms', customRooms);
+                    writeStorage(STORAGE_KEYS.customRooms, customRooms);
                     selectedRoomKey = null;
                     renderRooms();
                     addActivity('Deleted a room');
@@ -1521,7 +1807,6 @@ function initManageRooms() {
         });
     }
 
-    // ── Show modal (now includes image previews) ──
     function showModal(edit = false) {
         clearImagePreviews();
         existingImages = [];
@@ -1529,7 +1814,7 @@ function initManageRooms() {
         if (imageInput) imageInput.value = '';
 
         if (edit && selectedRoomKey) {
-            const customRooms = readStorage('cozycorner-custom-rooms', {});
+            const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
             const room = customRooms[selectedRoomKey] || ROOM_DATA[selectedRoomKey];
             if (!room) return;
             form.elements['roomKey'].value = selectedRoomKey;
@@ -1540,7 +1825,6 @@ function initManageRooms() {
             form.elements['type'].value = room.type;
             form.elements['description'].value = room.description;
             modalTitle.textContent = 'Update Room';
-            // load existing images if any
             if (room.images && Array.isArray(room.images)) {
                 existingImages = [...room.images];
             }
@@ -1558,14 +1842,13 @@ function initManageRooms() {
     closeBtn.addEventListener('click', hideModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
 
-    // ── Button event listeners (unchanged) ──
     document.getElementById('btn-add-room').addEventListener('click', () => {
         selectedRoomKey = null;
         showModal(false);
     });
     document.getElementById('btn-update-room').addEventListener('click', () => {
         if (!selectedRoomKey) { showNotification('error','Select a room first.'); return; }
-        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
         if (!customRooms[selectedRoomKey] && ROOM_DATA[selectedRoomKey]) {
             showNotification('error', 'Default rooms cannot be updated. Add a custom room instead.');
             return;
@@ -1574,11 +1857,11 @@ function initManageRooms() {
     });
     document.getElementById('btn-delete-room').addEventListener('click', () => {
         if (!selectedRoomKey) { showNotification('error','Select a room first.'); return; }
-        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
         if (!customRooms[selectedRoomKey]) { showNotification('error','Only custom rooms can be deleted.'); return; }
         if (confirm('Delete this room?')) {
             delete customRooms[selectedRoomKey];
-            writeStorage('cozycorner-custom-rooms', customRooms);
+            writeStorage(STORAGE_KEYS.customRooms, customRooms);
             selectedRoomKey = null;
             renderRooms();
             addActivity('Deleted a room');
@@ -1586,7 +1869,7 @@ function initManageRooms() {
         }
     });
 
-    // ── Form submit (now handles image files) ──
+    // REMOVED buggy code block here (was isRoomAvailable with undefined vars)
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const roomId = form.elements['roomId'].value.trim();
@@ -1600,13 +1883,12 @@ function initManageRooms() {
             showNotification('error','All fields are required.');
             return;
         }
-        const customRooms = readStorage('cozycorner-custom-rooms', {});
+        const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
         if (ROOM_DATA[roomId] && form.elements['roomKey'].value !== roomId) {
             showNotification('error','That room ID is already used by a default room.');
             return;
         }
 
-        // Process image files into data URLs
         const newDataUrls = await Promise.all(
             newImageFiles.map(file => new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1616,7 +1898,6 @@ function initManageRooms() {
             }))
         );
 
-        // Combine existing + new images
         const finalImages = [...existingImages, ...newDataUrls];
 
         customRooms[roomId] = {
@@ -1627,10 +1908,10 @@ function initManageRooms() {
             type,
             description,
             features: [`${guests} guests`, type.charAt(0).toUpperCase()+type.slice(1)],
-            images: finalImages   // <-- stored as array of data URLs
+            images: finalImages
         };
 
-        writeStorage('cozycorner-custom-rooms', customRooms);
+        writeStorage(STORAGE_KEYS.customRooms, customRooms);
         hideModal();
         renderRooms();
         addActivity('Room saved with images');
@@ -1703,7 +1984,6 @@ function clearSupportMessages() {
         return;
     }
     if (!confirm(`Delete all ${messages.length} messages? This cannot be undone.`)) return;
-
     writeStorage(STORAGE_KEYS.contact, []);
     addActivity('Cleared all support messages');
     showNotification('success', 'All messages cleared.');
@@ -1713,14 +1993,14 @@ function clearSupportMessages() {
 function initSuperAdminDashboard() {
     if (!enforceSuperAdminAccess()) return;
     const reservations = readStorage(STORAGE_KEYS.reservations, []);
-    const customRooms = readStorage('cozycorner-custom-rooms', {});
+    const customRooms = readStorage(STORAGE_KEYS.customRooms, {});
     const allRooms = { ...ROOM_DATA, ...customRooms };
 
     document.getElementById('stat-total-reservations').textContent = reservations.length;
     document.getElementById('stat-total-properties').textContent = Object.keys(allRooms).length;
     document.getElementById('stat-total-guests').textContent = reservations.reduce((sum,r) => sum + (r.guests||0), 0);
 
-    const activities = readStorage('cozycorner-activity-log', []);
+    const activities = readStorage(STORAGE_KEYS.activityLog, []);
     const logContainer = document.getElementById('activity-log');
     if (activities.length === 0) {
         logContainer.innerHTML = '<li class="activity-item" style="text-align:center;color:var(--text-soft);">No recent activity.</li>';
@@ -1760,7 +2040,6 @@ function initSuperAdminDashboard() {
 
 function initManageAdmins() {
     if (!enforceSuperAdminAccess()) return;
-
     const modal = document.getElementById('admin-modal');
     const form = document.getElementById('admin-form-modal');
     const modalTitle = document.getElementById('admin-modal-title');
@@ -1772,7 +2051,6 @@ function initManageAdmins() {
         const adminUsers = Object.entries(allUsers).filter(
             ([_, u]) => u.role === USER_ROLES.ADMIN
         );
-
         let changed = false;
         adminUsers.forEach(([uname, user]) => {
             if (user.active === undefined) {
@@ -1791,15 +2069,12 @@ function initManageAdmins() {
             });
             writeStorage(STORAGE_KEYS.registeredUsers, registered);
         }
-
         const container = document.getElementById('admins-container');
         if (!container) return;
-
         if (!adminUsers.length) {
             container.innerHTML = '<p style="text-align:center;color:var(--text-soft);padding:40px;">No admin accounts found.</p>';
             return;
         }
-
         let html = '<table class="reservations-table"><thead><tr><th>Select</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
         adminUsers.forEach(([uname, user]) => {
             const isSel = uname === selectedUsername;

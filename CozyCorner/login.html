@@ -41,7 +41,6 @@
                 <section class="panel" id="login-panel" aria-labelledby="login-title">
                     <div class="panel-heading">
                         <h2 id="login-title">Login</h2>
-                        
                     </div>
 
                     <form class="auth-form" id="login-form" novalidate>
@@ -50,17 +49,15 @@
                             <input id="login-username" type="text" name="username" autocomplete="username">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <div class="field">
                             <label for="login-password">Password</label>
                             <input id="login-password" type="password" name="password" autocomplete="current-password">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <button class="button button--primary" type="submit">Login</button>
-                        
+                        <!-- feedback is now a direct child of the form -->
+                        <p id="login-feedback" class="form-feedback" aria-live="polite"></p>
                     </form>
-
                     <div class="auth-switch">
                         Don't have an account? <a href="#" id="show-register-link">Register</a>
                     </div>

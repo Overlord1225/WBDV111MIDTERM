@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="page-reservations">
     <div class="site-frame">
@@ -18,9 +17,7 @@
                     <img src="img/logo.png" alt="CozyCorner">
                 </a>
                 <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                     <span class="sr-only">Toggle navigation</span>
                 </button>
                 <ul class="site-links" id="site-menu">
@@ -34,440 +31,138 @@
         </header>
 
         <main class="site-main">
-            <!-- Page intro -->
             <section class="page-intro" aria-labelledby="reservations-heading">
                 <h2 id="reservations-heading" class="visually-hidden">Reservations Introduction</h2>
                 <p class="eyebrow">Plan your stay</p>
                 <h1>Reservations</h1>
-                
             </section>
 
-            <!-- Main reservation layout: filters + booking form (left), rooms grid (right) -->
-            <div class="reservation-layout">
-                <!-- Sidebar with filters and booking form -->
-                <aside class="sidebar-panel">
-                    <!-- Filter section -->
-                    <section class="panel" aria-labelledby="filter-title">
-                        <div class="panel-heading">
-                            <h2 id="filter-title">Search filters</h2>
-                        </div>
-                        <form class="filter-form" id="filter-form">
-                            <div class="field">
-                                <label for="filter-guests">Guests</label>
-                                <select id="filter-guests" name="guests">
-                                    <option value="">Any size</option>
-                                    <option value="1">1 guest</option>
-                                    <option value="2">2 guests</option>
-                                    <option value="3">3+ guests</option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label for="filter-type">Room type</label>
-                                <select id="filter-type" name="type">
-                                    <option value="">All types</option>
-                                    <option value="suite">Suite</option>
-                                    <option value="studio">Studio</option>
-                                    <option value="family">Family</option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label for="filter-price">Max price</label>
-                                <select id="filter-price" name="price">
-                                    <option value="">No limit</option>
-                                    <option value="3000">PHP 3,000</option>
-                                    <option value="3400">PHP 3,400</option>
-                                    <option value="3800">PHP 3,800</option>
-                                </select>
-                            </div>
-                            <div class="form-actions">
-                                <button class="button button--primary" type="submit">Apply</button>
-                                <button class="button button--secondary" type="button" id="clear-filters">Reset</button>
-                            </div>
-                            
-                        </form>
-                    </section>
-
-                    <!-- Booking form -->
-                    <section class="panel" aria-labelledby="booking-title">
-                        <div class="panel-heading">
-                            <h2 id="booking-title">Book your stay</h2>
-                        </div>
-                        <form class="booking-form" id="booking-form">
-                            <input id="selected-room-id" type="hidden" name="roomId">
-                            <div class="booking-summary" id="selected-room-summary" aria-live="polite">
-                                <strong>No room selected</strong>
-                                <span>Choose a room to start your booking.</span>
-                            </div>
-                            <div class="field">
-                                <label for="booking-name">Full name</label>
-                                <input id="booking-name" type="text" name="name" autocomplete="name">
-                                <p class="field-message" aria-live="polite"></p>
-                            </div>
-                            <div class="field">
-                                <label for="booking-email">Email</label>
-                                <input id="booking-email" type="email" name="email" autocomplete="email">
-                                <p class="field-message" aria-live="polite"></p>
-                            </div>
-                            <div class="field">
-                                <label for="booking-checkin">Check-in</label>
-                                <input id="booking-checkin" type="date" name="checkin">
-                                <p class="field-message" aria-live="polite"></p>
-                            </div>
-                            <div class="field">
-                                <label for="booking-checkout">Check-out</label>
-                                <input id="booking-checkout" type="date" name="checkout">
-                                <p class="field-message" aria-live="polite"></p>
-                            </div>
-                            <div class="field">
-                                <label for="booking-guests">Number of guests</label>
-                                <input id="booking-guests" type="number" name="guests" min="1" placeholder="Enter number of guests">
-                                <p class="field-message" aria-live="polite"></p>
-                            </div>
-                            <div class="booking-total" id="booking-total" aria-live="polite">Total: Select dates to calculate</div>
-                            <button class="button button--primary" type="submit">Reserve now</button>
-                            <p class="form-feedback" id="booking-feedback" aria-live="polite"></p>
-                        </form>
-                    </section>
-                </aside>
-
-                <!-- Rooms grid (right side) -->
-                <section class="listing-panel" aria-labelledby="room-list-title">
-                    <div class="section-heading section-heading--compact">
-                        <div>
-                            
-                            <h2 id="room-list-title">Choose a room</h2>
-                        </div>
+            <section class="filter-bar" aria-labelledby="filter-title">
+                <h2 id="filter-title" class="visually-hidden">Search filters</h2>
+                <form class="filter-form" id="filter-form">
+                    <div class="field">
+                        <label for="filter-guests">Guests</label>
+                        <select id="filter-guests" name="guests">
+                            <option value="">Any size</option>
+                            <option value="1">1 guest</option>
+                            <option value="2">2 guests</option>
+                            <option value="3">3+ guests</option>
+                        </select>
                     </div>
-                    <div class="reservation-grid" id="room-grid">
-                        <!-- Room 1 -->
-                        <article class="room-listing" data-room-id="room-1" data-price="2800" data-guests="2" data-type="suite">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room1/077f6d83-971c-4e34-aafc-018d2899368d.jpeg" alt="Room 1 cozy indoor dining and lounge setup">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room1/116bbd49-a22c-4f9f-ac40-400f4cd88a7c.jpeg" alt="Room 1 interior view">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room1/8e567aa9-5876-47f9-a166-ae5160579898.jpeg" alt="Room 1 lounge area">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room1/bb258352-46d0-4863-9c80-e365dc1ac150.jpeg" alt="Room 1 bedroom area">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 1</h3>
-                                        <p class="listing-subtitle">Forest Hearth Suite</p>
-                                    </div>
-                                    <span class="price-tag">PHP 2,800</span>
-                                </div>
-                                <p>Best for couples who want a warm indoor setup and a relaxed evening atmosphere.</p>
-                                <ul class="feature-list">
-                                    <li>2 guests</li>
-                                    <li>Suite</li>
-                                    <li>Lounge area</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-1">Reserve</button>
-                            </div>
-                        </article>
-
-                        <!-- Room 2 -->
-                        <article class="room-listing" data-room-id="room-2" data-price="3000" data-guests="2" data-type="studio">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room2/04d8d164-3ef9-4d6a-a9fb-f84fe0f4ef2a.jpeg" alt="Room 2 minimal bedroom with curtains and open floor area">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room2/43b0a2a7-8a82-44c0-9af0-6a0bafed9df3.jpeg" alt="Room 2 minimalist interior">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room2/18ca8bd8-c5d8-4d68-8ebe-186da680da43.jpeg" alt="Room 2 corner view">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room2/90830dde-da26-4073-bffc-8d79a7a0bfe0.jpeg" alt="Room 2 space overview">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 2</h3>
-                                        <p class="listing-subtitle">Calm Studio Retreat</p>
-                                    </div>
-                                    <span class="price-tag">PHP 3,000</span>
-                                </div>
-                                <p>A clean and quiet layout with a simple finish, ideal for short city stays.</p>
-                                <ul class="feature-list">
-                                    <li>2 guests</li>
-                                    <li>Studio</li>
-                                    <li>Quiet interior</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-2">Reserve</button>
-                            </div>
-                        </article>
-
-                        <!-- Room 3 -->
-                        <article class="room-listing" data-room-id="room-3" data-price="3200" data-guests="2" data-type="suite">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room3/151b01e3-2301-467d-8d1f-a798e8b5b6ac.jpeg" alt="Room 3 bright bedroom with wooden arch wall">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room3/b5e6a979-1510-4b42-b6e7-4f3a01d34034.jpeg" alt="Room 3 bedroom with wood accents">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room3/7272dc02-be0f-48c5-8402-658d67a48449.jpeg" alt="Room 3 living area">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room3/e6c9a497-cf50-4127-b8fd-478962c9ee02.jpeg" alt="Room 3 cozy corner">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 3</h3>
-                                        <p class="listing-subtitle">Sunlit Wood Suite</p>
-                                    </div>
-                                    <span class="price-tag">PHP 3,200</span>
-                                </div>
-                                <p>Bright styling with a workstation and extra floor space for longer stays.</p>
-                                <ul class="feature-list">
-                                    <li>2 guests</li>
-                                    <li>Suite</li>
-                                    <li>Work desk</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-3">Reserve</button>
-                            </div>
-                        </article>
-
-                        <!-- Room 4 -->
-                        <article class="room-listing" data-room-id="room-4" data-price="3400" data-guests="3" data-type="family">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room4/1487bc2a-edef-4cc6-8938-6a3bfdec31ce.jpeg" alt="Room 4 accommodation interior">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room4/5a31e05e-4295-4938-b02c-bb7b4097159c.jpeg" alt="Room 4 family space">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room4/5f516e68-0be0-42a7-a3f4-d7e264046018.jpeg" alt="Room 4 living area">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room4/ffd19a9d-eb68-42c9-8098-f636fa1ba4ea.jpeg" alt="Room 4 bedroom view">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 4</h3>
-                                        <p class="listing-subtitle">Relaxed Family Room</p>
-                                    </div>
-                                    <span class="price-tag">PHP 3,400</span>
-                                </div>
-                                <p>Designed with a little more room to move, suitable for small groups or families.</p>
-                                <ul class="feature-list">
-                                    <li>3 guests</li>
-                                    <li>Family</li>
-                                    <li>Open layout</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-4">Reserve</button>
-                            </div>
-                        </article>
-
-                        <!-- Room 5 -->
-                        <article class="room-listing" data-room-id="room-5" data-price="3600" data-guests="4" data-type="family">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room5/9340069e-24d2-4c0f-9558-364744bdfe78.jpeg" alt="Room 5 accommodation interior">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room5/bbffdf0b-6926-4800-ac7a-021e97a662de.jpeg" alt="Room 5 weekend stay layout">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room5/ea2b8597-0abb-44d9-9ee6-3f3a4396a8f7.jpeg" alt="Room 5 extended stay area">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room5/e2ab49e2-aeb9-4308-969e-8329e514bdf4.jpeg" alt="Room 5 spacious interior">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 5</h3>
-                                        <p class="listing-subtitle">Spacious Weekend Stay</p>
-                                    </div>
-                                    <span class="price-tag">PHP 3,600</span>
-                                </div>
-                                <p>A roomier setup with balanced natural tones for extended weekend bookings.</p>
-                                <ul class="feature-list">
-                                    <li>4 guests</li>
-                                    <li>Family</li>
-                                    <li>Extended stay</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-5">Reserve</button>
-                            </div>
-                        </article>
-
-                        <!-- Room 6 -->
-                        <article class="room-listing" data-room-id="room-6" data-price="3800" data-guests="4" data-type="suite">
-                            <figure class="room-listing__media">
-                                <div class="carousel" data-carousel>
-                                    <div class="carousel-track">
-                                        <div class="carousel-slide is-active">
-                                            <img src="img/room6/9535844c-f80b-46dc-bf47-8c62001e2175.jpeg" alt="Room 6 accommodation interior">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room6/e8b4e5c7-3f13-4d7f-8a83-7a75ed3888ec.jpeg" alt="Room 6 premium suite layout">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room6/c47f2b9a-e2b7-4368-b112-39b9ea3cec7d.jpeg" alt="Room 6 living space">
-                                        </div>
-                                        <div class="carousel-slide">
-                                            <img src="img/room6/9af22104-09aa-4dbc-a7f4-d844c9fce34d.jpeg" alt="Room 6 bedroom area">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <div class="carousel-dots" role="tablist"></div>
-                                </div>
-                            </figure>
-                            <div class="room-listing__body">
-                                <div class="room-listing__header">
-                                    <div>
-                                        <h3>Room 6</h3>
-                                        <p class="listing-subtitle">Premium Cozy Suite</p>
-                                    </div>
-                                    <span class="price-tag">PHP 3,800</span>
-                                </div>
-                                <p>Our highest-capacity suite with a more polished finish and broader guest flexibility.</p>
-                                <ul class="feature-list">
-                                    <li>4 guests</li>
-                                    <li>Suite</li>
-                                    <li>Premium finish</li>
-                                </ul>
-                                <button class="button button--primary reserve-trigger" type="button" data-room-select="room-6">Reserve</button>
-                            </div>
-                        </article>
+                    <div class="field">
+                        <label for="filter-type">Room type</label>
+                        <select id="filter-type" name="type">
+                            <option value="">All types</option>
+                            <option value="suite">Suite</option>
+                            <option value="studio">Studio</option>
+                            <option value="family">Family</option>
+                        </select>
                     </div>
-                </section>
-            </div>
+                    <div class="field">
+                        <label for="filter-price">Max price</label>
+                        <select id="filter-price" name="price">
+                            <option value="">No limit</option>
+                            <option value="3000">PHP 3,000</option>
+                            <option value="3400">PHP 3,400</option>
+                            <option value="3800">PHP 3,800</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button class="button button--primary" type="submit">Apply</button>
+                        <button class="button button--secondary" type="button" id="clear-filters">Reset</button>
+                    </div>
+                    <p id="filter-feedback" class="form-feedback"></p>
+                </form>
+            </section>
+
+            <section class="listing-panel" aria-labelledby="room-list-title">
+                <h2 id="room-list-title" class="visually-hidden">Available rooms</h2>
+                <div class="reservation-grid" id="room-grid"></div>
+            </section>
         </main>
 
-        
+        <!-- Booking overlay (hidden) – perfect nesting -->
+        <div id="booking-overlay" class="modal" style="display:none;">
+            <div class="modal-content panel">
+                <div class="panel-heading">
+                    <h2 id="overlay-room-title">Reserve a Room</h2>
+                    <button class="modal-close" id="btn-close-overlay">&times;</button>
+                </div>
+                <form class="booking-form" id="overlay-booking-form" novalidate>
+                    <input type="hidden" name="roomId" value="">
+                    <div class="booking-summary" id="overlay-room-summary"></div>
+
+                    <div class="field">
+                        <label for="overlay-name">Full name</label>
+                        <input id="overlay-name" type="text" name="name" autocomplete="name" required>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="field">
+                        <label for="overlay-email">Email</label>
+                        <input id="overlay-email" type="email" name="email" autocomplete="email" required>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="field">
+                        <label for="overlay-checkin">Check-in</label>
+                        <input id="overlay-checkin" type="date" name="checkin" required>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="field">
+                        <label for="overlay-checkout">Check-out</label>
+                        <input id="overlay-checkout" type="date" name="checkout" required>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="field">
+                        <label for="overlay-guests">Guests</label>
+                        <input id="overlay-guests" type="number" name="guests" min="1" required>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="field terms-field">
+                        <label>
+                            <input type="checkbox" name="terms" required>
+                            I agree to the <a href="#" onclick="event.preventDefault(); showTermsOverlay();" data-no-transition>Terms & Conditions</a>
+                        </label>
+                        <p class="field-message"></p>
+                    </div>
+                    <div class="booking-overlay-total" id="overlay-total">Total: select dates</div>
+                    <div class="form-actions">
+                        <button class="button button--primary" type="submit">Book now</button>
+                        <button class="button button--secondary" type="button" id="btn-cancel-overlay">Cancel</button>
+                    </div>
+                    <p class="form-feedback" id="overlay-feedback"></p>
+                </form>
+            </div>
+        </div>
     </div>
+
     <footer class="site-footer">
-    <div class="footer-inner">
-        <div class="footer-brand">
-            
-            <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reservation.html">Reservations</a></li>
+                    <li><a href="aboutus.html">About us</a></li>
+                    <li><a href="contactus.html">Contact us</a></li>
+                    <li><a href="login.html">Login/Register</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <ul>
+                    <li>Email: hello@cozycorner.example</li>
+                    <li>Phone: +63 912 345 6789</li>
+                    <li>Daily, 8:00 AM – 8:00 PM</li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-links">
-            <h4>Explore</h4>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="reservation.html">Reservations</a></li>
-                <li><a href="aboutus.html">About us</a></li>
-                <li><a href="contactus.html">Contact us</a></li>
-                <li><a href="login.html">Login/Register</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CozyCorner. All rights reserved.</p>
         </div>
-        <div class="footer-contact">
-            <h4>Contact</h4>
-            <ul>
-                <li>Email: hello@cozycorner.example</li>
-                <li>Phone: +63 912 345 6789</li>
-                <li>Daily, 8:00 AM – 8:00 PM</li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2026 CozyCorner. All rights reserved.</p>
-    </div>
-</footer>
+    </footer>
     <script src="js/script.js"></script>
 </body>
 </html>
