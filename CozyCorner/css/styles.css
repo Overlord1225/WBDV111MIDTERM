@@ -568,6 +568,17 @@ input[type="checkbox"] { accent-color: var(--color-primary); width: 18px; height
 .status-disabled { background: var(--color-error); color: #fff; }
 
 /* ----------------------------------------------------------------------------- */
+/*  ADMIN STAT CARD HOVER REMOVAL (fix #13) */
+.page-admin .stat-card:hover,
+.page-superadmin .stat-card:hover,
+.page-manage-reservations .stat-card:hover,
+.page-manage-rooms .stat-card:hover,
+.page-admin-support .stat-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-level-2);
+}
+
+/* ----------------------------------------------------------------------------- */
 /*  RESPONSIVE */
 @media (max-width: 1100px) {
     :root { --container-padding: var(--space-md); --section-gap: var(--space-2xl); }
