@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="page-reservations">
@@ -44,7 +45,6 @@
                         <label for="filter-guests">Guests</label>
                         <select id="filter-guests" name="guests">
                             <option value="">Any size</option>
-                            <option value="1">1 guest</option>
                             <option value="2">2 guests</option>
                             <option value="3">3+ guests</option>
                         </select>
@@ -61,17 +61,17 @@
                     <div class="field">
                         <label for="filter-price">Max price</label>
                         <select id="filter-price" name="price">
-                            <option value="">No limit</option>
+                            <option value="">Default</option>
+                            <option value="2000">PHP 2,000</option>
                             <option value="3000">PHP 3,000</option>
-                            <option value="3400">PHP 3,400</option>
-                            <option value="3800">PHP 3,800</option>
+                            <option value="4000">PHP 4,000</option>
                         </select>
                     </div>
                     <div class="form-actions">
                         <button class="button button--primary" type="submit">Apply</button>
                         <button class="button button--secondary" type="button" id="clear-filters">Reset</button>
                     </div>
-                    <p id="filter-feedback" class="form-feedback"></p>
+                    
                 </form>
             </section>
 
@@ -80,89 +80,35 @@
                 <div class="reservation-grid" id="room-grid"></div>
             </section>
         </main>
-
-        <!-- Booking overlay (hidden) – perfect nesting -->
-        <div id="booking-overlay" class="modal" style="display:none;">
-            <div class="modal-content panel">
-                <div class="panel-heading">
-                    <h2 id="overlay-room-title">Reserve a Room</h2>
-                    <button class="modal-close" id="btn-close-overlay">&times;</button>
-                </div>
-                <form class="booking-form" id="overlay-booking-form" novalidate>
-                    <input type="hidden" name="roomId" value="">
-                    <div class="booking-summary" id="overlay-room-summary"></div>
-
-                    <div class="field">
-                        <label for="overlay-name">Full name</label>
-                        <input id="overlay-name" type="text" name="name" autocomplete="name" required>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="field">
-                        <label for="overlay-email">Email</label>
-                        <input id="overlay-email" type="email" name="email" autocomplete="email" required>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="field">
-                        <label for="overlay-checkin">Check-in</label>
-                        <input id="overlay-checkin" type="date" name="checkin" required>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="field">
-                        <label for="overlay-checkout">Check-out</label>
-                        <input id="overlay-checkout" type="date" name="checkout" required>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="field">
-                        <label for="overlay-guests">Guests</label>
-                        <input id="overlay-guests" type="number" name="guests" min="1" required>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="field terms-field">
-                        <label>
-                            <input type="checkbox" name="terms" required>
-                            I agree to the <a href="#" onclick="event.preventDefault(); showTermsOverlay();" data-no-transition>Terms & Conditions</a>
-                        </label>
-                        <p class="field-message"></p>
-                    </div>
-                    <div class="booking-overlay-total" id="overlay-total">Total: select dates</div>
-                    <div class="form-actions">
-                        <button class="button button--primary" type="submit">Book now</button>
-                        <button class="button button--secondary" type="button" id="btn-cancel-overlay">Cancel</button>
-                    </div>
-                    <p class="form-feedback" id="overlay-feedback"></p>
-                </form>
-            </div>
+    </div>
+    <footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="reservation.html">Reservations</a></li>
+                <li><a href="aboutus.html">About us</a></li>
+                <li><a href="contactus.html">Contact us</a></li>
+                <li><a href="login.html">Login/Register</a></li>
+            </ul>
+        </div>
+        <div class="footer-contact">
+            <h4>Contact</h4>
+            <ul>
+                <li>Email: hello@cozycorner.example</li>
+                <li>Phone: +63 912 345 6789</li>
+                <li>Daily, 8:00 AM – 8:00 PM</li>
+            </ul>
         </div>
     </div>
-
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-brand">
-                <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Explore</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="reservation.html">Reservations</a></li>
-                    <li><a href="aboutus.html">About us</a></li>
-                    <li><a href="contactus.html">Contact us</a></li>
-                    <li><a href="login.html">Login/Register</a></li>
-                </ul>
-            </div>
-            <div class="footer-contact">
-                <h4>Contact</h4>
-                <ul>
-                    <li>Email: hello@cozycorner.example</li>
-                    <li>Phone: +63 912 345 6789</li>
-                    <li>Daily, 8:00 AM – 8:00 PM</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 CozyCorner. All rights reserved.</p>
-        </div>
-    </footer>
+    <div class="footer-bottom">
+        <p>&copy; 2026 CozyCorner. All rights reserved.</p>
+    </div>
+</footer>
     <script src="js/script.js"></script>
 </body>
 </html>

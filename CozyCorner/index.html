@@ -7,8 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/styles.css">
-    
 </head>
 <body class="page-home">
     <div class="site-frame">
@@ -49,149 +49,15 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Featured rooms section (unchanged) -->
             <section class="section-block" aria-labelledby="featured-rooms-title">
                 <div class="section-heading">
                     <div>
                         <p class="eyebrow">Guest favorites</p>
                         <h2 id="featured-rooms-title">Featured Rooms</h2>
                     </div>
-                    
                 </div>
-
-                <div class="card-grid">
-                    <!-- Room 1 card (unchanged) -->
-                    <article class="stay-card">
-                        <figure class="stay-card__media">
-                            <div class="carousel" data-carousel>
-                                <div class="carousel-track">
-                                    <div class="carousel-slide is-active">
-                                        <img src="img/room1/077f6d83-971c-4e34-aafc-018d2899368d.jpeg" alt="Cozy evening dining and lounge space in Room 1">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room1/116bbd49-a22c-4f9f-ac40-400f4cd88a7c.jpeg" alt="Room 1 interior view">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room1/8e567aa9-5876-47f9-a166-ae5160579898.jpeg" alt="Room 1 lounge area">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room1/bb258352-46d0-4863-9c80-e365dc1ac150.jpeg" alt="Room 1 bedroom area">
-                                    </div>
-                                </div>
-                                <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="carousel-dots" role="tablist"></div>
-                            </div>
-                        </figure>
-                        <div class="stay-card__body">
-                            <div class="stay-card__meta">
-                                <h3>Room 1</h3>
-                                <p>Warm lighting, a private lounge setup, and a quiet indoor atmosphere for couples.</p>
-                                <div class="room-rating" data-room-id="room-1"></div>   <!-- for Room 1 -->
-                            </div>
-                            <div class="stay-card__footer">
-                                <span class="price-tag">PHP 2,800 / night</span>
-                                <a class="button button--primary reserve-link" href="reservation.html?room=room-1">Reserve</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Room 2 card (unchanged) -->
-                    <article class="stay-card">
-                        <figure class="stay-card__media">
-                            <div class="carousel" data-carousel>
-                                <div class="carousel-track">
-                                    <div class="carousel-slide is-active">
-                                        <img src="img/room2/04d8d164-3ef9-4d6a-a9fb-f84fe0f4ef2a.jpeg" alt="Minimal room interior with curtains and wooden accents in Room 2">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room2/43b0a2a7-8a82-44c0-9af0-6a0bafed9df3.jpeg" alt="Room 2 minimalist interior">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room2/18ca8bd8-c5d8-4d68-8ebe-186da680da43.jpeg" alt="Room 2 corner view">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room2/90830dde-da26-4073-bffc-8d79a7a0bfe0.jpeg" alt="Room 2 space overview">
-                                    </div>
-                                </div>
-                                <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="carousel-dots" role="tablist"></div>
-                            </div>
-                        </figure>
-                        <div class="stay-card__body">
-                            <div class="stay-card__meta">
-                                <h3>Room 2</h3>
-                                <p>Soft neutral finishes and open floor space designed for solo guests or a pair.</p>
-                                <div class="room-rating" data-room-id="room-2"></div>   <!-- for Room 2 -->
-                            </div>
-                            <div class="stay-card__footer">
-                                <span class="price-tag">PHP 3,000 / night</span>
-                                <a class="button button--primary reserve-link" href="reservation.html?room=room-2">Reserve</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Room 3 card (unchanged) -->
-                    <article class="stay-card">
-                        <figure class="stay-card__media">
-                            <div class="carousel" data-carousel>
-                                <div class="carousel-track">
-                                    <div class="carousel-slide is-active">
-                                        <img src="img/room3/151b01e3-2301-467d-8d1f-a798e8b5b6ac.jpeg" alt="Bright bedroom with wood feature wall in Room 3">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room3/b5e6a979-1510-4b42-b6e7-4f3a01d34034.jpeg" alt="Room 3 bedroom with wood accents">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room3/7272dc02-be0f-48c5-8402-658d67a48449.jpeg" alt="Room 3 living area">
-                                    </div>
-                                    <div class="carousel-slide">
-                                        <img src="img/room3/e6c9a497-cf50-4127-b8fd-478962c9ee02.jpeg" alt="Room 3 cozy corner">
-                                    </div>
-                                </div>
-                                <button class="carousel-btn carousel-btn--prev" type="button" aria-label="Previous image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button class="carousel-btn carousel-btn--next" type="button" aria-label="Next image">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="carousel-dots" role="tablist"></div>
-                            </div>
-                        </figure>
-                        <div class="stay-card__body">
-                            <div class="stay-card__meta">
-                                <h3>Room 3</h3>
-                                <p>Airy bedroom styling with a dedicated work corner and a brighter daytime feel.</p>
-                                <div class="room-rating" data-room-id="room-3"></div>   <!-- for Room 3 -->
-                            </div>
-                            <div class="stay-card__footer">
-                                <span class="price-tag">PHP 3,200 / night</span>
-                                <a class="button button--primary reserve-link" href="reservation.html?room=room-3">Reserve</a>
-                            </div>
-                        </div>
-                    </article>
+                <div class="card-grid" id="featured-rooms-grid">
+                    <!-- dynamically filled by JS -->
                 </div>
             </section>
             <section aria-labelledby="reviews-heading">
@@ -203,7 +69,6 @@
     <footer class="site-footer">
     <div class="footer-inner">
         <div class="footer-brand">
-            
             <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
         </div>
         <div class="footer-links">
