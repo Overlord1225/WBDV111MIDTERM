@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/styles.css">
-    
 </head>
 <body class="page-login">
     <div class="site-frame">
@@ -56,7 +55,6 @@
                             <p class="field-message" aria-live="polite"></p>
                         </div>
                         <button class="button button--primary" type="submit">Login</button>
-                        <!-- feedback is now a direct child of the form -->
                         <p id="login-feedback" class="form-feedback" aria-live="polite"></p>
                     </form>
                     <div class="auth-switch">
@@ -64,7 +62,7 @@
                     </div>
                 </section>
 
-                <!-- REGISTER PANEL – hidden initially, shown via JS/CSS -->
+                <!-- REGISTER PANEL – hidden initially -->
                 <section class="panel" id="register-panel" aria-labelledby="register-title">
                     <div class="panel-heading">
                         <h2 id="register-title">Register</h2>
@@ -77,25 +75,21 @@
                             <input id="register-username" type="text" name="username" autocomplete="username">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <div class="field">
                             <label for="register-email">Email</label>
                             <input id="register-email" type="email" name="email" autocomplete="email">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <div class="field">
                             <label for="register-password">Password</label>
                             <input id="register-password" type="password" name="password" autocomplete="new-password">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <div class="field">
                             <label for="register-confirm">Confirm password</label>
                             <input id="register-confirm" type="password" name="confirm-password" autocomplete="new-password">
                             <p class="field-message" aria-live="polite"></p>
                         </div>
-
                         <button class="button button--primary" type="submit">Register</button>
                         <p class="form-feedback" id="register-feedback" aria-live="polite"></p>
                     </form>
@@ -105,13 +99,40 @@
                     </div>
                 </section>
             </section>
+
+            <!-- DEMO ACCOUNTS SECTION -->
+            <section class="panel" aria-labelledby="demo-accounts-title" style="max-width:700px; margin:0 auto;">
+                <div class="panel-heading">
+                    <h2 id="demo-accounts-title" style="font-size:1.5rem;">Demo Accounts</h2>
+                    <p style="color:var(--text-soft); font-size:0.9rem;">Use these credentials for testing. All accounts have the same password.</p>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:var(--space-md); margin-top:var(--space-md);">
+                    <!-- User -->
+                    <div style="background:var(--color-surface-muted); border-radius:var(--radius-md); padding:var(--space-md);">
+                        <h4 style="margin:0 0 4px;">👤 User</h4>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-soft);">Email:<br><strong>user1@example.com</strong></p>
+                        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-soft);">Password:<br><strong>1user123</strong></p>
+                    </div>
+                    <!-- Admin -->
+                    <div style="background:var(--color-surface-muted); border-radius:var(--radius-md); padding:var(--space-md);">
+                        <h4 style="margin:0 0 4px;">🛠️ Admin</h4>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-soft);">Email:<br><strong>admin1@example.com</strong></p>
+                        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-soft);">Password:<br><strong>1admin123</strong></p>
+                    </div>
+                    <!-- Super Admin -->
+                    <div style="background:var(--color-surface-muted); border-radius:var(--radius-md); padding:var(--space-md);">
+                        <h4 style="margin:0 0 4px;">⭐ Super Admin</h4>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-soft);">Email:<br><strong>superadmin@example.com</strong></p>
+                        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-soft);">Password:<br><strong>super123</strong></p>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                
                 <p>CozyCorner combines clean design, warm materials, and practical booking for a more relaxed stay.</p>
             </div>
             <div class="footer-links">
